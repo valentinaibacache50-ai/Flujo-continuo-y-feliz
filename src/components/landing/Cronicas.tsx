@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const cronicas = [
   {
     tag: "CRÓNICA SUB-12",
@@ -20,31 +22,46 @@ const cronicas = [
 ];
 
 const Cronicas = () => (
-  <section id="cronicas" className="py-20 px-4 bg-secondary/30">
+  <section id="cronicas" className="py-28 px-4 bg-secondary/30">
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="flex items-center justify-between mb-12"
+      >
         <div>
-          <p className="text-primary text-sm font-semibold mb-1">Crónicas</p>
-          <h2 className="font-bebas text-4xl md:text-5xl tracking-wider text-foreground">
+          <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Crónicas</p>
+          <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground">
             DESDE LA CANCHA
           </h2>
         </div>
         <a href="#" className="text-primary text-sm hover:underline hidden md:inline">
           Ver todas →
         </a>
-      </div>
+      </motion.div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-8">
         {cronicas.map((c, i) => (
-          <article key={i} className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors">
-            <span className="text-xs font-semibold text-primary tracking-widest">{c.tag}</span>
-            <h3 className="font-bebas text-xl md:text-2xl mt-2 mb-2 text-foreground">{c.title}</h3>
+          <motion.article
+            key={i}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors"
+          >
+            <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">
+              {c.tag}
+            </span>
+            <h3 className="font-space font-semibold text-xl mb-2 text-foreground">{c.title}</h3>
             <p className="text-muted-foreground text-sm mb-4">{c.desc}</p>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{c.date}</span>
               <a href="#" className="text-primary hover:underline">Leer →</a>
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
     </div>

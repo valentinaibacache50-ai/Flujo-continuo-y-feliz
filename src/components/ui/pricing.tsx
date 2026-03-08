@@ -85,7 +85,7 @@ export function Pricing({
   return (
     <div className="w-full">
       <div className="text-center space-y-4 mb-10">
-        <h2 className="font-bebas text-4xl md:text-5xl tracking-wider text-foreground">
+        <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground">
           {title}
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">

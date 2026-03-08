@@ -33,7 +33,7 @@ const NoticiasPanel = () => {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-bebas text-2xl text-foreground">Gestión de Noticias</h2>
+        <h2 className="font-space font-bold uppercase text-2xl text-foreground">Gestión de Noticias</h2>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-1 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90"

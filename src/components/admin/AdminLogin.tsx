@@ -24,7 +24,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       <div className="bg-card border border-border rounded-xl p-8 max-w-sm w-full">
         <div className="text-center mb-6">
           <span className="text-3xl">⚽</span>
-          <h1 className="font-bebas text-3xl tracking-wider text-foreground mt-2">
+          <h1 className="font-space font-bold uppercase text-3xl tracking-wide text-foreground mt-2">
             Semillero de Campeones
           </h1>
           <p className="text-sm text-muted-foreground">Panel Admin</p>

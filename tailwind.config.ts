@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        outfit: ['Outfit', 'sans-serif'],
-        bebas: ['Bebas Neue', 'cursive'],
+        inter: ['Inter', 'sans-serif'],
+        space: ['Space Grotesk', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

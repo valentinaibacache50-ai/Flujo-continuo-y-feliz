@@ -1,7 +1,7 @@
 const Footer = () => (
   <footer className="border-t border-border py-8 px-4">
     <div className="max-w-7xl mx-auto text-center">
-      <p className="font-bebas text-lg tracking-wider text-foreground mb-2">
+      <p className="font-space font-bold uppercase text-lg tracking-wide text-foreground mb-2">
         Semillero de Campeones
       </p>
       <p className="text-sm text-muted-foreground mb-4">

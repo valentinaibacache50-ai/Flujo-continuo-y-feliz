@@ -156,7 +156,7 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <h1 className="font-bebas text-6xl md:text-8xl lg:text-9xl leading-none tracking-tight">
+            <h1 className="font-space font-bold uppercase text-6xl md:text-8xl lg:text-9xl leading-none tracking-tight">
               <span className="text-gradient-green">{title1}</span>
               <br />
               <span className="text-gradient-green">{title2}</span>

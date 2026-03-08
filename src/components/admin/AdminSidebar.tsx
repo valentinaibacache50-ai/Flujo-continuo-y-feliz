@@ -19,7 +19,7 @@ const AdminSidebar = ({ activePanel, onSelect }: AdminSidebarProps) => (
   <aside className="w-64 min-h-screen bg-card border-r border-border p-4 hidden md:block">
     <div className="flex items-center gap-2 mb-8 px-2">
       <span className="text-2xl">⚽</span>
-      <span className="font-bebas text-xl tracking-wider text-foreground">Admin</span>
+      <span className="font-space font-bold text-xl tracking-wide text-foreground">Admin</span>
     </div>
     <nav className="space-y-1">
       {menuItems.map((item) => (

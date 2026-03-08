@@ -3,6 +3,7 @@ import Hero from "@/components/landing/Hero";
 import Noticias from "@/components/landing/Noticias";
 import Galeria from "@/components/landing/Galeria";
 import Estadisticas from "@/components/landing/Estadisticas";
+import Fechas from "@/components/landing/Fechas";
 import Cronicas from "@/components/landing/Cronicas";
 import Tienda from "@/components/landing/Tienda";
 import Contacto from "@/components/landing/Contacto";
@@ -15,6 +16,7 @@ const Index = () => (
     <Noticias />
     <Galeria />
     <Estadisticas />
+    <Fechas />
     <Cronicas />
     <Tienda />
     <Contacto />

@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const noticias = [
   {
     tag: "CRÓNICA",
@@ -42,39 +44,80 @@ const noticias = [
 ];
 
 const Noticias = () => (
-  <section id="noticias" className="py-20 px-4">
+  <section id="noticias" className="py-28 px-4">
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="flex items-center justify-between mb-12"
+      >
         <div>
-          <p className="text-primary text-sm font-semibold mb-1">Noticias</p>
-          <h2 className="font-bebas text-4xl md:text-5xl tracking-wider text-foreground">
+          <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Noticias</p>
+          <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground">
             ÚLTIMAS NOTICIAS
           </h2>
         </div>
         <a href="#" className="text-primary text-sm hover:underline hidden md:inline">
           Ver todas →
         </a>
-      </div>
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {noticias.map((n, i) => (
-          <article
+      {/* Featured article */}
+      <motion.article
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, delay: 0.1 }}
+        className="relative bg-card border border-border rounded-2xl p-8 md:p-10 mb-8 hover:border-primary/50 transition-all cursor-pointer group overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-xs font-semibold text-primary-foreground bg-primary px-3 py-1 rounded-full tracking-wider">
+              {noticias[0].tag}
+            </span>
+            {noticias[0].cat && (
+              <span className="text-xs font-medium bg-accent/20 text-accent px-3 py-1 rounded-full">
+                {noticias[0].cat}
+              </span>
+            )}
+          </div>
+          <h3 className="font-space font-bold text-2xl md:text-3xl mb-3 text-foreground group-hover:text-primary transition-colors">
+            {noticias[0].title}
+          </h3>
+          <p className="text-muted-foreground text-base mb-4 max-w-3xl">{noticias[0].desc}</p>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span>{noticias[0].date}</span>
+            {noticias[0].read && <span>· {noticias[0].read}</span>}
+          </div>
+        </div>
+      </motion.article>
+
+      {/* Grid of remaining articles */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {noticias.slice(1).map((n, i) => (
+          <motion.article
             key={i}
-            className={`bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors ${
-              i === 0 ? "md:col-span-2 lg:col-span-2" : ""
-            }`}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.15 + i * 0.1 }}
+            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all cursor-pointer group"
           >
-            <span className="text-xs font-semibold text-primary tracking-widest">{n.tag}</span>
-            <h3 className="font-bebas text-xl md:text-2xl mt-2 mb-2 text-foreground">{n.title}</h3>
-            {n.desc && <p className="text-muted-foreground text-sm mb-3">{n.desc}</p>}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">
+              {n.tag}
+            </span>
+            <h3 className="font-space font-semibold text-base mb-2 text-foreground group-hover:text-primary transition-colors leading-snug">
+              {n.title}
+            </h3>
+            {n.desc && <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{n.desc}</p>}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
               <span>{n.date}</span>
               {n.read && <span>· {n.read}</span>}
-              {n.cat && (
-                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded">{n.cat}</span>
-              )}
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
     </div>

@@ -23,7 +23,7 @@ const ShopModal = ({ product, onClose }: ShopModalProps) => {
         </button>
 
         <span className="text-xs font-semibold text-primary tracking-widest">{product.type}</span>
-        <h3 className="font-bebas text-2xl text-foreground mt-2 mb-2">{product.title}</h3>
+        <h3 className="font-space font-bold text-2xl text-foreground mt-2 mb-2">{product.title}</h3>
         <p className="text-sm text-muted-foreground mb-4">{product.details}</p>
         <p className="text-3xl font-bold text-primary mb-6">{product.price}</p>
 

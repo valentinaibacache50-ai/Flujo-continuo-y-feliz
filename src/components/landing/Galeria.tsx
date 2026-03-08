@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const filters = ["Todo", "Fotos", "Videos"];
 
@@ -17,16 +18,22 @@ const Galeria = () => {
   const filtered = filter === "Todo" ? items : items.filter((i) => i.type === (filter === "Fotos" ? "Foto" : "Video"));
 
   return (
-    <section id="galeria" className="py-20 px-4 bg-secondary/30">
+    <section id="galeria" className="py-28 px-4 bg-secondary/30">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex items-center justify-between mb-8"
+        >
           <div>
-            <p className="text-primary text-sm font-semibold mb-1">Galería</p>
-            <h2 className="font-bebas text-4xl md:text-5xl tracking-wider text-foreground">
+            <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Galería</p>
+            <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground">
               MOMENTOS CAPTURADOS
             </h2>
           </div>
-        </div>
+        </motion.div>
 
         <div className="flex gap-3 mb-8">
           {filters.map((f) => (
@@ -46,14 +53,18 @@ const Galeria = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {filtered.map((item, i) => (
-            <div
-              key={i}
+            <motion.div
+              key={`${filter}-${i}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
               className="aspect-square bg-card border border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors cursor-pointer group"
             >
               <span className="text-4xl group-hover:scale-110 transition-transform">{item.emoji}</span>
               <span className="text-sm text-muted-foreground">{item.label}</span>
               <span className="text-xs text-primary">{item.type}</span>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

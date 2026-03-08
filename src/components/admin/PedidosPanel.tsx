@@ -13,7 +13,7 @@ const statusColor: Record<string, string> = {
 
 const PedidosPanel = () => (
   <div className="p-6">
-    <h2 className="font-bebas text-2xl text-foreground mb-6">Gestión de Pedidos</h2>
+    <h2 className="font-space font-bold uppercase text-2xl text-foreground mb-6">Gestión de Pedidos</h2>
 
     <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="overflow-x-auto">

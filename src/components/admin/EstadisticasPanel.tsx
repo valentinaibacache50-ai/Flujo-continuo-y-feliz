@@ -20,7 +20,7 @@ const EstadisticasPanel = () => {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-bebas text-2xl text-foreground">Gestión de Estadísticas</h2>
+        <h2 className="font-space font-bold uppercase font-bold uppercase text-2xl text-foreground">Gestión de Estadísticas</h2>
         <button onClick={save} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">
           Guardar cambios
         </button>
@@ -29,7 +29,7 @@ const EstadisticasPanel = () => {
       <div className="space-y-6">
         {stats.map((s) => (
           <div key={s.id} className="bg-card border border-border rounded-xl p-5">
-            <h3 className="font-bebas text-xl text-foreground mb-4">{s.cat}</h3>
+            <h3 className="font-space font-bold uppercase text-xl text-foreground mb-4">{s.cat}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "Partidos", field: "partidos", val: s.partidos },
