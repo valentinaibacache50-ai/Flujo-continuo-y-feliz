@@ -2,12 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Play, Loader2 } from "lucide-react";
+import { Image, Play, Loader2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const filters = ["Todo", "Fotos", "Videos"];
 
 const Galeria = () => {
   const [filter, setFilter] = useState("Todo");
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["galeria"],
@@ -19,6 +21,14 @@ const Galeria = () => {
   });
 
   const filtered = filter === "Todo" ? items : items.filter((i) => i.tipo === (filter === "Fotos" ? "Foto" : "Video"));
+  const selectedItem = selectedIndex !== null ? filtered[selectedIndex] : null;
+
+  const goNext = () => {
+    if (selectedIndex !== null && selectedIndex < filtered.length - 1) setSelectedIndex(selectedIndex + 1);
+  };
+  const goPrev = () => {
+    if (selectedIndex !== null && selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
+  };
 
   return (
     <section id="galeria" className="py-28 px-4 bg-secondary/30">
@@ -69,6 +79,7 @@ const Galeria = () => {
                 transition={{ duration: 0.4, delay: i * 0.08 }}
                 whileHover={{ scale: 1.03 }}
                 className="aspect-square rounded-xl overflow-hidden relative group cursor-pointer"
+                onClick={() => setSelectedIndex(i)}
               >
                 {item.imagen_url ? (
                   <img src={item.imagen_url} alt={item.titulo} className="w-full h-full object-cover" />
@@ -89,6 +100,65 @@ const Galeria = () => {
           </div>
         )}
       </div>
+
+      {/* Lightbox */}
+      <Dialog open={selectedIndex !== null} onOpenChange={(open) => !open && setSelectedIndex(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto p-0 bg-background/95 backdrop-blur-sm border-border overflow-hidden [&>button]:hidden">
+          {selectedItem && (
+            <div className="relative flex items-center justify-center min-h-[60vh]">
+              {/* Close */}
+              <button
+                onClick={() => setSelectedIndex(null)}
+                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Prev */}
+              {selectedIndex !== null && selectedIndex > 0 && (
+                <button
+                  onClick={goPrev}
+                  className="absolute left-3 z-10 p-2 rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+              )}
+
+              {/* Next */}
+              {selectedIndex !== null && selectedIndex < filtered.length - 1 && (
+                <button
+                  onClick={goNext}
+                  className="absolute right-3 z-10 p-2 rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              )}
+
+              {/* Content */}
+              <div className="flex flex-col items-center">
+                {selectedItem.imagen_url ? (
+                  <img
+                    src={selectedItem.imagen_url}
+                    alt={selectedItem.titulo}
+                    className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                  />
+                ) : (
+                  <div className="w-64 h-64 bg-card flex items-center justify-center rounded-lg">
+                    <Image size={48} className="text-muted-foreground" />
+                  </div>
+                )}
+                <div className="p-4 text-center">
+                  <p className="text-foreground font-medium">{selectedItem.titulo}</p>
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                    {selectedItem.tipo === "Video" && <Play size={10} />}
+                    {selectedItem.tipo}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
