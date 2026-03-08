@@ -5,6 +5,7 @@ import Galeria from "@/components/landing/Galeria";
 import Estadisticas from "@/components/landing/Estadisticas";
 import Fechas from "@/components/landing/Fechas";
 import Noticias from "@/components/landing/Noticias";
+import Reportajes from "@/components/landing/Reportajes";
 import Tienda from "@/components/landing/Tienda";
 import Contacto from "@/components/landing/Contacto";
 import Footer from "@/components/landing/Footer";
@@ -18,6 +19,7 @@ const Index = () => (
     <Estadisticas />
     <Fechas />
     <Noticias />
+    <Reportajes />
     <Tienda />
     <Contacto />
     <Footer />

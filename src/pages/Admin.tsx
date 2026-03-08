@@ -12,6 +12,7 @@ import EstadisticasPanel from "@/components/admin/EstadisticasPanel";
 import FechasPanel from "@/components/admin/FechasPanel";
 import TiendaPanel from "@/components/admin/TiendaPanel";
 import ContactoPanel from "@/components/admin/ContactoPanel";
+import ReportajesPanel from "@/components/admin/ReportajesPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
 import { Loader2 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const panels: Record<string, React.FC<any>> = {
   estadisticas: EstadisticasPanel,
   fechas: FechasPanel,
   tienda: TiendaPanel,
+  reportajes: ReportajesPanel,
   contacto: ContactoPanel,
   pedidos: PedidosPanel,
 };

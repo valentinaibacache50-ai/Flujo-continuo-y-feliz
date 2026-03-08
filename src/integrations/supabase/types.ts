@@ -269,6 +269,42 @@ export type Database = {
         }
         Relationships: []
       }
+      reportajes: {
+        Row: {
+          contenido: string
+          created_at: string
+          id: string
+          imagen_url: string | null
+          publicado: boolean
+          subtitulo: string | null
+          tag: string
+          titulo: string
+          video_url: string | null
+        }
+        Insert: {
+          contenido: string
+          created_at?: string
+          id?: string
+          imagen_url?: string | null
+          publicado?: boolean
+          subtitulo?: string | null
+          tag?: string
+          titulo: string
+          video_url?: string | null
+        }
+        Update: {
+          contenido?: string
+          created_at?: string
+          id?: string
+          imagen_url?: string | null
+          publicado?: boolean
+          subtitulo?: string | null
+          tag?: string
+          titulo?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
