@@ -3,7 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Loader2, Image, Play } from "lucide-react";
+import { Plus, Trash2, Upload, Loader2, Image, Play, Video } from "lucide-react";
+
+const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+const isVideoFileObj = (file: File) => file.type.startsWith("video/");
 
 const GaleriaPanel = () => {
   const queryClient = useQueryClient();
