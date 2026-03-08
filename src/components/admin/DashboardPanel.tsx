@@ -40,7 +40,7 @@ const DashboardPanel = () => (
     <div className="grid lg:grid-cols-2 gap-6">
       {/* Activity */}
       <div className="bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bebas text-xl text-foreground mb-4">ACTIVIDAD RECIENTE</h3>
+        <h3 className="font-space font-bold uppercase text-xl text-foreground mb-4">ACTIVIDAD RECIENTE</h3>
         <div className="space-y-3">
           {activity.map((a, i) => (
             <div key={i} className="flex items-start justify-between gap-3 text-sm">
