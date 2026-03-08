@@ -21,8 +21,8 @@ const Galeria = () => {
     <section id="galeria" className="py-28 px-4 bg-secondary/30">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between mb-8"
@@ -59,7 +59,8 @@ const Galeria = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="aspect-square bg-card border border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors cursor-pointer group"
+              whileHover={{ scale: 1.05 }}
+              className="aspect-square bg-card border border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
             >
               <span className="text-4xl group-hover:scale-110 transition-transform">{item.emoji}</span>
               <span className="text-sm text-muted-foreground">{item.label}</span>

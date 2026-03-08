@@ -10,6 +10,7 @@ const fixtures = [
     away: "Rayos del Sur",
     category: "Sub-12",
     venue: "Cancha La Bombonera",
+    live: true,
   },
   {
     date: "12 MAR",
@@ -19,6 +20,7 @@ const fixtures = [
     away: "Estrellas del Norte",
     category: "Sub-15",
     venue: "Cancha La Bombonera",
+    live: false,
   },
   {
     date: "13 MAR",
@@ -28,6 +30,7 @@ const fixtures = [
     away: "Leones de Oro",
     category: "Sub-12",
     venue: "Polideportivo Central",
+    live: false,
   },
   {
     date: "13 MAR",
@@ -37,6 +40,7 @@ const fixtures = [
     away: "Guerreros FC",
     category: "Sub-17",
     venue: "Polideportivo Central",
+    live: false,
   },
   {
     date: "15 MAR",
@@ -46,6 +50,7 @@ const fixtures = [
     away: "Semillero B",
     category: "Sub-15",
     venue: "Cancha de Entrenamiento",
+    live: false,
   },
   {
     date: "19 MAR",
@@ -55,6 +60,7 @@ const fixtures = [
     away: "Por definir",
     category: "Sub-12",
     venue: "Estadio Municipal",
+    live: false,
   },
 ];
 
@@ -68,8 +74,8 @@ const Fechas = () => (
   <section id="fechas" className="py-28 px-4">
     <div className="max-w-7xl mx-auto">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="flex items-center justify-between mb-12"
@@ -89,11 +95,12 @@ const Fechas = () => (
         {fixtures.map((f, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.08 }}
-            className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-all group flex flex-col md:flex-row md:items-center gap-4"
+            whileHover={{ scale: 1.01, x: 4 }}
+            className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all group flex flex-col md:flex-row md:items-center gap-4"
           >
             {/* Date block */}
             <div className="flex items-center gap-4 md:min-w-[160px]">
@@ -110,9 +117,21 @@ const Fechas = () => (
             {/* Match info */}
             <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
               <div className="flex-1">
-                <p className="font-space font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {f.home} <span className="text-muted-foreground font-normal mx-1">vs</span> {f.away}
-                </p>
+                <div className="flex items-center gap-2">
+                  {f.live && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-destructive uppercase">
+                      <motion.span
+                        className="inline-block w-2 h-2 rounded-full bg-destructive"
+                        animate={{ opacity: [1, 0.3, 1] }}
+                        transition={{ duration: 1.2, repeat: Infinity }}
+                      />
+                      EN VIVO
+                    </span>
+                  )}
+                  <p className="font-space font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {f.home} <span className="text-muted-foreground font-normal mx-1">vs</span> {f.away}
+                  </p>
+                </div>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                   <MapPin className="h-3 w-3" />
                   <span>{f.venue}</span>

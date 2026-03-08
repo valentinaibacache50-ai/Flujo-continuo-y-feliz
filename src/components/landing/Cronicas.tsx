@@ -25,8 +25,8 @@ const Cronicas = () => (
   <section id="cronicas" className="py-28 px-4 bg-secondary/30">
     <div className="max-w-7xl mx-auto">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="flex items-center justify-between mb-12"
@@ -50,7 +50,8 @@ const Cronicas = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors"
+            whileHover={{ y: -6, scale: 1.01 }}
+            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
           >
             <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">
               {c.tag}
