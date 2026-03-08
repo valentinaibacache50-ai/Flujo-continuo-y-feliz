@@ -87,6 +87,13 @@ const Lightbox = ({
                 className="w-full h-full rounded-lg"
               />
             </div>
+          ) : item.imagen_url && isVideoFile(item.imagen_url) ? (
+            <video
+              src={item.imagen_url}
+              controls
+              autoPlay
+              className="max-w-[90vw] max-h-[80vh] rounded-lg"
+            />
           ) : item.imagen_url ? (
             <img src={item.imagen_url} alt={item.titulo} className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg" />
           ) : (
