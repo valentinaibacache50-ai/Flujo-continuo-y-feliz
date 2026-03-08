@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -83,7 +83,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-outfit;
+    @apply bg-background text-foreground font-inter;
   }
 
   html {
@@ -92,11 +92,11 @@
 }
 
 @layer utilities {
-  .font-outfit {
-    font-family: 'Outfit', sans-serif;
+  .font-inter {
+    font-family: 'Inter', sans-serif;
   }
-  .font-bebas {
-    font-family: 'Bebas Neue', cursive;
+  .font-space {
+    font-family: 'Space Grotesk', sans-serif;
   }
   .text-gradient-green {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;

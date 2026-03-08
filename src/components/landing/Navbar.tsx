@@ -5,6 +5,7 @@ const navLinks = [
   { label: "Noticias", href: "#noticias" },
   { label: "Galería", href: "#galeria" },
   { label: "Estadísticas", href: "#estadisticas" },
+  { label: "Fechas", href: "#fechas" },
   { label: "Crónicas", href: "#cronicas" },
   { label: "Tienda", href: "#tienda" },
   { label: "Contacto", href: "#contacto" },
@@ -18,7 +19,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2">
           <span className="text-2xl">⚽</span>
-          <span className="font-bebas text-2xl tracking-wider text-foreground">
+          <span className="font-space text-2xl font-bold tracking-wide text-foreground">
             Semillero de Campeones
           </span>
         </a>
