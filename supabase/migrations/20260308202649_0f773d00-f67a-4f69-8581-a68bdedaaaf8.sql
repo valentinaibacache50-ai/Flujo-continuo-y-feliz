@@ -1,0 +1,1 @@
+ALTER TABLE public.galeria ADD COLUMN video_url text;
