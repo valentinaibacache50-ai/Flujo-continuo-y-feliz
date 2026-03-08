@@ -1,11 +1,11 @@
-import { BarChart3, FileText, Image, BookOpen, ShoppingBag, Package, LayoutDashboard } from "lucide-react";
+import { BarChart3, FileText, Image, ShoppingBag, Package, LayoutDashboard, Calendar } from "lucide-react";
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "noticias", label: "Noticias", icon: FileText },
   { id: "galeria", label: "Galería", icon: Image },
   { id: "estadisticas", label: "Estadísticas", icon: BarChart3 },
-  { id: "cronicas", label: "Crónicas", icon: BookOpen },
+  { id: "fechas", label: "Fechas", icon: Calendar },
   { id: "productos", label: "Productos", icon: ShoppingBag },
   { id: "pedidos", label: "Pedidos", icon: Package },
 ];
