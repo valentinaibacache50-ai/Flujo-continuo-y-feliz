@@ -4,20 +4,26 @@ import AdminLogin from "@/components/admin/AdminLogin";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 import DashboardPanel from "@/components/admin/DashboardPanel";
+import HeroPanel from "@/components/admin/HeroPanel";
+import QuienesSomosPanel from "@/components/admin/QuienesSomosPanel";
 import NoticiasPanel from "@/components/admin/NoticiasPanel";
 import GaleriaPanel from "@/components/admin/GaleriaPanel";
 import EstadisticasPanel from "@/components/admin/EstadisticasPanel";
 import FechasPanel from "@/components/admin/FechasPanel";
-import ProductosPanel from "@/components/admin/ProductosPanel";
+import TiendaPanel from "@/components/admin/TiendaPanel";
+import ContactoPanel from "@/components/admin/ContactoPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
 import { Loader2 } from "lucide-react";
 
 const panels: Record<string, React.FC<any>> = {
+  hero: HeroPanel,
+  "quienes-somos": QuienesSomosPanel,
   noticias: NoticiasPanel,
   galeria: GaleriaPanel,
   estadisticas: EstadisticasPanel,
   fechas: FechasPanel,
-  productos: ProductosPanel,
+  tienda: TiendaPanel,
+  contacto: ContactoPanel,
   pedidos: PedidosPanel,
 };
 
@@ -40,8 +46,8 @@ const Admin = () => {
     if (activePanel === "dashboard") {
       return <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
     }
-    const Panel = panels[activePanel] || DashboardPanel;
-    return <Panel />;
+    const Panel = panels[activePanel];
+    return Panel ? <Panel /> : <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
   };
 
   return (

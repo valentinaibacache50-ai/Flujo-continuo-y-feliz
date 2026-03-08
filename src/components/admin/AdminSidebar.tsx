@@ -1,12 +1,15 @@
-import { BarChart3, FileText, Image, ShoppingBag, Package, LayoutDashboard, Calendar } from "lucide-react";
+import { BarChart3, FileText, Image, ShoppingBag, Package, LayoutDashboard, Calendar, Sparkles, Users, Phone, Store } from "lucide-react";
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "noticias", label: "Noticias", icon: FileText },
+  { id: "hero", label: "Hero", icon: Sparkles },
+  { id: "quienes-somos", label: "Quiénes Somos", icon: Users },
   { id: "galeria", label: "Galería", icon: Image },
   { id: "estadisticas", label: "Estadísticas", icon: BarChart3 },
   { id: "fechas", label: "Fechas", icon: Calendar },
-  { id: "productos", label: "Productos", icon: ShoppingBag },
+  { id: "noticias", label: "Noticias", icon: FileText },
+  { id: "tienda", label: "Tienda", icon: Store },
+  { id: "contacto", label: "Contacto", icon: Phone },
   { id: "pedidos", label: "Pedidos", icon: Package },
 ];
 

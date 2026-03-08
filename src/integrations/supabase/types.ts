@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      contacto_config: {
+        Row: {
+          cobertura: string
+          created_at: string
+          facebook: string
+          id: string
+          whatsapp: string
+        }
+        Insert: {
+          cobertura?: string
+          created_at?: string
+          facebook?: string
+          id?: string
+          whatsapp?: string
+        }
+        Update: {
+          cobertura?: string
+          created_at?: string
+          facebook?: string
+          id?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       estadisticas: {
         Row: {
           categoria: string
@@ -104,6 +128,39 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_config: {
+        Row: {
+          badge: string
+          created_at: string
+          cta_href: string
+          cta_text: string
+          description: string
+          id: string
+          title1: string
+          title2: string
+        }
+        Insert: {
+          badge?: string
+          created_at?: string
+          cta_href?: string
+          cta_text?: string
+          description?: string
+          id?: string
+          title1?: string
+          title2?: string
+        }
+        Update: {
+          badge?: string
+          created_at?: string
+          cta_href?: string
+          cta_text?: string
+          description?: string
+          id?: string
+          title1?: string
+          title2?: string
+        }
+        Relationships: []
+      }
       noticias: {
         Row: {
           categoria: string | null
@@ -140,6 +197,48 @@ export type Database = {
           tiempo_lectura?: string | null
           titulo?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      productos: {
+        Row: {
+          created_at: string
+          descripcion: string | null
+          es_popular: boolean
+          features: string[]
+          id: string
+          nombre: string
+          orden: number
+          periodo: string
+          precio: string
+          precio_anual: string | null
+          whatsapp_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          descripcion?: string | null
+          es_popular?: boolean
+          features?: string[]
+          id?: string
+          nombre: string
+          orden?: number
+          periodo?: string
+          precio: string
+          precio_anual?: string | null
+          whatsapp_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          descripcion?: string | null
+          es_popular?: boolean
+          features?: string[]
+          id?: string
+          nombre?: string
+          orden?: number
+          periodo?: string
+          precio?: string
+          precio_anual?: string | null
+          whatsapp_url?: string | null
         }
         Relationships: []
       }
