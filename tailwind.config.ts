@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
+        sora: ['Sora', 'sans-serif'],
         space: ['Space Grotesk', 'sans-serif'],
       },
       colors: {

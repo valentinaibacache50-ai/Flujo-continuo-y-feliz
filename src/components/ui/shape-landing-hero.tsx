@@ -9,6 +9,7 @@ function ElegantShape({
   height = 100,
   rotate = 0,
   gradient = "from-primary/[0.08]",
+  floatDuration = 12,
 }: {
   className?: string;
   delay?: number;
@@ -16,23 +17,24 @@ function ElegantShape({
   height?: number;
   rotate?: number;
   gradient?: string;
+  floatDuration?: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
       animate={{ opacity: 1, y: 0, rotate }}
       transition={{
-        duration: 2.4,
+        duration: 1.8,
         delay,
         ease: [0.23, 0.86, 0.39, 0.96],
-        opacity: { duration: 1.2 },
+        opacity: { duration: 0.9 },
       }}
       className={cn("absolute", className)}
     >
       <motion.div
         animate={{ y: [0, 15, 0] }}
         transition={{
-          duration: 12,
+          duration: floatDuration,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -88,46 +90,51 @@ function HeroGeometric({
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-accent/[0.05]" />
 
-      {/* Geometric shapes */}
+      {/* Geometric shapes — varied float speeds */}
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
-          delay={0.3}
+          delay={0.2}
           width={600}
           height={140}
           rotate={12}
           gradient="from-primary/[0.08]"
+          floatDuration={10}
           className="top-[-10%] left-[-5%] md:left-[0%]"
         />
         <ElegantShape
-          delay={0.5}
+          delay={0.35}
           width={500}
           height={120}
           rotate={-15}
           gradient="from-accent/[0.08]"
+          floatDuration={14}
           className="top-[15%] right-[-10%] md:right-[-5%]"
         />
         <ElegantShape
-          delay={0.4}
+          delay={0.3}
           width={300}
           height={80}
           rotate={-8}
           gradient="from-primary/[0.06]"
+          floatDuration={16}
           className="bottom-[5%] left-[5%] md:left-[10%]"
         />
         <ElegantShape
-          delay={0.6}
+          delay={0.45}
           width={200}
           height={60}
           rotate={20}
           gradient="from-accent/[0.06]"
+          floatDuration={9}
           className="top-[60%] right-[5%] md:right-[15%]"
         />
         <ElegantShape
-          delay={0.7}
+          delay={0.5}
           width={150}
           height={40}
           rotate={-25}
           gradient="from-primary/[0.04]"
+          floatDuration={18}
           className="top-[8%] left-[45%]"
         />
       </div>
@@ -149,10 +156,22 @@ function HeroGeometric({
             </span>
           </motion.div>
 
-          {/* Title */}
+          {/* Title with scale entrance */}
           <motion.div
             custom={1}
-            variants={fadeUpVariants}
+            variants={{
+              hidden: { opacity: 0, y: 30, scale: 0.9 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: {
+                  duration: 1.2,
+                  delay: 0.7,
+                  ease: [0.25, 0.4, 0.25, 1],
+                },
+              },
+            }}
             initial="hidden"
             animate="visible"
           >
@@ -176,7 +195,7 @@ function HeroGeometric({
             </motion.p>
           )}
 
-          {/* CTA */}
+          {/* CTA with glow pulse */}
           {ctaText && ctaHref && (
             <motion.div
               custom={3}
@@ -185,12 +204,19 @@ function HeroGeometric({
               animate="visible"
               className="mt-8"
             >
-              <a
+              <motion.a
                 href={ctaHref}
-                className="inline-block px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+                className="inline-block px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors relative"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
-                {ctaText}
-              </a>
+                <motion.span
+                  className="absolute inset-0 rounded-lg bg-primary/30"
+                  animate={{ opacity: [0, 0.6, 0], scale: [1, 1.15, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <span className="relative z-10">{ctaText}</span>
+              </motion.a>
             </motion.div>
           )}
         </div>

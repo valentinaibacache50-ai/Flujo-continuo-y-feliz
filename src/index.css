@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;8mily=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -83,8 +83,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
-  }
+    @apply bg-background text-foreground font-intersora
 
   html {
     scroll-behavior: smooth;
@@ -92,8 +91,8 @@
 }
 
 @layer utilities {
-  .font-inter {
-    font-family: 'Inter', sans-serif;
+  .font-sora {
+    font-family: 'Sora', sans-serif;
   }
   .font-space {
     font-family: 'Space Grotesk', sans-serif;

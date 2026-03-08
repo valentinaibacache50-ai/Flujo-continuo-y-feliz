@@ -47,8 +47,8 @@ const Noticias = () => (
   <section id="noticias" className="py-28 px-4">
     <div className="max-w-7xl mx-auto">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="flex items-center justify-between mb-12"
@@ -66,11 +66,12 @@ const Noticias = () => (
 
       {/* Featured article */}
       <motion.article
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="relative bg-card border border-border rounded-2xl p-8 md:p-10 mb-8 hover:border-primary/50 transition-all cursor-pointer group overflow-hidden"
+        whileHover={{ y: -4 }}
+        className="relative bg-card border border-border rounded-2xl p-8 md:p-10 mb-8 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="relative z-10">
@@ -104,7 +105,8 @@ const Noticias = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.15 + i * 0.1 }}
-            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all cursor-pointer group"
+            whileHover={{ y: -4, scale: 1.02 }}
+            className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
           >
             <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">
               {n.tag}
