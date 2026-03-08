@@ -29,7 +29,7 @@ const EstadisticasPanel = () => {
       <div className="space-y-6">
         {stats.map((s) => (
           <div key={s.id} className="bg-card border border-border rounded-xl p-5">
-            space font-bold uppercaselassName="font-bebas text-xl text-foreground mb-4">{s.cat}</h3>
+            <h3 className="font-space font-bold uppercase text-xl text-foreground mb-4">{s.cat}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "Partidos", field: "partidos", val: s.partidos },

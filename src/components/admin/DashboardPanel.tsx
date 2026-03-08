@@ -53,7 +53,7 @@ const DashboardPanel = () => (
 
       {/* Quick actions */}
       <div className="bg-card border border-border rounded-xl p-5">
-        space font-bold uppercaselassName="font-bebas text-xl text-foreground mb-4">ACCIONES RÁPIDAS</h3>
+        <h3 className="font-space font-bold uppercase text-xl text-foreground mb-4">ACCIONES RÁPIDAS</h3>
         <div className="space-y-2">
           {quickActions.map((a, i) => (
             <button
