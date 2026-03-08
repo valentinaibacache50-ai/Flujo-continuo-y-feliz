@@ -2,12 +2,12 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Trophy, Dumbbell, Star } from "lucide-react";
+import { Loader2, Camera, Users, Radio } from "lucide-react";
 
-const catIcons: Record<string, typeof Trophy> = {
-  "Sub-12": Trophy,
-  "Sub-15": Dumbbell,
-  "Sub-17": Star,
+const catIcons: Record<string, typeof Camera> = {
+  "Cobertura 2026": Camera,
+  "Comunidad": Users,
+  "Alcance": Radio,
 };
 
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -74,7 +74,7 @@ const Estadisticas = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {Object.entries(grouped).map(([cat, items], i) => {
-              const Icon = catIcons[cat] || Trophy;
+              const Icon = catIcons[cat] || Camera;
               return (
                 <motion.div
                   key={cat}
