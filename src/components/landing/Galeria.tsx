@@ -186,7 +186,8 @@ const Galeria = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {filtered.map((item, i) => {
               const videoId = item.tipo === "Video" && (item as any).video_url ? getYouTubeId((item as any).video_url) : null;
-              const thumbnail = item.imagen_url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null);
+              const isDirectVideo = item.imagen_url && isVideoFile(item.imagen_url);
+              const thumbnail = !isDirectVideo ? (item.imagen_url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null)) : null;
 
               return (
                 <motion.div
