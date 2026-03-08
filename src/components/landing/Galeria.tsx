@@ -32,6 +32,11 @@ const SafeVideo = ({ src, className, controls, autoPlay, muted, preload }: { src
   return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} onError={() => setError(true)} />;
 };
 
+const formatDate = (d: string | null) => {
+  if (!d) return null;
+  try { return new Date(d).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" }); } catch { return null; }
+};
+
 const Lightbox = ({
   items,
   index,
@@ -206,6 +211,7 @@ const Galeria = () => {
               const videoId = item.tipo === "Video" && (item as any).video_url ? getYouTubeId((item as any).video_url) : null;
               const isDirectVideo = item.imagen_url && isVideoFile(item.imagen_url);
               const thumbnail = !isDirectVideo ? (item.imagen_url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null)) : null;
+              const dateStr = formatDate((item as any).fecha_publicacion);
 
               return (
                 <motion.div
@@ -245,10 +251,13 @@ const Galeria = () => {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                     <span className="text-foreground text-sm font-medium">{item.titulo}</span>
-                    <span className="text-xs text-primary flex items-center gap-1">
-                      {item.tipo === "Video" && <Play size={10} />}
-                      {item.tipo}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-primary flex items-center gap-1">
+                        {item.tipo === "Video" && <Play size={10} />}
+                        {item.tipo}
+                      </span>
+                      {dateStr && <span className="text-xs text-muted-foreground">· {dateStr}</span>}
+                    </div>
                   </div>
                 </motion.div>
               );

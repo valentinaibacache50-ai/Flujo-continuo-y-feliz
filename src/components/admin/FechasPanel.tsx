@@ -2,12 +2,13 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil, X } from "lucide-react";
 
 const FechasPanel = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [fecha, setFecha] = useState("");
   const [dia, setDia] = useState("");
   const [hora, setHora] = useState("");
@@ -25,18 +26,36 @@ const FechasPanel = () => {
     },
   });
 
-  const addMutation = useMutation({
+  const resetForm = () => {
+    setFecha(""); setDia(""); setHora(""); setLocal(""); setVisitante(""); setCategoria(""); setSede("");
+    setEditingId(null); setShowForm(false);
+  };
+
+  const startEdit = (f: any) => {
+    setEditingId(f.id);
+    setFecha(f.fecha); setDia(f.dia); setHora(f.hora);
+    setLocal(f.local); setVisitante(f.visitante);
+    setCategoria(f.categoria || ""); setSede(f.sede || "");
+    setShowForm(true);
+  };
+
+  const saveMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("fechas").insert({ fecha, dia, hora, local, visitante, categoria: categoria || null, sede: sede || null });
-      if (error) throw error;
+      const payload = { fecha, dia, hora, local, visitante, categoria: categoria || null, sede: sede || null };
+      if (editingId) {
+        const { error } = await supabase.from("fechas").update(payload).eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("fechas").insert(payload);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fechas"] });
-      setFecha(""); setDia(""); setHora(""); setLocal(""); setVisitante(""); setCategoria(""); setSede("");
-      setShowForm(false);
-      toast({ title: "Fecha agregada" });
+      resetForm();
+      toast({ title: editingId ? "Fecha actualizada" : "Fecha agregada" });
     },
-    onError: () => toast({ title: "Error al agregar", variant: "destructive" }),
+    onError: () => toast({ title: "Error al guardar", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
@@ -54,13 +73,15 @@ const FechasPanel = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-space font-bold uppercase text-2xl text-foreground">Gestión de Fechas</h2>
-        <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-1 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-1 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">
           <Plus size={16} /> Nueva
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={(e) => { e.preventDefault(); addMutation.mutate(); }} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-3">
+        <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(); }} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-3 relative">
+          <button type="button" onClick={resetForm} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"><X size={18} /></button>
+          <h3 className="text-sm font-semibold text-foreground mb-1">{editingId ? "Editar fecha" : "Nueva fecha"}</h3>
           <div className="grid grid-cols-2 gap-3">
             <input placeholder="Fecha (ej: 15 MAR)" value={fecha} onChange={(e) => setFecha(e.target.value)} className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" required />
             <input placeholder="Día (ej: Sábado)" value={dia} onChange={(e) => setDia(e.target.value)} className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" required />
@@ -74,9 +95,9 @@ const FechasPanel = () => {
             <input placeholder="Categoría (opcional)" value={categoria} onChange={(e) => setCategoria(e.target.value)} className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
             <input placeholder="Sede (opcional)" value={sede} onChange={(e) => setSede(e.target.value)} className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
           </div>
-          <button type="submit" disabled={addMutation.isPending} className="px-6 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 flex items-center gap-2 disabled:opacity-50">
-            {addMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-            Guardar
+          <button type="submit" disabled={saveMutation.isPending} className="px-6 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 flex items-center gap-2 disabled:opacity-50">
+            {saveMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+            {editingId ? "Actualizar" : "Guardar"}
           </button>
         </form>
       )}
@@ -95,9 +116,10 @@ const FechasPanel = () => {
                   {f.sede && <span>📍 {f.sede}</span>}
                 </div>
               </div>
-              <button onClick={() => deleteMutation.mutate(f.id)} className="text-muted-foreground hover:text-destructive">
-                <Trash2 size={16} />
-              </button>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => startEdit(f)} className="text-muted-foreground hover:text-primary p-1"><Pencil size={15} /></button>
+                <button onClick={() => deleteMutation.mutate(f.id)} className="text-muted-foreground hover:text-destructive p-1"><Trash2 size={15} /></button>
+              </div>
             </div>
           ))}
           {fechas.length === 0 && <p className="text-center text-muted-foreground py-8">No hay fechas aún</p>}
