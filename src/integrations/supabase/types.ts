@@ -107,6 +107,7 @@ export type Database = {
       galeria: {
         Row: {
           created_at: string
+          fecha_publicacion: string | null
           id: string
           imagen_url: string | null
           tipo: string
@@ -115,6 +116,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          fecha_publicacion?: string | null
           id?: string
           imagen_url?: string | null
           tipo?: string
@@ -123,6 +125,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          fecha_publicacion?: string | null
           id?: string
           imagen_url?: string | null
           tipo?: string
@@ -273,6 +276,7 @@ export type Database = {
         Row: {
           contenido: string
           created_at: string
+          fecha_publicacion: string | null
           id: string
           imagen_url: string | null
           publicado: boolean
@@ -284,6 +288,7 @@ export type Database = {
         Insert: {
           contenido: string
           created_at?: string
+          fecha_publicacion?: string | null
           id?: string
           imagen_url?: string | null
           publicado?: boolean
@@ -295,6 +300,7 @@ export type Database = {
         Update: {
           contenido?: string
           created_at?: string
+          fecha_publicacion?: string | null
           id?: string
           imagen_url?: string | null
           publicado?: boolean
