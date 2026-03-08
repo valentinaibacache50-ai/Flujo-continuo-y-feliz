@@ -16,19 +16,6 @@ import ReportajesPanel from "@/components/admin/ReportajesPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
 import { Loader2 } from "lucide-react";
 
-const panels: Record<string, React.FC<any>> = {
-  hero: HeroPanel,
-  "quienes-somos": QuienesSomosPanel,
-  noticias: NoticiasPanel,
-  galeria: GaleriaPanel,
-  estadisticas: EstadisticasPanel,
-  fechas: FechasPanel,
-  tienda: TiendaPanel,
-  reportajes: ReportajesPanel,
-  contacto: ContactoPanel,
-  pedidos: PedidosPanel,
-};
-
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const [activePanel, setActivePanel] = useState("dashboard");
@@ -45,11 +32,19 @@ const Admin = () => {
   if (!user || !isAdmin) return <AdminLogin />;
 
   const renderPanel = () => {
-    if (activePanel === "dashboard") {
-      return <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
+    switch (activePanel) {
+      case "hero": return <HeroPanel />;
+      case "quienes-somos": return <QuienesSomosPanel />;
+      case "noticias": return <NoticiasPanel />;
+      case "galeria": return <GaleriaPanel />;
+      case "estadisticas": return <EstadisticasPanel />;
+      case "fechas": return <FechasPanel />;
+      case "tienda": return <TiendaPanel />;
+      case "reportajes": return <ReportajesPanel />;
+      case "contacto": return <ContactoPanel />;
+      case "pedidos": return <PedidosPanel />;
+      default: return <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
     }
-    const Panel = panels[activePanel];
-    return Panel ? <Panel /> : <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
   };
 
   return (

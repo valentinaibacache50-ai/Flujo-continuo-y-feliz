@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Loader2, Image, Play, Video } from "lucide-react";
+import { Plus, Trash2, Upload, Loader2, Image, Play, Video, AlertCircle } from "lucide-react";
 
 const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
 const isVideoFileObj = (file: File) => file.type.startsWith("video/");
@@ -17,14 +17,27 @@ const GaleriaPanel = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { data: items = [], isLoading } = useQuery({
+  // Revoke object URL on cleanup
+  useEffect(() => {
+    if (imageFile) {
+      const url = URL.createObjectURL(imageFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [imageFile]);
+
+  const { data: items = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["galeria"],
     queryFn: async () => {
       const { data, error } = await supabase.from("galeria").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
+    retry: 2,
   });
 
   const addMutation = useMutation({
@@ -97,15 +110,15 @@ const GaleriaPanel = () => {
             <span className="text-sm text-muted-foreground">{imageFile ? imageFile.name : tipo === "Video" ? "Archivo de video o miniatura (opcional)" : "Seleccionar imagen"}</span>
             <input type="file" accept={tipo === "Video" ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"} onChange={(e) => setImageFile(e.target.files?.[0] || null)} className="hidden" />
           </label>
-          {imageFile && imageFile.type.startsWith("image/") && (
-            <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-full h-40 object-cover rounded-lg" />
+          {previewUrl && imageFile && imageFile.type.startsWith("image/") && (
+            <img src={previewUrl} alt="Preview" className="w-full h-40 object-cover rounded-lg" onError={(e) => (e.currentTarget.style.display = "none")} />
           )}
-          {imageFile && isVideoFileObj(imageFile) && (
-            <video src={URL.createObjectURL(imageFile)} controls className="w-full h-40 object-cover rounded-lg" />
+          {previewUrl && imageFile && isVideoFileObj(imageFile) && (
+            <video src={previewUrl} controls className="w-full h-40 object-cover rounded-lg" onError={(e) => (e.currentTarget.style.display = "none")} />
           )}
           {tipo === "Video" && videoUrl && getYouTubeId(videoUrl) && (
             <div className="rounded-lg overflow-hidden">
-              <img src={`https://img.youtube.com/vi/${getYouTubeId(videoUrl)}/hqdefault.jpg`} alt="YouTube thumbnail" className="w-full h-40 object-cover rounded-lg" />
+              <img src={`https://img.youtube.com/vi/${getYouTubeId(videoUrl)}/hqdefault.jpg`} alt="YouTube thumbnail" className="w-full h-40 object-cover rounded-lg" onError={(e) => (e.currentTarget.style.display = "none")} />
               <p className="text-xs text-muted-foreground mt-1">Vista previa del video de YouTube</p>
             </div>
           )}
@@ -118,13 +131,19 @@ const GaleriaPanel = () => {
 
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+      ) : isError ? (
+        <div className="text-center py-8">
+          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm mb-3">Error al cargar la galería</p>
+          <button onClick={() => refetch()} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">Reintentar</button>
+        </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map((item) => (
             <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden group relative">
               {item.imagen_url && isVideoFile(item.imagen_url) ? (
                 <div className="relative">
-                  <video src={item.imagen_url} preload="metadata" muted className="w-full aspect-square object-cover" />
+                  <video src={item.imagen_url} preload="metadata" muted className="w-full aspect-square object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center">
                       <Play size={18} className="text-primary-foreground ml-0.5" />
@@ -133,7 +152,7 @@ const GaleriaPanel = () => {
                 </div>
               ) : item.imagen_url ? (
                 <div className="relative">
-                  <img src={item.imagen_url} alt={item.titulo} className="w-full aspect-square object-cover" />
+                  <img src={item.imagen_url} alt={item.titulo} className="w-full aspect-square object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
                   {item.tipo === "Video" && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center">
@@ -144,7 +163,7 @@ const GaleriaPanel = () => {
                 </div>
               ) : item.tipo === "Video" && (item as any).video_url && getYouTubeId((item as any).video_url) ? (
                 <div className="relative">
-                  <img src={`https://img.youtube.com/vi/${getYouTubeId((item as any).video_url)}/hqdefault.jpg`} alt={item.titulo} className="w-full aspect-square object-cover" />
+                  <img src={`https://img.youtube.com/vi/${getYouTubeId((item as any).video_url)}/hqdefault.jpg`} alt={item.titulo} className="w-full aspect-square object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center">
                       <Play size={18} className="text-primary-foreground ml-0.5" />

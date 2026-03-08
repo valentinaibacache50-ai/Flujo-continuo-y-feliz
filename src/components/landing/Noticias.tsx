@@ -3,11 +3,23 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Newspaper, X } from "lucide-react";
+import { Loader2, Newspaper, X, AlertCircle, Image } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
+const SafeImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return (
+    <div className={`bg-secondary flex items-center justify-center ${className}`}>
+      <Image size={32} className="text-muted-foreground" />
+    </div>
+  );
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+};
+
 const ImageLightbox = ({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) => {
+  const [imgError, setImgError] = useState(false);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
@@ -27,14 +39,22 @@ const ImageLightbox = ({ src, alt, onClose }: { src: string; alt: string; onClos
         <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/20 text-foreground hover:bg-background/40 transition-colors">
           <X size={24} />
         </button>
-        <motion.img
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          src={src}
-          alt={alt}
-          className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-          onClick={(e) => e.stopPropagation()}
-        />
+        {imgError ? (
+          <div className="bg-card rounded-lg p-12 flex flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            <Image size={48} className="text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">No se pudo cargar la imagen</p>
+          </div>
+        ) : (
+          <motion.img
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            src={src}
+            alt={alt}
+            className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+            onError={() => setImgError(true)}
+          />
+        )}
       </motion.div>
     </AnimatePresence>,
     document.body
@@ -44,13 +64,14 @@ const ImageLightbox = ({ src, alt, onClose }: { src: string; alt: string; onClos
 const Noticias = () => {
   const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null);
 
-  const { data: noticias = [], isLoading } = useQuery({
+  const { data: noticias = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["noticias"],
     queryFn: async () => {
       const { data, error } = await supabase.from("noticias").select("*").order("fecha", { ascending: false }).limit(5);
       if (error) throw error;
       return data;
     },
+    retry: 2,
   });
 
   const timeAgo = (date: string) => {
@@ -83,6 +104,12 @@ const Noticias = () => {
 
         {isLoading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : isError ? (
+          <div className="text-center py-16">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">Error al cargar las noticias</p>
+            <button onClick={() => refetch()} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">Reintentar</button>
+          </div>
         ) : noticias.length === 0 ? (
           <div className="text-center py-16">
             <Newspaper className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -102,7 +129,7 @@ const Noticias = () => {
             >
               {noticias[0].imagen_url ? (
                 <div className="relative h-48 sm:h-64 md:h-80">
-                  <img src={noticias[0].imagen_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
+                  <SafeImage src={noticias[0].imagen_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent rounded-2xl" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
                     <div className="flex items-center gap-3 mb-3 md:mb-4">
@@ -145,7 +172,7 @@ const Noticias = () => {
                     onClick={() => n.imagen_url && openImage(n.imagen_url, n.titulo)}
                   >
                     {n.imagen_url && (
-                      <img src={n.imagen_url} alt={n.titulo} className="w-full h-36 object-cover" />
+                      <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full h-36 object-cover" />
                     )}
                     <div className="p-4 md:p-6">
                       <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">{n.tag}</span>

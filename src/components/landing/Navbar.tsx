@@ -12,13 +12,27 @@ const navLinks = [
   { label: "Contacto", href: "#contacto" },
 ];
 
+const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  e.preventDefault();
+  if (href === "#") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+  const el = document.querySelector(href);
+  if (el) {
+    const offset = 72; // navbar height + padding
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+};
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2">
+        <a href="#" onClick={(e) => scrollToSection(e, "#")} className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
             <Trophy className="h-4 w-4 text-primary" />
           </div>
@@ -29,7 +43,7 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a key={l.href} href={l.href} onClick={(e) => scrollToSection(e, l.href)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
               {l.label}
             </a>
           ))}
@@ -43,7 +57,7 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-2">
           {navLinks.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-muted-foreground hover:text-primary transition-colors">
+            <a key={l.href} href={l.href} onClick={(e) => { scrollToSection(e, l.href); setOpen(false); }} className="block py-2 text-muted-foreground hover:text-primary transition-colors">
               {l.label}
             </a>
           ))}

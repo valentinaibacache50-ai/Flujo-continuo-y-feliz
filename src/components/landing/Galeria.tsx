@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Play, Loader2, ChevronLeft, ChevronRight, X, Video } from "lucide-react";
+import { Image, Play, Loader2, ChevronLeft, ChevronRight, X, Video, AlertCircle } from "lucide-react";
 
 const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
 
@@ -12,6 +12,24 @@ const filters = ["Todo", "Fotos", "Videos"];
 const getYouTubeId = (url: string) => {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([^?&\s]+)/);
   return match?.[1] || null;
+};
+
+const MediaFallback = ({ size = 48 }: { size?: number }) => (
+  <div className="w-full h-full bg-card flex items-center justify-center">
+    <Image size={size} className="text-muted-foreground" />
+  </div>
+);
+
+const SafeImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return <MediaFallback />;
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+};
+
+const SafeVideo = ({ src, className, controls, autoPlay, muted, preload }: { src: string; className?: string; controls?: boolean; autoPlay?: boolean; muted?: boolean; preload?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return <MediaFallback />;
+  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} onError={() => setError(true)} />;
 };
 
 const Lightbox = ({
@@ -88,18 +106,11 @@ const Lightbox = ({
               />
             </div>
           ) : item.imagen_url && isVideoFile(item.imagen_url) ? (
-            <video
-              src={item.imagen_url}
-              controls
-              autoPlay
-              className="max-w-[90vw] max-h-[80vh] rounded-lg"
-            />
+            <SafeVideo src={item.imagen_url} controls autoPlay className="max-w-[90vw] max-h-[80vh] rounded-lg" />
           ) : item.imagen_url ? (
-            <img src={item.imagen_url} alt={item.titulo} className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg" />
+            <SafeImage src={item.imagen_url} alt={item.titulo} className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg" />
           ) : (
-            <div className="w-64 h-64 bg-card flex items-center justify-center rounded-lg">
-              <Image size={48} className="text-muted-foreground" />
-            </div>
+            <MediaFallback />
           )}
           <div className="mt-4 text-center">
             <p className="text-foreground font-medium text-lg">{item.titulo}</p>
@@ -123,13 +134,14 @@ const Galeria = () => {
   const [filter, setFilter] = useState("Todo");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const { data: items = [], isLoading } = useQuery({
+  const { data: items = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["galeria"],
     queryFn: async () => {
       const { data, error } = await supabase.from("galeria").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
+    retry: 2,
   });
 
   const filtered = filter === "Todo" ? items : items.filter((i) => i.tipo === (filter === "Fotos" ? "Foto" : "Video"));
@@ -180,6 +192,12 @@ const Galeria = () => {
 
         {isLoading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : isError ? (
+          <div className="text-center py-16">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">Error al cargar la galería</p>
+            <button onClick={() => refetch()} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">Reintentar</button>
+          </div>
         ) : filtered.length === 0 ? (
           <p className="text-center text-muted-foreground py-16">No hay contenido en la galería aún</p>
         ) : (
@@ -202,7 +220,7 @@ const Galeria = () => {
                 >
                   {isDirectVideo ? (
                     <>
-                      <video src={item.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
+                      <SafeVideo src={item.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
                           <Play size={24} className="text-primary-foreground ml-1" />
@@ -211,7 +229,7 @@ const Galeria = () => {
                     </>
                   ) : thumbnail ? (
                     <>
-                      <img src={thumbnail} alt={item.titulo} className="w-full h-full object-cover" />
+                      <SafeImage src={thumbnail} alt={item.titulo} className="w-full h-full object-cover" />
                       {item.tipo === "Video" && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">

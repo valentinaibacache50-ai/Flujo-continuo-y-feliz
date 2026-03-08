@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Loader2, Image, Video, FileVideo } from "lucide-react";
+import { Plus, Trash2, Upload, Loader2, Image, FileVideo, AlertCircle } from "lucide-react";
 
 const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
 
@@ -19,14 +19,38 @@ const ReportajesPanel = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
-  const { data: reportajes = [], isLoading } = useQuery({
+  // Revoke object URLs on cleanup
+  useEffect(() => {
+    if (imageFile) {
+      const url = URL.createObjectURL(imageFile);
+      setImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setImagePreview(null);
+    }
+  }, [imageFile]);
+
+  useEffect(() => {
+    if (videoFile) {
+      const url = URL.createObjectURL(videoFile);
+      setVideoPreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setVideoPreview(null);
+    }
+  }, [videoFile]);
+
+  const { data: reportajes = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["reportajes"],
     queryFn: async () => {
       const { data, error } = await supabase.from("reportajes").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
+    retry: 2,
   });
 
   const addMutation = useMutation({
@@ -40,7 +64,7 @@ const ReportajesPanel = () => {
       }
       if (videoFile) {
         const uploaded = await uploadImage(videoFile, "reportajes");
-        if (uploaded) imagen_url = uploaded; // store video in imagen_url like galeria
+        if (uploaded) imagen_url = uploaded;
       }
 
       const { error } = await supabase.from("reportajes").insert({
@@ -104,10 +128,10 @@ const ReportajesPanel = () => {
               <input type="file" accept="video/*" onChange={(e) => { setVideoFile(e.target.files?.[0] || null); setImageFile(null); }} className="hidden" />
             </label>
           </div>
-          {(imageFile || videoFile) && (
+          {(imagePreview || videoPreview) && (
             <div className="rounded-lg overflow-hidden border border-border max-w-xs">
-              {imageFile && <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-full h-32 object-cover" />}
-              {videoFile && <video src={URL.createObjectURL(videoFile)} controls className="w-full h-32 object-cover" />}
+              {imagePreview && <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />}
+              {videoPreview && <video src={videoPreview} controls className="w-full h-32 object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />}
             </div>
           )}
           <button type="submit" disabled={uploading} className="px-6 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 flex items-center gap-2 disabled:opacity-50">
@@ -119,6 +143,12 @@ const ReportajesPanel = () => {
 
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+      ) : isError ? (
+        <div className="text-center py-8">
+          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm mb-3">Error al cargar reportajes</p>
+          <button onClick={() => refetch()} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">Reintentar</button>
+        </div>
       ) : (
         <div className="space-y-3">
           {reportajes.map((r) => {
@@ -127,9 +157,9 @@ const ReportajesPanel = () => {
               <div key={r.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   {hasVideo ? (
-                    <video src={r.imagen_url!} muted preload="metadata" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                    <video src={r.imagen_url!} muted preload="metadata" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" onError={(e) => (e.currentTarget.style.display = "none")} />
                   ) : r.imagen_url ? (
-                    <img src={r.imagen_url} alt={r.titulo} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                    <img src={r.imagen_url} alt={r.titulo} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" onError={(e) => (e.currentTarget.style.display = "none")} />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
                       <Image size={16} className="text-muted-foreground" />

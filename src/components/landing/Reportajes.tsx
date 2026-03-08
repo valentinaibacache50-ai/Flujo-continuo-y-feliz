@@ -3,13 +3,33 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Mic, X, Play } from "lucide-react";
+import { Loader2, Mic, X, Play, AlertCircle, Image } from "lucide-react";
 
 const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
 
 const getYouTubeId = (url: string) => {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([^?&\s]+)/);
   return match?.[1] || null;
+};
+
+const SafeImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return (
+    <div className={`bg-secondary flex items-center justify-center ${className}`}>
+      <Image size={32} className="text-muted-foreground" />
+    </div>
+  );
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+};
+
+const SafeVideo = ({ src, className, controls, autoPlay, muted, preload }: { src: string; className?: string; controls?: boolean; autoPlay?: boolean; muted?: boolean; preload?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return (
+    <div className={`bg-secondary flex items-center justify-center ${className}`}>
+      <Image size={32} className="text-muted-foreground" />
+    </div>
+  );
+  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} onError={() => setError(true)} />;
 };
 
 const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }) => {
@@ -52,9 +72,9 @@ const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }
               />
             </div>
           ) : isDirectVideo ? (
-            <video src={item.imagen_url} controls autoPlay className="w-full max-h-[50vh] object-contain bg-black" />
+            <SafeVideo src={item.imagen_url} controls autoPlay className="w-full max-h-[50vh] object-contain bg-black" />
           ) : item.imagen_url ? (
-            <img src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-cover" />
+            <SafeImage src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-cover" />
           ) : null}
           <div className="p-6 md:p-8">
             <span className="inline-block text-xs font-semibold text-primary-foreground bg-primary px-3 py-1 rounded-full tracking-wider mb-3">{item.tag}</span>
@@ -72,13 +92,14 @@ const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }
 const Reportajes = () => {
   const [selected, setSelected] = useState<any | null>(null);
 
-  const { data: reportajes = [], isLoading } = useQuery({
+  const { data: reportajes = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["reportajes"],
     queryFn: async () => {
       const { data, error } = await supabase.from("reportajes").select("*").eq("publicado", true).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
+    retry: 2,
   });
 
   const closeLightbox = useCallback(() => setSelected(null), []);
@@ -101,6 +122,12 @@ const Reportajes = () => {
 
         {isLoading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : isError ? (
+          <div className="text-center py-16">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">Error al cargar los reportajes</p>
+            <button onClick={() => refetch()} className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">Reintentar</button>
+          </div>
         ) : reportajes.length === 0 ? (
           <div className="text-center py-16">
             <Mic className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -127,7 +154,7 @@ const Reportajes = () => {
                   <div className="relative h-44">
                     {isDirectVideo ? (
                       <>
-                        <video src={r.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
+                        <SafeVideo src={r.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="w-12 h-12 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
                             <Play size={20} className="text-primary-foreground ml-0.5" />
@@ -136,7 +163,7 @@ const Reportajes = () => {
                       </>
                     ) : thumbnail ? (
                       <>
-                        <img src={thumbnail} alt={r.titulo} className="w-full h-full object-cover" />
+                        <SafeImage src={thumbnail} alt={r.titulo} className="w-full h-full object-cover" />
                         {youtubeId && (
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-12 h-12 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
