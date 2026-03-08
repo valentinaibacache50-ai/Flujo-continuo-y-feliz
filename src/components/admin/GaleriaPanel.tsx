@@ -3,7 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Loader2, Image, Play } from "lucide-react";
+import { Plus, Trash2, Upload, Loader2, Image, Play, Video } from "lucide-react";
+
+const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+const isVideoFileObj = (file: File) => file.type.startsWith("video/");
 
 const GaleriaPanel = () => {
   const queryClient = useQueryClient();
@@ -91,11 +94,14 @@ const GaleriaPanel = () => {
 
           <label className="flex items-center gap-2 px-4 py-3 bg-secondary border border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
             <Upload size={16} className="text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{imageFile ? imageFile.name : tipo === "Video" ? "Miniatura del video (opcional)" : "Seleccionar imagen"}</span>
-            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className="hidden" />
+            <span className="text-sm text-muted-foreground">{imageFile ? imageFile.name : tipo === "Video" ? "Archivo de video o miniatura (opcional)" : "Seleccionar imagen"}</span>
+            <input type="file" accept={tipo === "Video" ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"} onChange={(e) => setImageFile(e.target.files?.[0] || null)} className="hidden" />
           </label>
           {imageFile && imageFile.type.startsWith("image/") && (
             <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-full h-40 object-cover rounded-lg" />
+          )}
+          {imageFile && isVideoFileObj(imageFile) && (
+            <video src={URL.createObjectURL(imageFile)} controls className="w-full h-40 object-cover rounded-lg" />
           )}
           {tipo === "Video" && videoUrl && getYouTubeId(videoUrl) && (
             <div className="rounded-lg overflow-hidden">
@@ -116,7 +122,16 @@ const GaleriaPanel = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map((item) => (
             <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden group relative">
-              {item.imagen_url ? (
+              {item.imagen_url && isVideoFile(item.imagen_url) ? (
+                <div className="relative">
+                  <video src={item.imagen_url} preload="metadata" muted className="w-full aspect-square object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center">
+                      <Play size={18} className="text-primary-foreground ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+              ) : item.imagen_url ? (
                 <div className="relative">
                   <img src={item.imagen_url} alt={item.titulo} className="w-full aspect-square object-cover" />
                   {item.tipo === "Video" && (

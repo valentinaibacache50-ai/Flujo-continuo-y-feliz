@@ -3,7 +3,9 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Play, Loader2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Image, Play, Loader2, ChevronLeft, ChevronRight, X, Video } from "lucide-react";
+
+const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
 
 const filters = ["Todo", "Fotos", "Videos"];
 
@@ -85,6 +87,13 @@ const Lightbox = ({
                 className="w-full h-full rounded-lg"
               />
             </div>
+          ) : item.imagen_url && isVideoFile(item.imagen_url) ? (
+            <video
+              src={item.imagen_url}
+              controls
+              autoPlay
+              className="max-w-[90vw] max-h-[80vh] rounded-lg"
+            />
           ) : item.imagen_url ? (
             <img src={item.imagen_url} alt={item.titulo} className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg" />
           ) : (
@@ -177,7 +186,8 @@ const Galeria = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {filtered.map((item, i) => {
               const videoId = item.tipo === "Video" && (item as any).video_url ? getYouTubeId((item as any).video_url) : null;
-              const thumbnail = item.imagen_url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null);
+              const isDirectVideo = item.imagen_url && isVideoFile(item.imagen_url);
+              const thumbnail = !isDirectVideo ? (item.imagen_url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null)) : null;
 
               return (
                 <motion.div
@@ -190,7 +200,16 @@ const Galeria = () => {
                   className="aspect-square rounded-xl overflow-hidden relative group cursor-pointer"
                   onClick={() => setSelectedIndex(i)}
                 >
-                  {thumbnail ? (
+                  {isDirectVideo ? (
+                    <>
+                      <video src={item.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
+                          <Play size={24} className="text-primary-foreground ml-1" />
+                        </div>
+                      </div>
+                    </>
+                  ) : thumbnail ? (
                     <>
                       <img src={thumbnail} alt={item.titulo} className="w-full h-full object-cover" />
                       {item.tipo === "Video" && (
@@ -203,7 +222,7 @@ const Galeria = () => {
                     </>
                   ) : (
                     <div className="w-full h-full bg-card border border-border flex items-center justify-center">
-                      <Image size={32} className="text-muted-foreground" />
+                      <Video size={32} className="text-muted-foreground" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
