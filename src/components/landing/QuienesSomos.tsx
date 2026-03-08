@@ -55,7 +55,6 @@ const QuienesSomos = () => (
         </p>
       </motion.div>
 
-      {/* Mission statement */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -65,7 +64,9 @@ const QuienesSomos = () => (
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] to-transparent" />
         <div className="relative z-10 text-center max-w-3xl mx-auto">
-          <span className="text-4xl mb-4 block">⚽</span>
+          <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+            <Trophy className="h-6 w-6 text-primary" />
+          </div>
           <h3 className="font-space font-bold uppercase text-2xl md:text-3xl text-foreground mb-4">
             NUESTRA MISIÓN
           </h3>
@@ -77,7 +78,6 @@ const QuienesSomos = () => (
         </div>
       </motion.div>
 
-      {/* Values grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {valores.map((v, i) => (
           <motion.div

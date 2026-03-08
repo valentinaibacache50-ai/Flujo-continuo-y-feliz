@@ -1,3 +1,5 @@
+import { Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
+
 const Footer = () => (
   <footer className="border-t border-border py-8 px-4">
     <div className="max-w-7xl mx-auto text-center">
@@ -7,11 +9,19 @@ const Footer = () => (
       <p className="text-sm text-muted-foreground mb-4">
         Portal Deportivo · Fútbol Juvenil
       </p>
-      <div className="flex justify-center gap-4 text-xl mb-4">
-        <span className="cursor-pointer hover:scale-110 transition-transform">📘</span>
-        <span className="cursor-pointer hover:scale-110 transition-transform">📸</span>
-        <span className="cursor-pointer hover:scale-110 transition-transform">▶</span>
-        <span className="cursor-pointer hover:scale-110 transition-transform">💬</span>
+      <div className="flex justify-center gap-4 mb-4">
+        <a href="#" className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+          <Facebook size={16} />
+        </a>
+        <a href="#" className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+          <Instagram size={16} />
+        </a>
+        <a href="#" className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+          <Youtube size={16} />
+        </a>
+        <a href="#" className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+          <MessageCircle size={16} />
+        </a>
       </div>
       <p className="text-xs text-muted-foreground">
         © 2025 Semillero de Campeones · Portal Deportivo Independiente · Fútbol Juvenil y de Barrio

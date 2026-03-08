@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Image, Play, Loader2 } from "lucide-react";
 
 const filters = ["Todo", "Fotos", "Videos"];
-
-const items = [
-  { type: "Foto", emoji: "🎯", label: "Gol decisivo Sub-12" },
-  { type: "Video", emoji: "▶", label: "Highlight Jornada 8" },
-  { type: "Foto", emoji: "⚽", label: "Entrenamiento táctico" },
-  { type: "Foto", emoji: "🏆", label: "Premiación torneo" },
-  { type: "Video", emoji: "▶", label: "Resumen final Sub-17" },
-  { type: "Foto", emoji: "🌟", label: "Jugador destacado" },
-];
 
 const Galeria = () => {
   const [filter, setFilter] = useState("Todo");
 
-  const filtered = filter === "Todo" ? items : items.filter((i) => i.type === (filter === "Fotos" ? "Foto" : "Video"));
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["galeria"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("galeria").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const filtered = filter === "Todo" ? items : items.filter((i) => i.tipo === (filter === "Fotos" ? "Foto" : "Video"));
 
   return (
     <section id="galeria" className="py-28 px-4 bg-secondary/30">
@@ -51,23 +54,40 @@ const Galeria = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {filtered.map((item, i) => (
-            <motion.div
-              key={`${filter}-${i}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
-              whileHover={{ scale: 1.05 }}
-              className="aspect-square bg-card border border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
-            >
-              <span className="text-4xl group-hover:scale-110 transition-transform">{item.emoji}</span>
-              <span className="text-sm text-muted-foreground">{item.label}</span>
-              <span className="text-xs text-primary">{item.type}</span>
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-16">No hay contenido en la galería aún</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {filtered.map((item, i) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+                whileHover={{ scale: 1.03 }}
+                className="aspect-square rounded-xl overflow-hidden relative group cursor-pointer"
+              >
+                {item.imagen_url ? (
+                  <img src={item.imagen_url} alt={item.titulo} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-card border border-border flex items-center justify-center">
+                    <Image size={32} className="text-muted-foreground" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                  <span className="text-foreground text-sm font-medium">{item.titulo}</span>
+                  <span className="text-xs text-primary flex items-center gap-1">
+                    {item.tipo === "Video" && <Play size={10} />}
+                    {item.tipo}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

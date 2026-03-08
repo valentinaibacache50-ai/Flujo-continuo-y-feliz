@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import AdminLogin from "@/components/admin/AdminLogin";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
@@ -9,6 +10,7 @@ import EstadisticasPanel from "@/components/admin/EstadisticasPanel";
 import CronicasPanel from "@/components/admin/CronicasPanel";
 import ProductosPanel from "@/components/admin/ProductosPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
+import { Loader2 } from "lucide-react";
 
 const panels: Record<string, React.FC> = {
   dashboard: DashboardPanel,
@@ -21,11 +23,19 @@ const panels: Record<string, React.FC> = {
 };
 
 const Admin = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { user, isAdmin, loading, signOut } = useAuth();
   const [activePanel, setActivePanel] = useState("dashboard");
   const [mobileMenu, setMobileMenu] = useState(false);
 
-  if (!loggedIn) return <AdminLogin onLogin={() => setLoggedIn(true)} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) return <AdminLogin />;
 
   const ActivePanel = panels[activePanel] || DashboardPanel;
 
@@ -33,7 +43,6 @@ const Admin = () => {
     <div className="min-h-screen bg-background flex">
       <AdminSidebar activePanel={activePanel} onSelect={(p) => { setActivePanel(p); setMobileMenu(false); }} />
 
-      {/* Mobile sidebar overlay */}
       {mobileMenu && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-background/80" onClick={() => setMobileMenu(false)} />
@@ -44,7 +53,7 @@ const Admin = () => {
       )}
 
       <div className="flex-1 flex flex-col">
-        <AdminTopbar activePanel={activePanel} onLogout={() => setLoggedIn(false)} onMobileMenu={() => setMobileMenu(!mobileMenu)} />
+        <AdminTopbar activePanel={activePanel} onLogout={signOut} onMobileMenu={() => setMobileMenu(!mobileMenu)} />
         <main className="flex-1 overflow-auto">
           <ActivePanel />
         </main>
