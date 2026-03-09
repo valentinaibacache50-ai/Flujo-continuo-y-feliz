@@ -9,11 +9,13 @@ import Reportajes from "@/components/landing/Reportajes";
 import Tienda from "@/components/landing/Tienda";
 import Contacto from "@/components/landing/Contacto";
 import Footer from "@/components/landing/Footer";
+import Publicidad from "@/components/landing/Publicidad";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen bg-background overflow-x-hidden">
     <Navbar />
     <Hero />
+    <Publicidad />
     <QuienesSomos />
     <Galeria />
     <Estadisticas />

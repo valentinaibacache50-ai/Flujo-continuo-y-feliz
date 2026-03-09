@@ -68,7 +68,7 @@ const PublicidadPanel = () => {
     mutationFn: async ({ id, data, imageFile }: { id: string; data: Partial<Publicidad>; imageFile?: File }) => {
       let imagen_url = data.imagen_url;
       if (imageFile) {
-        imagen_url = await uploadFile(imageFile, "imagenes", "publicidad");
+        imagen_url = await uploadImage(imageFile, "publicidad");
       }
       const { error } = await supabase
         .from("publicidad")

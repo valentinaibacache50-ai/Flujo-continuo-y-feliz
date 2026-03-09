@@ -42,6 +42,7 @@ const Admin = () => {
       case "fechas": return <FechasPanel />;
       case "tienda": return <TiendaPanel />;
       case "reportajes": return <ReportajesPanel />;
+      case "publicidad": return <PublicidadPanel />;
       case "contacto": return <ContactoPanel />;
       case "pedidos": return <PedidosPanel />;
       default: return <DashboardPanel onNavigate={(p) => setActivePanel(p)} />;
