@@ -32,8 +32,6 @@ const Admin = () => {
 
   const renderPanel = () => {
     switch (activePanel) {
-      case "hero": return <HeroPanel />;
-      case "quienes-somos": return <QuienesSomosPanel />;
       case "noticias": return <NoticiasPanel />;
       case "galeria": return <GaleriaPanel />;
       case "estadisticas": return <EstadisticasPanel />;

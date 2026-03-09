@@ -20,7 +20,15 @@ const Contacto = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Mensaje enviado", description: "Nos pondremos en contacto pronto." });
+    
+    // Format WhatsApp number - remove spaces and special characters, keep only digits
+    const phoneNumber = (config?.whatsapp ?? "+54 9 1167391965").replace(/\D/g, "");
+    const message = encodeURIComponent(
+      `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}\n\n📱 Mi WhatsApp: ${form.whatsapp}`
+    );
+    
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    toast({ title: "Redirigiendo a WhatsApp", description: "Se abrirá una nueva ventana." });
     setForm({ nombre: "", whatsapp: "", asunto: "", mensaje: "" });
   };
 
