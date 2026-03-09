@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 
 const Contacto = () => {
   const { toast } = useToast();
-  const [form, setForm] = useState({ nombre: "", whatsapp: "", asunto: "", mensaje: "" });
+  const [form, setForm] = useState({ nombre: "", asunto: "", mensaje: "" });
 
   const { data: config, isLoading } = useQuery({
     queryKey: ["contacto_config"],
@@ -24,12 +24,12 @@ const Contacto = () => {
     // Format WhatsApp number - remove spaces and special characters, keep only digits
     const phoneNumber = (config?.whatsapp ?? "+54 9 1167391965").replace(/\D/g, "");
     const message = encodeURIComponent(
-      `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}\n\n📱 Mi WhatsApp: ${form.whatsapp}`
+      `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}`
     );
     
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
     toast({ title: "Redirigiendo a WhatsApp", description: "Se abrirá una nueva ventana." });
-    setForm({ nombre: "", whatsapp: "", asunto: "", mensaje: "" });
+    setForm({ nombre: "", asunto: "", mensaje: "" });
   };
 
   const whatsapp = config?.whatsapp ?? "+57 300 000 0000";
@@ -86,7 +86,6 @@ const Contacto = () => {
             className="space-y-4"
           >
             <input placeholder="Nombre" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" required />
-            <input placeholder="WhatsApp" value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" required />
             <input placeholder="Asunto" value={form.asunto} onChange={(e) => setForm({ ...form, asunto: e.target.value })} className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" required />
             <textarea placeholder="Contanos cómo podemos ayudarte..." rows={4} value={form.mensaje} onChange={(e) => setForm({ ...form, mensaje: e.target.value })} className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none transition-colors" required />
             <button type="submit" className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors">

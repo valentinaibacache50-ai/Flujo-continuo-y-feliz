@@ -26,7 +26,7 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
 const SafeVideo = ({ src, className, controls, autoPlay, muted, preload }: { src: string; className?: string; controls?: boolean; autoPlay?: boolean; muted?: boolean; preload?: string }) => {
   const [error, setError] = useState(false);
   if (error) return <div className={`bg-secondary flex items-center justify-center ${className}`}><Image size={32} className="text-muted-foreground" /></div>;
-  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} onError={() => setError(true)} />;
+  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} playsInline onError={() => setError(true)} />;
 };
 
 const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }) => {
@@ -115,7 +115,7 @@ const Reportajes = () => {
                   <div className="relative h-44">
                     {isDirectVideo ? (
                       <>
-                        <SafeVideo src={r.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
+                        <SafeVideo src={r.imagen_url!} preload="auto" muted className="w-full h-full object-cover" />
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><div className="w-12 h-12 rounded-full bg-primary/80 flex items-center justify-center shadow-lg"><Play size={20} className="text-primary-foreground ml-0.5" /></div></div>
                       </>
                     ) : thumbnail ? (

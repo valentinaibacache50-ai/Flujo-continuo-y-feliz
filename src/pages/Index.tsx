@@ -15,8 +15,8 @@ const Index = () => (
   <div className="min-h-screen bg-background overflow-x-hidden">
     <Navbar />
     <Hero />
-    <Publicidad />
     <QuienesSomos />
+    <Publicidad />
     <Galeria />
     <Estadisticas />
     <Fechas />
