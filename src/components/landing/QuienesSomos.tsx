@@ -13,24 +13,9 @@ const valores = [
     desc: "Documentamos cada partido, entrenamiento y momento especial con fotos y videos de alta calidad.",
   },
   {
-    icon: Heart,
-    title: "Pasión por el barrio",
-    desc: "Nacimos en la cancha de barrio y creemos que el fútbol juvenil merece la misma visibilidad que el profesional.",
-  },
-  {
-    icon: Target,
-    title: "Compromiso con el talento",
-    desc: "Identificamos y destacamos a los jóvenes talentos que merecen ser vistos por el mundo.",
-  },
-  {
     icon: Users,
     title: "Comunidad",
     desc: "Más que un medio deportivo, somos una familia de padres, entrenadores y jugadores unidos por el fútbol.",
-  },
-  {
-    icon: MapPin,
-    title: "Presencia local",
-    desc: "Cubrimos torneos juveniles y de barrio en todo el departamento, llevando las historias que nadie más cuenta.",
   },
 ];
 
