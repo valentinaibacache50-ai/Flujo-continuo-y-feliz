@@ -248,6 +248,36 @@ export type Database = {
         }
         Relationships: []
       }
+      publicidad: {
+        Row: {
+          activo: boolean
+          created_at: string
+          enlace_url: string | null
+          id: string
+          imagen_url: string | null
+          orden: number
+          titulo: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          enlace_url?: string | null
+          id?: string
+          imagen_url?: string | null
+          orden?: number
+          titulo: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          enlace_url?: string | null
+          id?: string
+          imagen_url?: string | null
+          orden?: number
+          titulo?: string
+        }
+        Relationships: []
+      }
       quienes_somos: {
         Row: {
           created_at: string
