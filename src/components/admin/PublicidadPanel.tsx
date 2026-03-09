@@ -42,7 +42,7 @@ const PublicidadPanel = () => {
     mutationFn: async (data: Partial<Publicidad> & { imageFile?: File }) => {
       let imagen_url = data.imagen_url;
       if (data.imageFile) {
-        imagen_url = await uploadFile(data.imageFile, "imagenes", "publicidad");
+        imagen_url = await uploadImage(data.imageFile, "publicidad");
       }
       const { error } = await supabase.from("publicidad").insert({
         titulo: data.titulo || "Nuevo anuncio",
