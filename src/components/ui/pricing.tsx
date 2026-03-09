@@ -59,7 +59,7 @@ export function Pricing({
       return `${plan.name} ($${price})`;
     });
     const text = `Hola! Quiero comprar: ${items.join(" + ")}. Total: $${totalPrice}`;
-    return `https://wa.me/573000000000?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/5491167391965?text=${encodeURIComponent(text)}`;
   };
 
   const handleToggle = (checked: boolean) => {

@@ -28,7 +28,7 @@ const ShopModal = ({ product, onClose }: ShopModalProps) => {
         <p className="text-3xl font-bold text-primary mb-6">{product.price}</p>
 
         <a
-          href="https://wa.me/573000000000"
+          href="https://wa.me/5491167391965"
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full text-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
