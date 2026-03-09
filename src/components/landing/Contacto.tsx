@@ -24,7 +24,7 @@ const Contacto = () => {
     // Format WhatsApp number - remove spaces and special characters, keep only digits
     const phoneNumber = (config?.whatsapp ?? "+54 9 1167391965").replace(/\D/g, "");
     const message = encodeURIComponent(
-      `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}\n\n📱 Mi WhatsApp: ${form.whatsapp}`
+      `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}`
     );
     
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
