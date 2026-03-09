@@ -30,7 +30,7 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
 const SafeVideo = ({ src, className, controls, autoPlay, muted, preload }: { src: string; className?: string; controls?: boolean; autoPlay?: boolean; muted?: boolean; preload?: string }) => {
   const [error, setError] = useState(false);
   if (error) return <MediaFallback />;
-  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} onError={() => setError(true)} />;
+  return <video src={src} className={className} controls={controls} autoPlay={autoPlay} muted={muted} preload={preload} playsInline onError={() => setError(true)} />;
 };
 
 const formatDate = (d: string | null) => {

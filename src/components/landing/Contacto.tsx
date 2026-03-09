@@ -29,7 +29,7 @@ const Contacto = () => {
     
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
     toast({ title: "Redirigiendo a WhatsApp", description: "Se abrirá una nueva ventana." });
-    setForm({ nombre: "", whatsapp: "", asunto: "", mensaje: "" });
+    setForm({ nombre: "", asunto: "", mensaje: "" });
   };
 
   const whatsapp = config?.whatsapp ?? "+57 300 000 0000";
