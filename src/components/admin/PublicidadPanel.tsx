@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, Edit2, X, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { uploadFile } from "@/lib/storage";
+import { uploadImage } from "@/lib/storage";
 
 interface Publicidad {
   id: string;
