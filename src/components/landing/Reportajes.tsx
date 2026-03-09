@@ -115,7 +115,9 @@ const Reportajes = () => {
                   <div className="relative h-44">
                     {isDirectVideo ? (
                       <>
-                        <SafeVideo src={r.imagen_url!} preload="auto" muted className="w-full h-full object-cover" />
+                        <div className="w-full h-full bg-secondary flex items-center justify-center">
+                          <Mic size={32} className="text-muted-foreground" />
+                        </div>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><div className="w-12 h-12 rounded-full bg-primary/80 flex items-center justify-center shadow-lg"><Play size={20} className="text-primary-foreground ml-0.5" /></div></div>
                       </>
                     ) : thumbnail ? (

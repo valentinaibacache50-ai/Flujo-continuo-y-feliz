@@ -228,7 +228,9 @@ const Galeria = () => {
                     >
                       {isDirectVideo ? (
                         <>
-                          <SafeVideo src={item.imagen_url!} preload="metadata" muted className="w-full h-full object-cover" />
+                          <div className="w-full h-full bg-card flex items-center justify-center">
+                            <Video size={40} className="text-muted-foreground" />
+                          </div>
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
                               <Play size={24} className="text-primary-foreground ml-1" />
