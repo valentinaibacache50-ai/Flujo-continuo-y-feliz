@@ -1,7 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, BookOpen } from "lucide-react";
+import { Loader2, BookOpen, Image } from "lucide-react";
+
+const SafeImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  const [error, setError] = useState(false);
+  if (error) return <div className={`bg-secondary flex items-center justify-center ${className}`}><Image size={32} className="text-muted-foreground" /></div>;
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+};
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -59,7 +66,7 @@ const Cronicas = () => {
                 className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
               >
                 {c.imagen_url && (
-                  <img src={c.imagen_url} alt={c.titulo} className="w-full h-48 object-cover" />
+                  <SafeImage src={c.imagen_url} alt={c.titulo} className="w-full h-48 object-cover" />
                 )}
                 <div className="p-6">
                   <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">

@@ -228,9 +228,13 @@ const Galeria = () => {
                     >
                       {isDirectVideo ? (
                         <>
-                          <div className="w-full h-full bg-card flex items-center justify-center">
-                            <Video size={40} className="text-muted-foreground" />
-                          </div>
+                          <video
+                            src={item.imagen_url}
+                            className="w-full h-full object-cover"
+                            preload="metadata"
+                            muted
+                            playsInline
+                          />
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">
                               <Play size={24} className="text-primary-foreground ml-1" />
