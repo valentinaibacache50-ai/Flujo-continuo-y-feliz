@@ -1,62 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Circle } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-function ElegantShape({
-  className,
-  delay = 0,
-  width = 400,
-  height = 100,
-  rotate = 0,
-  gradient = "from-primary/[0.08]",
-  floatDuration = 12,
-}: {
-  className?: string;
-  delay?: number;
-  width?: number;
-  height?: number;
-  rotate?: number;
-  gradient?: string;
-  floatDuration?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
-      animate={{ opacity: 1, y: 0, rotate }}
-      transition={{
-        duration: 1.8,
-        delay,
-        ease: [0.23, 0.86, 0.39, 0.96],
-        opacity: { duration: 0.9 },
-      }}
-      className={cn("absolute", className)}
-    >
-      <motion.div
-        animate={{ y: [0, 15, 0] }}
-        transition={{
-          duration: floatDuration,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        style={{ width, height }}
-        className="relative"
-      >
-        <div
-          className={cn(
-            "absolute inset-0 rounded-full",
-            "bg-gradient-to-r to-transparent",
-            gradient,
-            "backdrop-blur-[2px] border border-primary/[0.08]",
-            "shadow-[0_8px_32px_0_hsl(var(--primary)/0.1)]",
-            "after:absolute after:inset-0 after:rounded-full",
-            "after:bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.1),transparent_70%)]"
-          )}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
 
 function HeroGeometric({
   badge = "Design Collective",
@@ -110,56 +54,11 @@ function HeroGeometric({
         <div className="absolute inset-0 bg-background/70" />
       </motion.div>
 
-      {/* Background gradient */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-primary/[0.05] via-transparent to-accent/[0.05]" />
-
-      {/* Geometric shapes — varied float speeds */}
-      <div className="absolute inset-0 z-[2] overflow-hidden">
-        <ElegantShape
-          delay={0.2}
-          width={600}
-          height={140}
-          rotate={12}
-          gradient="from-primary/[0.08]"
-          floatDuration={10}
-          className="top-[-10%] left-[-5%] md:left-[0%]"
-        />
-        <ElegantShape
-          delay={0.35}
-          width={500}
-          height={120}
-          rotate={-15}
-          gradient="from-accent/[0.08]"
-          floatDuration={14}
-          className="top-[15%] right-[-10%] md:right-[-5%]"
-        />
-        <ElegantShape
-          delay={0.3}
-          width={300}
-          height={80}
-          rotate={-8}
-          gradient="from-primary/[0.06]"
-          floatDuration={16}
-          className="bottom-[5%] left-[5%] md:left-[10%]"
-        />
-        <ElegantShape
-          delay={0.45}
-          width={200}
-          height={60}
-          rotate={20}
-          gradient="from-accent/[0.06]"
-          floatDuration={9}
-          className="top-[60%] right-[5%] md:right-[15%]"
-        />
-        <ElegantShape
-          delay={0.5}
-          width={150}
-          height={40}
-          rotate={-25}
-          gradient="from-primary/[0.04]"
-          floatDuration={18}
-          className="top-[8%] left-[45%]"
-        />
+      {/* Subtle green glow — mantiene la esencia del color sin formas */}
+      <div className="absolute inset-0 z-[1] pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[700px] h-[700px] rounded-full bg-primary/10 blur-[140px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute top-[30%] left-[40%] w-[300px] h-[300px] rounded-full bg-primary/5 blur-[100px]" />
       </div>
 
       {/* Content */}
@@ -198,7 +97,7 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <h1 className="font-space font-bold uppercase text-4xl sm:text-6xl md:text-8xl lg:text-9xl leading-none tracking-tight">
+            <h1 className="font-bebas text-5xl sm:text-7xl md:text-9xl lg:text-[10rem] leading-none tracking-wide">
               <span className="text-gradient-green">{title1}</span>
               <br />
               <span className="text-gradient-green">{title2}</span>

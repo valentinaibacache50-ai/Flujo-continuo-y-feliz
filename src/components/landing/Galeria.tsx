@@ -234,6 +234,7 @@ const Galeria = () => {
                             preload="metadata"
                             muted
                             playsInline
+                            onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 0.1; }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center shadow-lg">

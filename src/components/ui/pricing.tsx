@@ -1,13 +1,9 @@
 import { buttonVariants } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Star, ShoppingCart } from "lucide-react";
-import { useState, useRef } from "react";
-// confetti removed - was canvas-confetti
+import { useState } from "react";
 import NumberFlow from "@number-flow/react";
 
 interface PricingPlan {
@@ -33,10 +29,7 @@ export function Pricing({
   title = "Simple, Transparent Pricing",
   description = "Choose the plan that works for you\nAll plans include access to our platform, lead generation tools, and dedicated support.",
 }: PricingProps) {
-  const [isMonthly, setIsMonthly] = useState(true);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const switchRef = useRef<HTMLButtonElement>(null);
 
   const toggleSelect = (index: number) => {
     setSelected((prev) => {
@@ -48,22 +41,13 @@ export function Pricing({
   };
 
   const totalPrice = Array.from(selected).reduce((sum, i) => {
-    const plan = plans[i];
-    return sum + parseInt(isMonthly ? plan.price : plan.yearlyPrice);
+    return sum + parseInt(plans[i].price);
   }, 0);
 
   const buildWhatsAppUrl = () => {
-    const items = Array.from(selected).map((i) => {
-      const plan = plans[i];
-      const price = isMonthly ? plan.price : plan.yearlyPrice;
-      return `${plan.name} ($${price})`;
-    });
+    const items = Array.from(selected).map((i) => `${plans[i].name} ($${plans[i].price})`);
     const text = `Hola! Quiero comprar: ${items.join(" + ")}. Total: $${totalPrice}`;
     return `https://wa.me/5491167391965?text=${encodeURIComponent(text)}`;
-  };
-
-  const handleToggle = (checked: boolean) => {
-    setIsMonthly(!checked);
   };
 
   return (
@@ -75,19 +59,6 @@ export function Pricing({
         <p className="text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">
           {description}
         </p>
-      </div>
-
-      <div className="flex items-center justify-center gap-4 mb-4">
-        <span className={cn("text-sm", isMonthly ? "text-foreground" : "text-muted-foreground")}>
-          Por evento
-        </span>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="pricing-toggle" className="sr-only">Toggle pricing</Label>
-          <Switch ref={switchRef} id="pricing-toggle" onCheckedChange={handleToggle} />
-        </div>
-        <span className={cn("text-sm", !isMonthly ? "text-foreground" : "text-muted-foreground")}>
-          Paquete mensual (Ahorrá 20%)
-        </span>
       </div>
 
       <p className="text-center text-xs text-muted-foreground mb-10">
@@ -134,7 +105,7 @@ export function Pricing({
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-foreground">
                   $<NumberFlow
-                    value={parseInt(isMonthly ? plan.price : plan.yearlyPrice)}
+                    value={parseInt(plan.price)}
                     format={{ useGrouping: true }}
                     transformTiming={{ duration: 500, easing: "ease-out" }}
                     willChange
@@ -143,9 +114,6 @@ export function Pricing({
                 </span>
                 <span className="text-sm text-muted-foreground">/ {plan.period}</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {isMonthly ? "precio por evento" : "precio con paquete mensual"}
-              </p>
               <ul className="space-y-2">
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
