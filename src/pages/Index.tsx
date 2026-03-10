@@ -1,6 +1,5 @@
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
-import QuienesSomos from "@/components/landing/QuienesSomos";
 import Galeria from "@/components/landing/Galeria";
 import Estadisticas from "@/components/landing/Estadisticas";
 import Fechas from "@/components/landing/Fechas";
@@ -13,10 +12,9 @@ import Publicidad from "@/components/landing/Publicidad";
 import PopupAd from "@/components/landing/PopupAd";
 
 const Index = () => (
-  <div className="min-h-screen bg-background overflow-x-hidden">
+  <div className="min-h-screen bg-background">
     <Navbar />
     <Hero />
-    <QuienesSomos />
     <Publicidad />
     <Galeria />
     <Estadisticas />

@@ -55,7 +55,6 @@ const PopupAd = () => {
             className="relative bg-card rounded-2xl overflow-hidden w-full max-w-md shadow-2xl border border-border/50"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
             <button
               onClick={() => setDismissed(true)}
               className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors shadow-sm"
@@ -63,24 +62,24 @@ const PopupAd = () => {
             >
               <X size={15} />
             </button>
-
             <span className="absolute top-3 left-3 z-10 text-[10px] bg-background/80 text-muted-foreground px-2 py-0.5 rounded-full">
               Publicidad
             </span>
 
             {anuncio.imagen_url && (
-              <div className="w-full overflow-hidden">
+              <div className="w-full bg-muted">
                 <img
                   src={anuncio.imagen_url}
                   alt={anuncio.titulo}
-                  className="w-full object-cover max-h-60 sm:max-h-72"
+                  className="w-full object-contain max-h-72"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             )}
 
             <div className="p-5 pt-4">
               <p className="font-semibold text-foreground text-base mb-1">{anuncio.titulo}</p>
-
               {anuncio.enlace_url && (
                 <a
                   href={anuncio.enlace_url}
