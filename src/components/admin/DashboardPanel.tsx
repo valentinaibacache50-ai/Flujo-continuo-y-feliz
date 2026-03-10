@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Newspaper, Image, BarChart3, Calendar, ShoppingBag, FileText, Users, Sparkles, Phone, Loader2, Store } from "lucide-react";
+import { Newspaper, Image, BarChart3, Calendar, FileText, Phone, Loader2, Store } from "lucide-react";
 
 interface DashboardPanelProps {
   onNavigate?: (panel: string) => void;
@@ -56,8 +56,6 @@ const DashboardPanel = ({ onNavigate }: DashboardPanelProps) => {
   ];
 
   const quickActions = [
-    { label: "Editar Hero principal", icon: Sparkles, panel: "hero" },
-    { label: "Editar Quiénes Somos", icon: Users, panel: "quienes-somos" },
     { label: "Publicar nueva noticia", icon: FileText, panel: "noticias" },
     { label: "Subir fotos o videos", icon: Image, panel: "galeria" },
     { label: "Actualizar estadísticas", icon: BarChart3, panel: "estadisticas" },
