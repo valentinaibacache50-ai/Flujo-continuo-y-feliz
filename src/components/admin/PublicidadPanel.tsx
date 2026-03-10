@@ -20,7 +20,8 @@ type Posicion =
   | "articulo-inicio"
   | "articulo-final"
   | "estadisticas-entre-tablas"
-  | "video-bajo-reproductor";
+  | "video-bajo-reproductor"
+  | "popup";
 
 const POSICION_LABELS: Record<Posicion, string> = {
   carrusel: "Carrusel de sponsors",
@@ -31,6 +32,7 @@ const POSICION_LABELS: Record<Posicion, string> = {
   "articulo-final": "Artículo — al final del contenido",
   "estadisticas-entre-tablas": "Estadísticas — entre tablas",
   "video-bajo-reproductor": "Video — debajo del reproductor",
+  popup: "Popup — aparece a los 5 segundos",
 };
 
 interface Publicidad {
