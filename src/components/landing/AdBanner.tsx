@@ -38,7 +38,7 @@ const AdBanner = ({ posicion, className = "" }: AdBannerProps) => {
         </span>
         <button
           onClick={() => setModalOpen(true)}
-          className="relative group block w-full max-w-[320px] h-[50px] sm:max-w-[728px] sm:h-[90px] rounded-lg overflow-hidden border border-border bg-muted hover:border-primary/40 transition-colors cursor-pointer"
+          className="relative group block w-full max-w-[320px] h-[50px] sm:max-w-[728px] sm:h-[90px] rounded-lg overflow-hidden border border-border bg-card hover:border-primary/40 transition-colors cursor-pointer"
           aria-label={`Ver anuncio: ${anuncio.titulo}`}
         >
           {anuncio.imagen_url ? (

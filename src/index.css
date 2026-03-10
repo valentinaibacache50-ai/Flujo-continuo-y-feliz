@@ -81,14 +81,28 @@
   * {
     @apply border-border;
     cursor: none !important;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-background text-foreground font-sora;
+    overscroll-behavior-y: contain;
   }
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Touch devices: restore cursor and native feel */
+  @media (hover: none) and (pointer: coarse) {
+    * { cursor: auto !important; }
+  }
+
+  /* Improve tap targets on mobile */
+  button, a, [role="button"] {
+    touch-action: manipulation;
   }
 }
 

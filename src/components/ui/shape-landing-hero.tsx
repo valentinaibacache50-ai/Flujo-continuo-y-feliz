@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Circle } from "lucide-react";
 
 function HeroGeometric({
@@ -18,8 +18,12 @@ function HeroGeometric({
   ctaHref?: string;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isTouch, setIsTouch] = useState(true);
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none)").matches);
+  }, []);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], isTouch ? ["0%", "0%"] : ["0%", "30%"]);
 
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
