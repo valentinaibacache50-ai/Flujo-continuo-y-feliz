@@ -64,13 +64,12 @@ const PopupAd = () => {
             </span>
 
             {anuncio.imagen_url && (
-              <div className="w-full bg-card flex items-center justify-center">
+              <div style={{ background: "#ffffff", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <img
                   src={anuncio.imagen_url}
                   alt={anuncio.titulo}
-                  className="block w-full object-contain max-h-[60vh]"
+                  style={{ display: "block", width: "100%", maxHeight: "60vh", objectFit: "contain" }}
                   loading="eager"
-                  decoding="async"
                 />
               </div>
             )}

@@ -40,31 +40,46 @@ const Publicidad = () => {
                 key={anuncio.id}
                 className="w-full max-w-sm sm:flex-1 sm:min-w-[260px] sm:max-w-[480px]"
               >
-                {/* div con aspect-video: funciona en todos los browsers a diferencia de button */}
                 <div
                   onClick={() => setSelectedAd(anuncio)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => e.key === "Enter" && setSelectedAd(anuncio)}
                   aria-label={`Ver anuncio: ${anuncio.titulo}`}
-                  className="relative aspect-video w-full rounded-xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-colors cursor-pointer group"
+                  className="w-full rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors cursor-pointer group"
+                  style={{ position: "relative", aspectRatio: "16/9", background: "#ffffff" }}
                 >
                   {anuncio.imagen_url ? (
                     <img
                       src={anuncio.imagen_url}
                       alt={anuncio.titulo}
-                      className="block w-full h-full object-contain"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
                       loading="eager"
-                      decoding="async"
                     />
                   ) : (
-                    <div className="flex items-center justify-center w-full h-full px-4">
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 1rem",
+                      }}
+                    >
                       <span className="text-muted-foreground text-sm font-medium text-center">
                         {anuncio.titulo}
                       </span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-end justify-end p-3">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-end p-3">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-white text-xs font-semibold bg-black/50 px-2.5 py-1 rounded-full backdrop-blur-sm">
                       Ver más <ChevronRight size={11} />
                     </span>
