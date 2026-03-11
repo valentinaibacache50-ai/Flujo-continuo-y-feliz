@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
 import { Megaphone, ChevronRight } from "lucide-react";
 import AdDetailModal from "@/components/landing/AdDetailModal";
 
 const Publicidad = () => {
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
 
-  const { data: anuncios } = useQuery({
+  const { data: anuncios = [] } = useQuery({
     queryKey: ["publicidad"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -18,42 +17,29 @@ const Publicidad = () => {
         .eq("posicion", "carrusel")
         .order("orden", { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
-  if (!anuncios || anuncios.length === 0) return null;
-
-  const gridCols =
-    anuncios.length === 1
-      ? "grid-cols-1 max-w-md mx-auto"
-      : anuncios.length === 2
-      ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto"
-      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  if (anuncios.length === 0) return null;
 
   return (
     <>
       <section className="py-8 md:py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-2 mb-6"
-          >
+          <div className="flex items-center gap-2 mb-6">
             <Megaphone size={16} className="text-primary" />
-            <p className="text-primary text-sm font-semibold tracking-wider uppercase">Sponsors</p>
-          </motion.div>
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase">
+              Sponsors
+            </p>
+          </div>
 
-          <div className={`grid gap-4 md:gap-5 ${gridCols}`}>
-            {anuncios.map((anuncio, i) => (
-              <motion.button
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            {anuncios.map((anuncio) => (
+              <button
                 key={anuncio.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
                 onClick={() => setSelectedAd(anuncio)}
-                className="relative group flex items-center justify-center w-full aspect-[16/9] rounded-xl overflow-hidden border border-border bg-muted hover:border-primary/40 transition-colors cursor-pointer"
+                className="relative group flex items-center justify-center w-full aspect-video rounded-xl overflow-hidden border border-border bg-muted hover:border-primary/40 transition-colors cursor-pointer"
                 aria-label={`Ver anuncio: ${anuncio.titulo}`}
               >
                 {anuncio.imagen_url ? (
@@ -76,13 +62,15 @@ const Publicidad = () => {
                     Ver más <ChevronRight size={11} />
                   </span>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      {selectedAd && <AdDetailModal anuncio={selectedAd} onClose={() => setSelectedAd(null)} />}
+      {selectedAd && (
+        <AdDetailModal anuncio={selectedAd} onClose={() => setSelectedAd(null)} />
+      )}
     </>
   );
 };
