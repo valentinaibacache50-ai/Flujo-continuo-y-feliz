@@ -1,7 +1,8 @@
-import { BarChart3, FileText, Image, Package, LayoutDashboard, Calendar, Phone, Store, Mic, Megaphone } from "lucide-react";
+import { BarChart3, FileText, Image, Package, LayoutDashboard, Calendar, Phone, Store, Mic, Megaphone, Clapperboard } from "lucide-react";
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "hero", label: "Hero", icon: Clapperboard },
   { id: "galeria", label: "Galería", icon: Image },
   { id: "estadisticas", label: "Estadísticas", icon: BarChart3 },
   { id: "fechas", label: "Fechas", icon: Calendar },
