@@ -100,7 +100,7 @@ const Lightbox = ({
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="flex flex-col items-center px-12 md:px-20"
+          className="flex flex-col items-center px-6 md:px-16"
           onClick={(e) => e.stopPropagation()}
         >
           {videoId ? (

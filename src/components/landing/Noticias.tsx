@@ -54,9 +54,9 @@ const NoticiaModal = ({ noticia, onClose }: { noticia: any; onClose: () => void 
           </button>
 
           {noticia.imagen_url && (
-            <div className="w-full h-56 sm:h-72">
+            <div className="relative w-full h-56 sm:h-72">
               <SafeImage src={noticia.imagen_url} alt={noticia.titulo} className="w-full h-full object-cover" />
-              <div className="absolute top-0 left-0 right-0 h-56 sm:h-72 bg-gradient-to-b from-transparent to-card/80 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card/80 pointer-events-none" />
             </div>
           )}
 
@@ -192,7 +192,7 @@ const Noticias = () => {
 
             {/* Grid */}
             {noticias.length > 1 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {noticias.slice(1).map((n, i) => (
                   <motion.article
                     key={n.id}

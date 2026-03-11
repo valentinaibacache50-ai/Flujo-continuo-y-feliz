@@ -205,7 +205,7 @@ const Reportajes = () => {
 
                     {/* "Ver nota" CTA — visible on hover or always on mobile */}
                     <div className="absolute bottom-3 right-3">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full opacity-0 group-hover:opacity-100 sm:group-hover:opacity-100 transition-opacity">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         {hasVideo ? "Ver video" : "Ver nota"} <ExternalLink size={10} />
                       </span>
                     </div>

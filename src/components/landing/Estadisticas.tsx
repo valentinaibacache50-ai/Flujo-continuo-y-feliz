@@ -65,9 +65,9 @@ const StatDetailModal = ({ cat, items, onClose }: { cat: string; items: StatItem
         >
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
 
           <div className="bg-primary/10 border-b border-border px-6 py-5 flex items-center gap-3">

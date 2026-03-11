@@ -45,7 +45,7 @@ const BannerFijo = () => {
               <img
                 src={banner.imagen_url}
                 alt={banner.titulo}
-                className="w-full h-20 sm:h-24 object-cover"
+                className="w-full h-20 sm:h-24 object-contain bg-card"
               />
             ) : (
               <div className="w-full h-20 sm:h-24 bg-card flex items-center justify-center">
@@ -56,9 +56,9 @@ const BannerFijo = () => {
           <button
             onClick={() => setCerrado(true)}
             aria-label="Cerrar banner"
-            className="absolute top-2 right-2 p-1 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
+            className="absolute top-2 right-2 p-2 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
           >
-            <X size={14} />
+            <X size={16} />
           </button>
           <span className="absolute bottom-1 left-2 text-[10px] text-muted-foreground/60">
             Publicidad

@@ -7,7 +7,7 @@ const Footer = () => (
         Semillero de Campeones
       </p>
       <p className="text-sm text-muted-foreground mb-4">
-        Portal Deportivo · Fútbol Juvenil
+        Portal Deportivo · Fútbol de Barrio
       </p>
       <div className="flex justify-center gap-4 mb-4">
         <a href="#" className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
@@ -24,7 +24,7 @@ const Footer = () => (
         </a>
       </div>
       <p className="text-xs text-muted-foreground">
-        © 2025 Semillero de Campeones · Portal Deportivo Independiente · Fútbol Juvenil y de Barrio
+        © 2026 Semillero de Campeones · Portal Deportivo Independiente · Fútbol Juvenil y de Barrio
       </p>
     </div>
   </footer>

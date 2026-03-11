@@ -52,13 +52,16 @@ const Navbar = () => {
       </div>
 
       {open && (
-        <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-2">
-          {navLinks.map((l) => (
-            <a key={l.href} href={l.href} onClick={(e) => { scrollToSection(e, l.href); setOpen(false); }} className="block py-2 text-muted-foreground hover:text-primary transition-colors">
-              {l.label}
-            </a>
-          ))}
-        </div>
+        <>
+          <div className="fixed inset-0 top-16 z-40 md:hidden" onClick={() => setOpen(false)} />
+          <div className="md:hidden relative z-50 bg-background border-b border-border px-4 pb-4 space-y-1">
+            {navLinks.map((l) => (
+              <a key={l.href} href={l.href} onClick={(e) => { scrollToSection(e, l.href); setOpen(false); }} className="block py-2.5 px-2 text-muted-foreground hover:text-primary transition-colors text-sm">
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </>
       )}
     </nav>
   );

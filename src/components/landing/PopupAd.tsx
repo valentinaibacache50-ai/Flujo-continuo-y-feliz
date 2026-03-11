@@ -54,10 +54,10 @@ const PopupAd = () => {
           >
             <button
               onClick={() => setDismissed(true)}
-              className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors shadow-sm"
+              className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors shadow-sm"
               aria-label="Cerrar anuncio"
             >
-              <X size={15} />
+              <X size={16} />
             </button>
             <span className="absolute top-3 left-3 z-10 text-[10px] bg-background/80 text-muted-foreground px-2 py-0.5 rounded-full">
               Publicidad

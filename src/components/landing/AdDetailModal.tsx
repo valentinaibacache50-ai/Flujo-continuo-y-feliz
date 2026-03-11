@@ -26,7 +26,7 @@ const AdDetailModal = ({ anuncio, onClose }: AdDetailModalProps) => createPortal
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
           aria-label="Cerrar"
         >
           <X size={16} />

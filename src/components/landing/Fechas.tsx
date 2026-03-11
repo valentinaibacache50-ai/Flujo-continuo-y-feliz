@@ -33,9 +33,9 @@ const FechaModal = ({ fixture, onClose }: { fixture: any; onClose: () => void })
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
+            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/70 hover:bg-background text-foreground transition-colors"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
 
           {/* Header */}
