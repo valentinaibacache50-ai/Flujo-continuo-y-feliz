@@ -40,25 +40,25 @@ const Publicidad = () => {
                 key={anuncio.id}
                 className="w-full max-w-sm sm:flex-1 sm:min-w-[260px] sm:max-w-[480px]"
               >
-                {/* padding-bottom hack: crea aspect ratio 16:9 confiable en todos los browsers */}
+                {/* div con aspect-video: funciona en todos los browsers a diferencia de button */}
                 <div
                   onClick={() => setSelectedAd(anuncio)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => e.key === "Enter" && setSelectedAd(anuncio)}
                   aria-label={`Ver anuncio: ${anuncio.titulo}`}
-                  className="relative w-full pb-[56.25%] rounded-xl overflow-hidden border border-border bg-muted hover:border-primary/40 transition-colors cursor-pointer group"
+                  className="relative aspect-video w-full rounded-xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-colors cursor-pointer group"
                 >
                   {anuncio.imagen_url ? (
                     <img
                       src={anuncio.imagen_url}
                       alt={anuncio.titulo}
-                      className="absolute inset-0 w-full h-full object-contain"
-                      loading="lazy"
+                      className="block w-full h-full object-contain"
+                      loading="eager"
                       decoding="async"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center px-4">
+                    <div className="flex items-center justify-center w-full h-full px-4">
                       <span className="text-muted-foreground text-sm font-medium text-center">
                         {anuncio.titulo}
                       </span>

@@ -64,11 +64,11 @@ const PopupAd = () => {
             </span>
 
             {anuncio.imagen_url && (
-              <div className="w-full bg-muted flex items-center justify-center">
+              <div className="w-full bg-card flex items-center justify-center">
                 <img
                   src={anuncio.imagen_url}
                   alt={anuncio.titulo}
-                  className="w-full object-contain max-h-[55vh]"
+                  className="block w-full object-contain max-h-[60vh]"
                   loading="eager"
                   decoding="async"
                 />
