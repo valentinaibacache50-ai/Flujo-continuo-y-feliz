@@ -127,7 +127,7 @@ const Publicidad = () => {
           <div className="flex items-center justify-center gap-2 mb-6">
             <Megaphone size={16} className="text-primary" />
             <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-              Sponsors
+              Publicidad
             </p>
           </div>
 
