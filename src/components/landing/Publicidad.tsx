@@ -39,13 +39,8 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
 
 const Publicidad = () => {
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const { data: anuncios = [], isSuccess } = useQuery({
+  const { data: anuncios = [], isLoading } = useQuery({
     queryKey: ["publicidad"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -60,7 +55,7 @@ const Publicidad = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  if (!mounted || !isSuccess || anuncios.length === 0) return null;
+  if (isLoading || anuncios.length === 0) return null;
 
   return (
     <>
