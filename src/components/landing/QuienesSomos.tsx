@@ -27,7 +27,7 @@ const QuienesSomos = () => (
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-16"
+        className="text-center mb-10 md:mb-16"
       >
         <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Nosotros</p>
         <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground mb-4">
