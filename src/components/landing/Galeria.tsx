@@ -275,12 +275,11 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                   {/* Videos section */}
                   {videoItems.length > 0 && (
                     <>
-                      {imageItems.length > 0 && (
-                        <div className="flex items-center gap-2 mt-6 mb-3">
-                          <Play size={14} className="text-primary" />
-                          <span className="text-sm font-semibold text-foreground">Videos</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 mt-6 mb-3 border-t border-border pt-4">
+                        <Play size={14} className="text-primary" />
+                        <span className="text-sm font-bold text-foreground uppercase tracking-wider">Videos</span>
+                        <span className="text-xs text-muted-foreground">({videoItems.length})</span>
+                      </div>
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                         {videoItems.map((vid: any) => {
                           const globalIndex = fotos.indexOf(vid);

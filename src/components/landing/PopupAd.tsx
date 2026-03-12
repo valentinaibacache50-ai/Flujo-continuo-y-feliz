@@ -27,7 +27,9 @@ const PopupAd = () => {
 
   useEffect(() => {
     if (!anuncio) return;
-    setVisible(true);
+    // Small delay to ensure portal mount on desktop
+    const timer = setTimeout(() => setVisible(true), 300);
+    return () => clearTimeout(timer);
   }, [anuncio]);
 
   if (!anuncio || dismissed) return null;
