@@ -1,11 +1,72 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Plus, Trash2, Upload, Loader2, Image, AlertCircle, Pencil, X, Camera, ChevronLeft, Star, Images,
+  Plus, Trash2, Upload, Loader2, Image, AlertCircle, Pencil, X, Camera, ChevronLeft, Star, Images, Play, Eye, Video,
 } from "lucide-react";
+
+const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+
+const getYouTubeId = (url: string) => {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([^?&\s]+)/);
+  return match?.[1] || null;
+};
+
+// ─── Preview Lightbox ─────────────────────────────────────────────────────────
+
+const PreviewLightbox = ({ item, onClose }: { item: any; onClose: () => void }) => {
+  const youtubeId = item.video_url ? getYouTubeId(item.video_url) : null;
+  const isDirectVideo = item.imagen_url && isVideoFile(item.imagen_url);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+      >
+        <X size={22} />
+      </button>
+      <div className="max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+        {youtubeId ? (
+          <div className="w-[80vw] max-w-4xl aspect-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
+              title={item.titulo || "Video"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
+            />
+          </div>
+        ) : isDirectVideo ? (
+          <video
+            src={item.imagen_url}
+            controls
+            autoPlay
+            className="max-w-[90vw] max-h-[85vh] rounded-lg"
+            playsInline
+          />
+        ) : item.imagen_url ? (
+          <img
+            src={item.imagen_url}
+            alt={item.titulo || ""}
+            className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+          />
+        ) : (
+          <div className="bg-secondary rounded-lg p-20 flex items-center justify-center">
+            <Image size={48} className="text-muted-foreground" />
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+};
 
 // ─── Album Form ───────────────────────────────────────────────────────────────
 
@@ -136,7 +197,7 @@ const AlbumForm = ({
           className="px-6 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 flex items-center gap-2 disabled:opacity-50"
         >
           {saving && <Loader2 size={14} className="animate-spin" />}
-          {editingAlbum ? "Actualizar" : "Crear y agregar fotos →"}
+          {editingAlbum ? "Actualizar" : "Crear y agregar contenido →"}
         </button>
         <button type="button" onClick={onCancel} className="text-sm text-muted-foreground hover:text-foreground">
           Cancelar
@@ -181,7 +242,6 @@ const AlbumsView = ({ onOpenAlbum }: { onOpenAlbum: (album: any) => void }) => {
   const handleSaved = (album: any) => {
     queryClient.invalidateQueries({ queryKey: ["albumes"] });
     setShowForm(false);
-    // Si es nuevo álbum, navegar directo a agregar fotos
     if (!editingAlbum && album) {
       onOpenAlbum(album);
     }
@@ -240,7 +300,7 @@ const AlbumsView = ({ onOpenAlbum }: { onOpenAlbum: (album: any) => void }) => {
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                   <span className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-1">
-                    <Images size={12} /> Ver fotos
+                    <Images size={12} /> Ver contenido
                   </span>
                 </div>
                 {album.fotoCount > 0 && (
@@ -290,16 +350,20 @@ const AlbumsView = ({ onOpenAlbum }: { onOpenAlbum: (album: any) => void }) => {
   );
 };
 
-// ─── Album Photos View ────────────────────────────────────────────────────────
+// ─── Album Content View (Photos + Videos) ─────────────────────────────────────
 
-const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) => {
+const AlbumContentView = ({ album, onBack }: { album: any; onBack: () => void }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
   const [currentAlbum, setCurrentAlbum] = useState(album);
+  const [previewItem, setPreviewItem] = useState<any | null>(null);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoTitulo, setVideoTitulo] = useState("");
+  const [addingVideo, setAddingVideo] = useState(false);
 
-  const { data: fotos = [], isLoading } = useQuery({
+  const { data: items = [], isLoading } = useQuery({
     queryKey: ["album_fotos", currentAlbum.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -312,6 +376,9 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
     },
   });
 
+  const photos = items.filter((i: any) => !i.video_url && !(i.imagen_url && isVideoFile(i.imagen_url)));
+  const videos = items.filter((i: any) => i.video_url || (i.imagen_url && isVideoFile(i.imagen_url)));
+
   const uploadFotos = async (files: FileList) => {
     if (files.length === 0) return;
     setUploading(true);
@@ -320,11 +387,12 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
     let failed = 0;
     for (const file of Array.from(files)) {
       try {
-        const imagen_url = await uploadImage(file, "galeria");
+        const fileUrl = await uploadImage(file, "galeria");
+        const isVid = isVideoFile(file.name);
         const { error } = await supabase.from("galeria").insert({
           titulo: file.name.replace(/\.[^.]+$/, ""),
-          tipo: "Foto",
-          imagen_url,
+          tipo: isVid ? "Video" : "Foto",
+          imagen_url: fileUrl,
           album_id: currentAlbum.id,
         });
         if (error) throw error;
@@ -338,24 +406,51 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
     queryClient.invalidateQueries({ queryKey: ["albumes"] });
     setUploading(false);
     setUploadProgress(null);
-    if (ok > 0) toast({ title: `${ok} foto${ok !== 1 ? "s" : ""} subida${ok !== 1 ? "s" : ""}` });
-    if (failed > 0) toast({ title: `${failed} foto${failed !== 1 ? "s" : ""} no se pudo${failed !== 1 ? "n" : ""} subir`, variant: "destructive" });
+    if (ok > 0) toast({ title: `${ok} archivo${ok !== 1 ? "s" : ""} subido${ok !== 1 ? "s" : ""}` });
+    if (failed > 0) toast({ title: `${failed} archivo${failed !== 1 ? "s" : ""} fallido${failed !== 1 ? "s" : ""}`, variant: "destructive" });
   };
 
-  const deleteFoto = async (id: string) => {
+  const addVideoLink = async () => {
+    if (!videoUrl.trim()) return;
+    setAddingVideo(true);
+    try {
+      const youtubeId = getYouTubeId(videoUrl.trim());
+      const { error } = await supabase.from("galeria").insert({
+        titulo: videoTitulo.trim() || "Video",
+        tipo: "Video",
+        video_url: videoUrl.trim(),
+        imagen_url: youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : null,
+        album_id: currentAlbum.id,
+      });
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ["album_fotos", currentAlbum.id] });
+      queryClient.invalidateQueries({ queryKey: ["albumes"] });
+      setVideoUrl("");
+      setVideoTitulo("");
+      toast({ title: "Video agregado" });
+    } catch (err: any) {
+      toast({ title: `Error: ${err?.message}`, variant: "destructive" });
+    } finally {
+      setAddingVideo(false);
+    }
+  };
+
+  const deleteItem = async (id: string) => {
     const { error } = await supabase.from("galeria").delete().eq("id", id);
     if (error) { toast({ title: "Error al eliminar", variant: "destructive" }); return; }
     queryClient.invalidateQueries({ queryKey: ["album_fotos", currentAlbum.id] });
     queryClient.invalidateQueries({ queryKey: ["albumes"] });
-    toast({ title: "Foto eliminada" });
+    toast({ title: "Eliminado" });
   };
 
   const setMiniatura = async (foto: any) => {
+    const url = foto.imagen_url || (foto.video_url && getYouTubeId(foto.video_url) ? `https://img.youtube.com/vi/${getYouTubeId(foto.video_url)}/hqdefault.jpg` : null);
+    if (!url) return;
     const { error } = await supabase
-      .from("albumes").update({ miniatura_url: foto.imagen_url }).eq("id", currentAlbum.id);
+      .from("albumes").update({ miniatura_url: url }).eq("id", currentAlbum.id);
     if (error) { toast({ title: "Error", variant: "destructive" }); return; }
     queryClient.invalidateQueries({ queryKey: ["albumes"] });
-    setCurrentAlbum({ ...currentAlbum, miniatura_url: foto.imagen_url });
+    setCurrentAlbum({ ...currentAlbum, miniatura_url: url });
     toast({ title: "Portada actualizada" });
   };
 
@@ -370,21 +465,19 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
           <h2 className="font-space font-bold uppercase text-xl text-foreground truncate">{currentAlbum.titulo}</h2>
           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5 flex-wrap">
             {currentAlbum.jornada && <span className="text-primary font-medium">{currentAlbum.jornada}</span>}
-            <span>{fotos.length} foto{fotos.length !== 1 ? "s" : ""}</span>
+            <span>{photos.length} foto{photos.length !== 1 ? "s" : ""}</span>
+            <span>{videos.length} video{videos.length !== 1 ? "s" : ""}</span>
             {currentAlbum.miniatura_url && (
               <span className="flex items-center gap-1 text-primary"><Star size={10} /> Portada configurada</span>
             )}
           </div>
-          {currentAlbum.descripcion && (
-            <p className="text-xs text-muted-foreground mt-1">{currentAlbum.descripcion}</p>
-          )}
         </div>
         <label className={`flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg cursor-pointer hover:bg-primary/90 shrink-0 ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
           {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-          {uploading ? `Subiendo ${uploadProgress?.done}/${uploadProgress?.total}...` : "Subir fotos"}
+          {uploading ? `Subiendo ${uploadProgress?.done}/${uploadProgress?.total}...` : "Subir archivos"}
           <input
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             onChange={(e) => e.target.files && uploadFotos(e.target.files)}
             className="hidden"
@@ -393,7 +486,7 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
         </label>
       </div>
 
-      {/* Barra de progreso */}
+      {/* Upload progress */}
       {uploading && uploadProgress && (
         <div className="mb-4 mt-2">
           <div className="w-full bg-secondary rounded-full h-1.5">
@@ -402,60 +495,172 @@ const AlbumFotosView = ({ album, onBack }: { album: any; onBack: () => void }) =
               style={{ width: `${(uploadProgress.done / uploadProgress.total) * 100}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">{uploadProgress.done} de {uploadProgress.total} fotos subidas</p>
+          <p className="text-xs text-muted-foreground mt-1">{uploadProgress.done} de {uploadProgress.total} archivos subidos</p>
         </div>
       )}
 
-      {/* Zona de drop / primer upload */}
-      {!isLoading && fotos.length === 0 && !uploading && (
+      {/* Add video URL */}
+      <div className="bg-card border border-border rounded-xl p-4 mb-4 mt-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Video size={14} className="text-primary" />
+          <span className="text-sm font-semibold text-foreground">Agregar video por URL</span>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <input
+            placeholder="Título del video (opcional)"
+            value={videoTitulo}
+            onChange={(e) => setVideoTitulo(e.target.value)}
+            className="flex-1 min-w-[140px] px-3 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary"
+          />
+          <input
+            placeholder="URL de YouTube o video directo"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            className="flex-[2] min-w-[200px] px-3 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary"
+          />
+          <button
+            onClick={addVideoLink}
+            disabled={addingVideo || !videoUrl.trim()}
+            className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center gap-1 shrink-0"
+          >
+            {addingVideo ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+            Agregar
+          </button>
+        </div>
+      </div>
+
+      {/* Empty state */}
+      {!isLoading && items.length === 0 && !uploading && (
         <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl py-16 cursor-pointer hover:border-primary transition-colors mb-4">
           <Upload size={32} className="text-muted-foreground mb-3" />
-          <p className="text-sm font-medium text-foreground">Subí las fotos del álbum</p>
-          <p className="text-xs text-muted-foreground mt-1">Podés seleccionar varias a la vez</p>
-          <input type="file" accept="image/*" multiple onChange={(e) => e.target.files && uploadFotos(e.target.files)} className="hidden" />
+          <p className="text-sm font-medium text-foreground">Subí fotos o videos del álbum</p>
+          <p className="text-xs text-muted-foreground mt-1">Podés seleccionar varios a la vez</p>
+          <input type="file" accept="image/*,video/*" multiple onChange={(e) => e.target.files && uploadFotos(e.target.files)} className="hidden" />
         </label>
       )}
 
-      {/* Grid de fotos */}
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
       ) : (
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {fotos.map((foto: any) => {
-            const isThumb = currentAlbum.miniatura_url === foto.imagen_url;
-            return (
-              <div key={foto.id} className="aspect-square rounded-xl overflow-hidden relative group bg-secondary border border-border">
-                {foto.imagen_url ? (
-                  <img src={foto.imagen_url} alt={foto.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Image size={24} className="text-muted-foreground" />
-                  </div>
-                )}
-                {isThumb && (
-                  <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-semibold">
-                    <Star size={9} /> Portada
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                  {!isThumb && foto.imagen_url && (
-                    <button
-                      onClick={() => setMiniatura(foto)}
-                      title="Usar como portada del álbum"
-                      className="p-2 bg-primary/80 rounded-lg text-white hover:bg-primary"
-                    >
-                      <Star size={14} />
-                    </button>
-                  )}
-                  <button onClick={() => deleteFoto(foto.id)} className="p-2 bg-destructive/80 rounded-lg text-white hover:bg-destructive">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
+        <>
+          {/* Photos grid */}
+          {photos.length > 0 && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <Camera size={14} className="text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fotos ({photos.length})</span>
               </div>
-            );
-          })}
-        </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-6">
+                {photos.map((foto: any) => {
+                  const isThumb = currentAlbum.miniatura_url === foto.imagen_url;
+                  return (
+                    <div key={foto.id} className="aspect-square rounded-xl overflow-hidden relative group bg-secondary border border-border">
+                      {foto.imagen_url ? (
+                        <img src={foto.imagen_url} alt={foto.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Image size={24} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      {isThumb && (
+                        <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-semibold">
+                          <Star size={9} /> Portada
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                        <button
+                          onClick={() => setPreviewItem(foto)}
+                          title="Vista previa"
+                          className="p-2 bg-white/20 rounded-lg text-white hover:bg-white/30"
+                        >
+                          <Eye size={14} />
+                        </button>
+                        {!isThumb && foto.imagen_url && (
+                          <button
+                            onClick={() => setMiniatura(foto)}
+                            title="Usar como portada"
+                            className="p-2 bg-primary/80 rounded-lg text-white hover:bg-primary"
+                          >
+                            <Star size={14} />
+                          </button>
+                        )}
+                        <button onClick={() => deleteItem(foto.id)} className="p-2 bg-destructive/80 rounded-lg text-white hover:bg-destructive">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Videos grid */}
+          {videos.length > 0 && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <Play size={14} className="text-primary" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Videos ({videos.length})</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {videos.map((vid: any) => {
+                  const youtubeId = vid.video_url ? getYouTubeId(vid.video_url) : null;
+                  const isDirectVid = vid.imagen_url && isVideoFile(vid.imagen_url);
+                  const thumbUrl = youtubeId
+                    ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+                    : null;
+
+                  return (
+                    <div key={vid.id} className="aspect-video rounded-xl overflow-hidden relative group bg-secondary border border-border">
+                      {thumbUrl ? (
+                        <img src={thumbUrl} alt={vid.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                      ) : isDirectVid ? (
+                        <video
+                          src={vid.imagen_url}
+                          className="w-full h-full object-cover"
+                          preload="metadata"
+                          muted
+                          playsInline
+                          onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 0.1; }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Play size={24} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      {/* Play overlay */}
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                        <div className="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center">
+                          <Play size={16} className="text-primary-foreground ml-0.5" />
+                        </div>
+                      </div>
+                      {vid.titulo && (
+                        <span className="absolute bottom-1.5 left-1.5 right-10 text-[10px] text-white font-medium truncate">{vid.titulo}</span>
+                      )}
+                      {/* Actions on hover */}
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => setPreviewItem(vid)}
+                          title="Vista previa"
+                          className="p-1.5 bg-white/20 rounded-lg text-white hover:bg-white/30"
+                        >
+                          <Eye size={12} />
+                        </button>
+                        <button onClick={() => deleteItem(vid.id)} className="p-1.5 bg-destructive/80 rounded-lg text-white hover:bg-destructive">
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </>
       )}
+
+      {/* Preview lightbox */}
+      {previewItem && <PreviewLightbox item={previewItem} onClose={() => setPreviewItem(null)} />}
     </div>
   );
 };
@@ -466,7 +671,7 @@ const GaleriaPanel = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<any | null>(null);
 
   if (selectedAlbum) {
-    return <AlbumFotosView album={selectedAlbum} onBack={() => setSelectedAlbum(null)} />;
+    return <AlbumContentView album={selectedAlbum} onBack={() => setSelectedAlbum(null)} />;
   }
 
   return <AlbumsView onOpenAlbum={setSelectedAlbum} />;

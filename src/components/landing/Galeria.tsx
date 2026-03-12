@@ -3,7 +3,14 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle, Camera, CalendarDays, Images } from "lucide-react";
+import { Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle, Camera, CalendarDays, Images, Play } from "lucide-react";
+
+const isVideoFile = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+
+const getYouTubeId = (url: string) => {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([^?&\s]+)/);
+  return match?.[1] || null;
+};
 
 const formatDate = (d: string | null) => {
   if (!d) return null;
@@ -27,6 +34,12 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
   );
 };
 
+const isMediaVideo = (item: any) => {
+  if (item.video_url) return true;
+  if (item.imagen_url && isVideoFile(item.imagen_url)) return true;
+  return false;
+};
+
 const AlbumLightbox = ({
   fotos,
   index,
@@ -43,6 +56,8 @@ const AlbumLightbox = ({
   onPrev: () => void;
 }) => {
   const foto = fotos[index];
+  const youtubeId = foto?.video_url ? getYouTubeId(foto.video_url) : null;
+  const isDirectVideo = foto?.imagen_url && isVideoFile(foto.imagen_url);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -92,16 +107,34 @@ const AlbumLightbox = ({
         initial={{ opacity: 0, scale: 0.93 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.18 }}
-        className="px-12 md:px-24"
+        className="px-12 md:px-24 max-w-[90vw]"
         onClick={(e) => e.stopPropagation()}
       >
-        {foto?.imagen_url && (
+        {youtubeId ? (
+          <div className="w-[80vw] max-w-4xl aspect-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
+              title={foto.titulo || "Video"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
+            />
+          </div>
+        ) : isDirectVideo ? (
+          <video
+            src={foto.imagen_url}
+            controls
+            autoPlay
+            className="max-w-[90vw] max-h-[85vh] rounded-lg"
+            playsInline
+          />
+        ) : foto?.imagen_url ? (
           <img
             src={foto.imagen_url}
             alt={foto.titulo || ""}
             className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
           />
-        )}
+        ) : null}
       </motion.div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/40">
@@ -148,6 +181,10 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
     };
   }, [onClose, lightboxIndex]);
 
+  const mediaItems = fotos;
+  const imageItems = mediaItems.filter((f: any) => !isMediaVideo(f));
+  const videoItems = mediaItems.filter((f: any) => isMediaVideo(f));
+
   return (
     <>
       {createPortal(
@@ -180,7 +217,8 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                   )}
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Camera size={11} />
-                    {fotos.length} foto{fotos.length !== 1 ? "s" : ""}
+                    {imageItems.length} foto{imageItems.length !== 1 ? "s" : ""}
+                    {videoItems.length > 0 && ` · ${videoItems.length} video${videoItems.length !== 1 ? "s" : ""}`}
                   </span>
                 </div>
                 {album.descripcion && (
@@ -201,31 +239,95 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               ) : fotos.length === 0 ? (
-                <p className="text-center text-muted-foreground py-16">No hay fotos en este álbum</p>
+                <p className="text-center text-muted-foreground py-16">No hay contenido en este álbum</p>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                  {fotos.map((foto, i) => (
-                    <motion.div
-                      key={foto.id}
-                      whileHover={{ scale: 1.04 }}
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer"
-                      onClick={() => setLightboxIndex(i)}
-                    >
-                      {foto.imagen_url ? (
-                        <img
-                          src={foto.imagen_url}
-                          alt={foto.titulo || ""}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-secondary flex items-center justify-center">
-                          <Image size={18} className="text-muted-foreground" />
+                <>
+                  {/* Images grid */}
+                  {imageItems.length > 0 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                      {imageItems.map((foto: any) => {
+                        const globalIndex = fotos.indexOf(foto);
+                        return (
+                          <motion.div
+                            key={foto.id}
+                            whileHover={{ scale: 1.04 }}
+                            className="aspect-square rounded-lg overflow-hidden cursor-pointer"
+                            onClick={() => setLightboxIndex(globalIndex)}
+                          >
+                            {foto.imagen_url ? (
+                              <img
+                                src={foto.imagen_url}
+                                alt={foto.titulo || ""}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-secondary flex items-center justify-center">
+                                <Image size={18} className="text-muted-foreground" />
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Videos section */}
+                  {videoItems.length > 0 && (
+                    <>
+                      {imageItems.length > 0 && (
+                        <div className="flex items-center gap-2 mt-6 mb-3">
+                          <Play size={14} className="text-primary" />
+                          <span className="text-sm font-semibold text-foreground">Videos</span>
                         </div>
                       )}
-                    </motion.div>
-                  ))}
-                </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {videoItems.map((vid: any) => {
+                          const globalIndex = fotos.indexOf(vid);
+                          const youtubeId = vid.video_url ? getYouTubeId(vid.video_url) : null;
+                          const isDirectVid = vid.imagen_url && isVideoFile(vid.imagen_url);
+                          const thumbUrl = youtubeId
+                            ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+                            : null;
+
+                          return (
+                            <motion.div
+                              key={vid.id}
+                              whileHover={{ scale: 1.04 }}
+                              className="aspect-video rounded-lg overflow-hidden cursor-pointer relative group"
+                              onClick={() => setLightboxIndex(globalIndex)}
+                            >
+                              {thumbUrl ? (
+                                <img src={thumbUrl} alt={vid.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                              ) : isDirectVid ? (
+                                <video
+                                  src={vid.imagen_url}
+                                  className="w-full h-full object-cover"
+                                  preload="metadata"
+                                  muted
+                                  playsInline
+                                  onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 0.1; }}
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-secondary flex items-center justify-center">
+                                  <Play size={24} className="text-muted-foreground" />
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                  <Play size={16} className="text-primary-foreground ml-0.5" />
+                                </div>
+                              </div>
+                              {vid.titulo && (
+                                <span className="absolute bottom-1.5 left-1.5 right-1.5 text-[10px] text-white font-medium truncate">{vid.titulo}</span>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </>
               )}
             </div>
           </motion.div>
@@ -328,7 +430,6 @@ const Galeria = () => {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  {/* Badge foto count */}
                   {(album as any).fotoCount > 0 && (
                     <span className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
                       <Images size={10} />
