@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      albumes: {
+        Row: {
+          created_at: string
+          descripcion: string | null
+          fecha_publicacion: string | null
+          id: string
+          jornada: string | null
+          miniatura_url: string | null
+          titulo: string
+        }
+        Insert: {
+          created_at?: string
+          descripcion?: string | null
+          fecha_publicacion?: string | null
+          id?: string
+          jornada?: string | null
+          miniatura_url?: string | null
+          titulo: string
+        }
+        Update: {
+          created_at?: string
+          descripcion?: string | null
+          fecha_publicacion?: string | null
+          id?: string
+          jornada?: string | null
+          miniatura_url?: string | null
+          titulo?: string
+        }
+        Relationships: []
+      }
       contacto_config: {
         Row: {
           cobertura: string
@@ -104,36 +134,6 @@ export type Database = {
         }
         Relationships: []
       }
-      albumes: {
-        Row: {
-          created_at: string
-          descripcion: string | null
-          fecha_publicacion: string | null
-          id: string
-          jornada: string | null
-          miniatura_url: string | null
-          titulo: string
-        }
-        Insert: {
-          created_at?: string
-          descripcion?: string | null
-          fecha_publicacion?: string | null
-          id?: string
-          jornada?: string | null
-          miniatura_url?: string | null
-          titulo: string
-        }
-        Update: {
-          created_at?: string
-          descripcion?: string | null
-          fecha_publicacion?: string | null
-          id?: string
-          jornada?: string | null
-          miniatura_url?: string | null
-          titulo?: string
-        }
-        Relationships: []
-      }
       galeria: {
         Row: {
           album_id: string | null
@@ -165,7 +165,15 @@ export type Database = {
           titulo?: string
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "galeria_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hero_config: {
         Row: {

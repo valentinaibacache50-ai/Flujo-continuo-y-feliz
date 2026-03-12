@@ -172,7 +172,7 @@ const Reportajes = () => {
                   <div className="relative h-48 overflow-hidden">
                     {isDirectVideo ? (
                       <video
-                        src={r.imagen_url}
+                        src={r.imagen_url!}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         preload="metadata"
                         muted

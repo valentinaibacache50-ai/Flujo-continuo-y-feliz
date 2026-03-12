@@ -29,7 +29,7 @@ const Cronicas = () => {
   };
 
   return (
-    <section id="cronicas" className="py-28 px-4 bg-secondary/30">
+    <section id="cronicas" className="py-16 md:py-28 px-4 bg-secondary/30">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -54,7 +54,7 @@ const Cronicas = () => {
             <p className="text-muted-foreground">No hay crónicas publicadas aún</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
             {cronicas.map((c, i) => (
               <motion.article
                 key={c.id}

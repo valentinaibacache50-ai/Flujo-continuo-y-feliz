@@ -27,7 +27,7 @@ const QuienesSomos = () => (
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-16"
+        className="text-center mb-10 md:mb-16"
       >
         <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Nosotros</p>
         <h2 className="font-space font-bold uppercase text-4xl md:text-5xl tracking-wide text-foreground mb-4">
@@ -45,7 +45,7 @@ const QuienesSomos = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="relative bg-card border border-border rounded-2xl p-8 md:p-12 mb-12 overflow-hidden"
+        className="relative bg-card border border-border rounded-2xl p-6 md:p-12 mb-8 md:mb-12 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] to-transparent" />
         <div className="relative z-10 text-center max-w-3xl mx-auto">

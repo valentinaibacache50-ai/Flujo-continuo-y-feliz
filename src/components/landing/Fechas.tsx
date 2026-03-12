@@ -110,7 +110,7 @@ const Fechas = () => {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.6 }}
-          className="flex items-center justify-between mb-12"
+          className="flex items-center justify-between mb-8 md:mb-12"
         >
           <div>
             <p className="text-primary text-sm font-semibold mb-1 tracking-wider uppercase">Calendario</p>
