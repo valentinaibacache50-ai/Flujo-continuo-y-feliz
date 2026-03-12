@@ -603,6 +603,8 @@ const AlbumContentView = ({ album, onBack }: { album: any; onBack: () => void })
               <div className="flex items-center gap-2 mb-2">
                 <Play size={14} className="text-primary" />
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Videos ({videos.length})</span>
+                <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">Publicados ✓</span>
+              </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {videos.map((vid: any) => {
