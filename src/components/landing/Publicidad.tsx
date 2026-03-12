@@ -1,110 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Megaphone, ChevronRight } from "lucide-react";
 import AdDetailModal from "@/components/landing/AdDetailModal";
 
-const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onClick()}
-      aria-label={`Ver anuncio: ${anuncio.titulo}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: "relative",
-        width: "100%",
-        paddingBottom: "56.25%",
-        borderRadius: "0.75rem",
-        overflow: "hidden",
-        border: hovered ? "1px solid hsl(var(--primary) / 0.5)" : "1px solid rgba(255,255,255,0.1)",
-        cursor: "pointer",
-        transition: "border-color 0.2s",
-      }}
-    >
-      {anuncio.imagen_url ? (
-        <img
-          src={anuncio.imagen_url}
-          alt={anuncio.titulo}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "block",
-          }}
-          loading="eager"
-        />
-      ) : (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 1rem",
-          }}
-        >
-          <span style={{ color: "var(--muted-foreground)", fontSize: "0.875rem", fontWeight: 500, textAlign: "center" }}>
-            {anuncio.titulo}
-          </span>
-        </div>
-      )}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: hovered ? "rgba(0,0,0,0.2)" : "transparent",
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "flex-end",
-          padding: "0.75rem",
-          transition: "background 0.2s",
-          pointerEvents: "none",
-        }}
-      >
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            color: "white",
-            fontSize: "0.75rem",
-            fontWeight: 600,
-            background: "rgba(0,0,0,0.5)",
-            padding: "0.25rem 0.625rem",
-            borderRadius: "9999px",
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.2s",
-          }}
-        >
-          Ver más <ChevronRight size={11} />
+const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => (
+  <div
+    onClick={onClick}
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => e.key === "Enter" && onClick()}
+    aria-label={`Ver anuncio: ${anuncio.titulo}`}
+    className="relative w-full rounded-xl overflow-hidden border border-border hover:border-primary/50 cursor-pointer transition-colors group"
+    style={{ paddingBottom: "56.25%" }}
+  >
+    {anuncio.imagen_url ? (
+      <img
+        src={anuncio.imagen_url}
+        alt={anuncio.titulo}
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+    ) : (
+      <div className="absolute inset-0 flex items-center justify-center px-4 bg-secondary">
+        <span className="text-muted-foreground text-sm font-medium text-center">
+          {anuncio.titulo}
         </span>
       </div>
+    )}
+    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-end p-3 pointer-events-none">
+      <span className="flex items-center gap-1 text-white text-xs font-semibold bg-black/50 px-2.5 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+        Ver más <ChevronRight size={11} />
+      </span>
     </div>
-  );
-};
+  </div>
+);
 
 const Publicidad = () => {
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  const { data: anuncios = [] } = useQuery({
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const { data: anuncios = [], isSuccess } = useQuery({
     queryKey: ["publicidad"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -116,9 +57,10 @@ const Publicidad = () => {
       if (error) throw error;
       return data ?? [];
     },
+    staleTime: 1000 * 60 * 5,
   });
 
-  if (anuncios.length === 0) return null;
+  if (!mounted || !isSuccess || anuncios.length === 0) return null;
 
   return (
     <>
@@ -133,9 +75,7 @@ const Publicidad = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {anuncios.map((anuncio) => (
-              <div key={anuncio.id}>
-                <AdCard anuncio={anuncio} onClick={() => setSelectedAd(anuncio)} />
-              </div>
+              <AdCard key={anuncio.id} anuncio={anuncio} onClick={() => setSelectedAd(anuncio)} />
             ))}
           </div>
         </div>

@@ -281,7 +281,7 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                           <span className="text-sm font-semibold text-foreground">Videos</span>
                         </div>
                       )}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                         {videoItems.map((vid: any) => {
                           const globalIndex = fotos.indexOf(vid);
                           const youtubeId = vid.video_url ? getYouTubeId(vid.video_url) : null;
@@ -294,7 +294,7 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                             <motion.div
                               key={vid.id}
                               whileHover={{ scale: 1.04 }}
-                              className="aspect-video rounded-lg overflow-hidden cursor-pointer relative group"
+                              className="aspect-square rounded-lg overflow-hidden cursor-pointer relative group"
                               onClick={() => setLightboxIndex(globalIndex)}
                             >
                               {thumbUrl ? (
@@ -313,13 +313,18 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                                   <Play size={24} className="text-muted-foreground" />
                                 </div>
                               )}
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center">
                                   <Play size={16} className="text-primary-foreground ml-0.5" />
                                 </div>
                               </div>
+                              <div className="absolute top-1.5 left-1.5">
+                                <div className="w-6 h-6 rounded-full bg-black/50 flex items-center justify-center">
+                                  <Play size={10} className="text-white ml-0.5" />
+                                </div>
+                              </div>
                               {vid.titulo && (
-                                <span className="absolute bottom-1.5 left-1.5 right-1.5 text-[10px] text-white font-medium truncate">{vid.titulo}</span>
+                                <span className="absolute bottom-1.5 left-1.5 right-1.5 text-[10px] text-white font-medium truncate drop-shadow-md">{vid.titulo}</span>
                               )}
                             </motion.div>
                           );
