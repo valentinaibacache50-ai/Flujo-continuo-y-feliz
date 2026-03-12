@@ -136,6 +136,7 @@ export type Database = {
       }
       galeria: {
         Row: {
+          album_id: string | null
           created_at: string
           fecha_publicacion: string | null
           id: string
@@ -145,6 +146,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          album_id?: string | null
           created_at?: string
           fecha_publicacion?: string | null
           id?: string
@@ -154,6 +156,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          album_id?: string | null
           created_at?: string
           fecha_publicacion?: string | null
           id?: string
@@ -162,7 +165,15 @@ export type Database = {
           titulo?: string
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "galeria_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hero_config: {
         Row: {
