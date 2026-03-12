@@ -22,7 +22,7 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
         paddingBottom: "56.25%",
         borderRadius: "0.75rem",
         overflow: "hidden",
-        border: hovered ? "1px solid rgba(var(--primary), 0.4)" : "1px solid rgba(255,255,255,0.1)",
+        border: hovered ? "1px solid hsl(var(--primary) / 0.5)" : "1px solid rgba(255,255,255,0.1)",
         cursor: "pointer",
         transition: "border-color 0.2s",
       }}

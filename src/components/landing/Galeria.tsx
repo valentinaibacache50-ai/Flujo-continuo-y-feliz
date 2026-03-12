@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle, Camera, CalendarDays } from "lucide-react";
+import { Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle, Camera, CalendarDays, Images } from "lucide-react";
 
 const formatDate = (d: string | null) => {
   if (!d) return null;
@@ -183,6 +183,9 @@ const AlbumModal = ({ album, onClose }: { album: any; onClose: () => void }) => 
                     {fotos.length} foto{fotos.length !== 1 ? "s" : ""}
                   </span>
                 </div>
+                {album.descripcion && (
+                  <p className="text-sm text-muted-foreground mt-2">{album.descripcion}</p>
+                )}
               </div>
               <button
                 onClick={onClose}
@@ -252,12 +255,16 @@ const Galeria = () => {
   const { data: albumes = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["albumes"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("albumes")
-        .select("*")
-        .order("fecha_publicacion", { ascending: false });
+      const [{ data: albumData, error }, { data: countData }] = await Promise.all([
+        supabase.from("albumes").select("*").order("fecha_publicacion", { ascending: false }),
+        supabase.from("galeria").select("album_id").not("album_id", "is", null),
+      ]);
       if (error) throw error;
-      return data ?? [];
+      const countMap: Record<string, number> = {};
+      for (const row of countData ?? []) {
+        if (row.album_id) countMap[row.album_id] = (countMap[row.album_id] ?? 0) + 1;
+      }
+      return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0 }));
     },
     retry: 2,
   });
@@ -305,7 +312,7 @@ const Galeria = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.2) }}
                 whileHover={{ scale: 1.03 }}
-                className="rounded-xl overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-colors bg-card"
+                className="rounded-xl overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-colors bg-card group"
                 onClick={() => setSelectedAlbum(album)}
               >
                 <div className="aspect-[4/3] relative overflow-hidden">
@@ -313,14 +320,21 @@ const Galeria = () => {
                     <SafeImage
                       src={album.miniatura_url}
                       alt={album.titulo}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
                     <div className="w-full h-full bg-secondary flex items-center justify-center">
                       <Camera size={22} className="text-muted-foreground" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {/* Badge foto count */}
+                  {(album as any).fotoCount > 0 && (
+                    <span className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                      <Images size={10} />
+                      {(album as any).fotoCount}
+                    </span>
+                  )}
                 </div>
                 <div className="px-3 py-2">
                   <p className="text-foreground text-sm font-semibold line-clamp-1">{album.titulo}</p>

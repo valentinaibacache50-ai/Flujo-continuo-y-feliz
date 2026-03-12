@@ -107,6 +107,7 @@ export type Database = {
       albumes: {
         Row: {
           created_at: string
+          descripcion: string | null
           fecha_publicacion: string | null
           id: string
           jornada: string | null
@@ -115,6 +116,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          descripcion?: string | null
           fecha_publicacion?: string | null
           id?: string
           jornada?: string | null
@@ -123,6 +125,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          descripcion?: string | null
           fecha_publicacion?: string | null
           id?: string
           jornada?: string | null
