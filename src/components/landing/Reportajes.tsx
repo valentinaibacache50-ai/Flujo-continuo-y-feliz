@@ -171,9 +171,14 @@ const Reportajes = () => {
                   {/* Thumbnail with overlay */}
                   <div className="relative h-48 overflow-hidden">
                     {isDirectVideo ? (
-                      <div className="w-full h-full bg-secondary/80 flex items-center justify-center">
-                        <Mic size={28} className="text-muted-foreground" />
-                      </div>
+                      <video
+                        src={r.imagen_url!}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        preload="metadata"
+                        muted
+                        playsInline
+                        onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 0.1; }}
+                      />
                     ) : thumbnail ? (
                       <SafeImage
                         src={thumbnail}
