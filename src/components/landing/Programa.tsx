@@ -20,12 +20,7 @@ const isDirectVideo = (url: string) => !getYoutubeId(url);
 
 const trackView = async (id: string, type: "half" | "complete") => {
   try {
-    const col = type === "half" ? "vistas_mitad" : "vistas_completas";
-    // Read current, increment
-    const { data } = await supabase.from("programa_episodios").select(col).eq("id", id).single();
-    if (!data) return;
-    const current = (data as any)[col] ?? 0;
-    await supabase.from("programa_episodios").update({ [col]: current + 1 }).eq("id", id);
+    await supabase.rpc("increment_programa_view" as any, { ep_id: id, view_type: type });
   } catch { /* silent */ }
 };
 
