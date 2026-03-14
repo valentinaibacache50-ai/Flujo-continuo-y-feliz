@@ -3,8 +3,9 @@ import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import Publicidad from "@/components/landing/Publicidad";
 import PopupAd from "@/components/landing/PopupAd";
+import CookieConsent from "@/components/landing/CookieConsent";
 
-// Lazy-load everything below the fold
+const Programa = lazy(() => import("@/components/landing/Programa"));
 const Galeria = lazy(() => import("@/components/landing/Galeria"));
 const Estadisticas = lazy(() => import("@/components/landing/Estadisticas"));
 const Fechas = lazy(() => import("@/components/landing/Fechas"));
@@ -26,6 +27,9 @@ const Index = () => (
     <Hero />
     <Publicidad />
     <Suspense fallback={<SectionLoader />}>
+      <Programa />
+    </Suspense>
+    <Suspense fallback={<SectionLoader />}>
       <Galeria />
     </Suspense>
     <Suspense fallback={<SectionLoader />}>
@@ -46,6 +50,7 @@ const Index = () => (
       <Footer />
     </Suspense>
     <PopupAd />
+    <CookieConsent />
   </div>
 );
 

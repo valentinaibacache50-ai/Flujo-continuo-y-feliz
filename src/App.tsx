@@ -11,6 +11,8 @@ import CustomCursor from "@/components/CustomCursor";
 
 const Index = lazy(() => import("./pages/Index"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Privacidad = lazy(() => import("./pages/Privacidad"));
+const Terminos = lazy(() => import("./pages/Terminos"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -43,6 +45,8 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/privacidad" element={<Privacidad />} />
+                  <Route path="/terminos" element={<Terminos />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

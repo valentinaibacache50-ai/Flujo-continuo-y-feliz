@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
 
 const Footer = () => (
@@ -23,8 +24,13 @@ const Footer = () => (
           <MessageCircle size={16} />
         </a>
       </div>
+      <div className="flex justify-center gap-4 mb-4 text-xs text-muted-foreground">
+        <Link to="/privacidad" className="hover:text-foreground transition-colors">Política de Privacidad</Link>
+        <span>·</span>
+        <Link to="/terminos" className="hover:text-foreground transition-colors">Términos y Condiciones</Link>
+      </div>
       <p className="text-xs text-muted-foreground">
-        © 2026 Semillero de Campeones · Portal Deportivo Independiente · Fútbol Juvenil y de Barrio
+        © {new Date().getFullYear()} Semillero de Campeones · Todos los derechos reservados · Portal Deportivo Independiente
       </p>
     </div>
   </footer>

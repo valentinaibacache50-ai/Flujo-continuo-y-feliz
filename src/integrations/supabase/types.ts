@@ -22,6 +22,7 @@ export type Database = {
           id: string
           jornada: string | null
           miniatura_url: string | null
+          tipo: string
           titulo: string
         }
         Insert: {
@@ -31,6 +32,7 @@ export type Database = {
           id?: string
           jornada?: string | null
           miniatura_url?: string | null
+          tipo?: string
           titulo: string
         }
         Update: {
@@ -40,6 +42,7 @@ export type Database = {
           id?: string
           jornada?: string | null
           miniatura_url?: string | null
+          tipo?: string
           titulo?: string
         }
         Relationships: []
@@ -286,6 +289,48 @@ export type Database = {
           precio?: string
           precio_anual?: string | null
           whatsapp_url?: string | null
+        }
+        Relationships: []
+      }
+      programa_episodios: {
+        Row: {
+          activo: boolean
+          created_at: string
+          descripcion: string | null
+          duracion: string | null
+          episodio: number
+          fecha_publicacion: string | null
+          id: string
+          miniatura_url: string | null
+          temporada: number
+          titulo: string
+          video_url: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          descripcion?: string | null
+          duracion?: string | null
+          episodio?: number
+          fecha_publicacion?: string | null
+          id?: string
+          miniatura_url?: string | null
+          temporada?: number
+          titulo: string
+          video_url: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          descripcion?: string | null
+          duracion?: string | null
+          episodio?: number
+          fecha_publicacion?: string | null
+          id?: string
+          miniatura_url?: string | null
+          temporada?: number
+          titulo?: string
+          video_url?: string
         }
         Relationships: []
       }

@@ -14,6 +14,7 @@ import ContactoPanel from "@/components/admin/ContactoPanel";
 import ReportajesPanel from "@/components/admin/ReportajesPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
 import PublicidadPanel from "@/components/admin/PublicidadPanel";
+import ProgramaPanel from "@/components/admin/ProgramaPanel";
 import { Loader2 } from "lucide-react";
 
 const Admin = () => {
@@ -36,6 +37,7 @@ const Admin = () => {
       case "hero": return <HeroPanel />;
       case "noticias": return <NoticiasPanel />;
       case "galeria": return <GaleriaPanel />;
+      case "programa": return <ProgramaPanel />;
       case "estadisticas": return <EstadisticasPanel />;
       case "fechas": return <FechasPanel />;
       case "tienda": return <TiendaPanel />;
