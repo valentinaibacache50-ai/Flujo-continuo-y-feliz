@@ -66,13 +66,23 @@ const Programa = () => {
         {/* Featured player */}
         <div className="mb-8">
           <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              src={getEmbedUrl(featured.video_url)}
-              title={featured.titulo}
-              className="absolute inset-0 w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            {isDirectVideo(featured.video_url) ? (
+              <video
+                key={featured.id}
+                src={featured.video_url}
+                controls
+                autoPlay
+                className="absolute inset-0 w-full h-full"
+              />
+            ) : (
+              <iframe
+                src={getEmbedUrl(featured.video_url)!}
+                title={featured.titulo}
+                className="absolute inset-0 w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            )}
           </div>
           <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-2">
