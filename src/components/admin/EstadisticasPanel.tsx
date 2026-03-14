@@ -6,7 +6,13 @@ import { Plus, Trash2, Loader2, Pencil, X, BarChart2 } from "lucide-react";
 
 const inputCls = "w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm";
 
-const CATEGORY_PRESETS = ["Sub-12", "Sub-15", "Sub-17", "Sub-20", "Primera", "Cobertura 2026", "Comunidad", "Alcance"];
+const CATEGORY_PRESETS = [
+  "Sub-12", "Sub-15", "Sub-17", "Sub-20", "Primera",
+  "Cobertura 2026", "Comunidad", "Alcance",
+  "Goles", "Partidos", "Jugadores", "Equipos",
+  "Asistencias", "Tarjetas", "Árbitros", "Torneos",
+  "Sedes", "Categorías", "Temporadas", "Redes Sociales",
+];
 const SUFFIX_PRESETS = ["%", "k", "M", "+", "hs", "min"];
 
 const EstadisticasPanel = () => {

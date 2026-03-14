@@ -409,16 +409,23 @@ const Galeria = () => {
   const { data: albumes = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["albumes"],
     queryFn: async () => {
-      const [{ data: albumData, error }, { data: countData }] = await Promise.all([
+      const [{ data: albumData, error }, { data: countData }, { data: videoData }] = await Promise.all([
         supabase.from("albumes").select("*").order("fecha_publicacion", { ascending: false }),
         supabase.from("galeria").select("album_id").not("album_id", "is", null),
+        supabase.from("galeria").select("album_id, video_url").not("video_url", "is", null),
       ]);
       if (error) throw error;
       const countMap: Record<string, number> = {};
       for (const row of countData ?? []) {
         if (row.album_id) countMap[row.album_id] = (countMap[row.album_id] ?? 0) + 1;
       }
-      return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0 }));
+      const firstVideoMap: Record<string, string> = {};
+      for (const row of videoData ?? []) {
+        if (row.album_id && row.video_url && !firstVideoMap[row.album_id]) {
+          firstVideoMap[row.album_id] = row.video_url;
+        }
+      }
+      return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0, firstVideoUrl: firstVideoMap[album.id] ?? null }));
     },
     retry: 2,
   });

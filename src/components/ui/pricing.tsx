@@ -165,14 +165,12 @@ export function Pricing({
                   />
                 </span>
               </div>
-              <a
-                href={buildWhatsAppUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => window.open(buildWhatsAppUrl(), "_blank")}
                 className={cn(buttonVariants({ variant: "default", size: "lg" }), "gap-2")}
               >
                 Comprar {selected.size} paquete{selected.size > 1 ? "s" : ""} por WhatsApp
-              </a>
+              </button>
             </div>
           </motion.div>
         )}
