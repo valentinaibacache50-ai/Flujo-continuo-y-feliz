@@ -428,7 +428,9 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
   const { toast } = useToast();
   const [videoUrl, setVideoUrl] = useState("");
   const [videoTitulo, setVideoTitulo] = useState("");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [adding, setAdding] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [currentAlbum, setCurrentAlbum] = useState(album);
 
@@ -444,13 +446,24 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
 
   const addVideo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!videoUrl.trim()) return;
+    if (!videoUrl.trim() && !videoFile) return;
     setAdding(true);
     try {
+      let finalVideoUrl = videoUrl.trim() || null;
+      let imagenUrl: string | null = null;
+
+      if (videoFile) {
+        setUploading(true);
+        const uploaded = await uploadImage(videoFile, "galeria");
+        imagenUrl = uploaded; // stored as imagen_url for direct .mp4
+        setUploading(false);
+      }
+
       const { error } = await supabase.from("galeria").insert({
-        titulo: videoTitulo.trim() || "Video",
+        titulo: videoTitulo.trim() || videoFile?.name.replace(/\.[^.]+$/, "") || "Video",
         tipo: "Video",
-        video_url: videoUrl.trim(),
+        video_url: finalVideoUrl,
+        imagen_url: imagenUrl,
         album_id: currentAlbum.id,
       });
       if (error) throw error;
@@ -458,12 +471,14 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
       queryClient.invalidateQueries({ queryKey: ["albumes", "videos"] });
       setVideoUrl("");
       setVideoTitulo("");
+      setVideoFile(null);
       setShowAddForm(false);
       toast({ title: "Video agregado" });
     } catch (err: any) {
       toast({ title: `Error: ${err?.message}`, variant: "destructive" });
     } finally {
       setAdding(false);
+      setUploading(false);
     }
   };
 
