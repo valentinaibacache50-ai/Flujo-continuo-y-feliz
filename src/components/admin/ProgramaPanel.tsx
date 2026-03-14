@@ -5,18 +5,15 @@ import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Pencil, Loader2, X, Tv, Play, Upload, Eye, Image } from "lucide-react";
 
-const getYoutubeId = (url: string): string | null => {
-  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
-  return m ? m[1] : null;
-};
+import VideoThumbnail from "@/components/VideoThumbnail";
+import { getYoutubeId, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
 
 const getThumb = (ep: any) => {
   if (ep.miniatura_url) return ep.miniatura_url;
-  const ytId = getYoutubeId(ep.video_url ?? "");
-  return ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
+  return getYoutubeThumbnail(ep.video_url);
 };
 
-const isDirectVideo = (url: string) => !getYoutubeId(url);
+const isDirectVideo = (url?: string | null) => isDirectVideoFile(url);
 
 const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () => void; onCancel: () => void }) => {
   const { toast } = useToast();
