@@ -24,9 +24,7 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
       />
     ) : (
       <div className="absolute inset-0 flex items-center justify-center px-4 bg-secondary">
-        <span className="text-muted-foreground text-sm font-medium text-center">
-          {anuncio.titulo}
-        </span>
+        <span className="text-muted-foreground text-sm font-medium text-center">{anuncio.titulo}</span>
       </div>
     )}
     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-end p-3 pointer-events-none">
@@ -40,14 +38,13 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
 const Publicidad = () => {
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
 
-  const { data: anuncios = [], isLoading } = useQuery({
-    queryKey: ["publicidad"],
+  const { data: anuncios = [] } = useQuery({
+    queryKey: ["publicidad_all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("publicidad")
         .select("*")
         .eq("activo", true)
-        .eq("posicion", "carrusel")
         .order("orden", { ascending: true });
       if (error) throw error;
       return data ?? [];
@@ -55,7 +52,8 @@ const Publicidad = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  if (isLoading || anuncios.length === 0) return null;
+  // Show all active ads (both carrusel and popup) in the section
+  if (anuncios.length === 0) return null;
 
   return (
     <>
@@ -63,11 +61,8 @@ const Publicidad = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Megaphone size={16} className="text-primary" />
-            <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-              Publicidad
-            </p>
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase">Publicidad</p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {anuncios.map((anuncio) => (
               <AdCard key={anuncio.id} anuncio={anuncio} onClick={() => setSelectedAd(anuncio)} />
@@ -75,10 +70,7 @@ const Publicidad = () => {
           </div>
         </div>
       </section>
-
-      {selectedAd && (
-        <AdDetailModal anuncio={selectedAd} onClose={() => setSelectedAd(null)} />
-      )}
+      {selectedAd && <AdDetailModal anuncio={selectedAd} onClose={() => setSelectedAd(null)} />}
     </>
   );
 };

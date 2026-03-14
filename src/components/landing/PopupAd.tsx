@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
 
 const PopupAd = () => {
@@ -10,7 +9,7 @@ const PopupAd = () => {
   const [dismissed, setDismissed] = useState(false);
 
   const { data: anuncio } = useQuery({
-    queryKey: ["ad_banner", "popup"],
+    queryKey: ["ad_popup"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("publicidad")
@@ -23,80 +22,63 @@ const PopupAd = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {
-    if (!anuncio) return;
-    // Small delay to ensure portal mount on desktop
-    const timer = setTimeout(() => setVisible(true), 300);
+    if (!anuncio || dismissed) return;
+    const timer = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(timer);
-  }, [anuncio]);
+  }, [anuncio, dismissed]);
 
-  if (!anuncio || dismissed) return null;
+  if (!anuncio || dismissed || !visible) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          key="popup-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    <div
+      className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={() => setDismissed(true)}
+    >
+      <div
+        className="relative bg-card rounded-2xl overflow-hidden w-full max-w-sm sm:max-w-lg shadow-2xl border border-border/50 animate-in fade-in zoom-in-95 duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
           onClick={() => setDismissed(true)}
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors shadow-sm"
+          aria-label="Cerrar anuncio"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 40, scale: 0.96 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative bg-card rounded-2xl overflow-hidden w-full max-w-sm sm:max-w-lg shadow-2xl border border-border/50"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setDismissed(true)}
-              className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors shadow-sm"
-              aria-label="Cerrar anuncio"
+          <X size={16} />
+        </button>
+        <span className="absolute top-3 left-3 z-10 text-[10px] bg-background/80 text-muted-foreground px-2 py-0.5 rounded-full">
+          Publicidad
+        </span>
+
+        {anuncio.imagen_url && (
+          <img
+            src={anuncio.imagen_url}
+            alt={anuncio.titulo}
+            className="block w-full max-h-[60vh] object-contain"
+            loading="eager"
+          />
+        )}
+
+        {anuncio.enlace_url && (
+          <div className="px-5 py-4">
+            {anuncio.titulo && anuncio.titulo !== "Nuevo anuncio" && anuncio.titulo !== "Publicidad" && (
+              <p className="font-semibold text-foreground text-base mb-1">{anuncio.titulo}</p>
+            )}
+            <a
+              href={anuncio.enlace_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all"
             >
-              <X size={16} />
-            </button>
-            <span className="absolute top-3 left-3 z-10 text-[10px] bg-background/80 text-muted-foreground px-2 py-0.5 rounded-full">
-              Publicidad
-            </span>
-
-            {anuncio.imagen_url && (
-              <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <img
-                  src={anuncio.imagen_url}
-                  alt={anuncio.titulo}
-                  style={{ display: "block", width: "100%", maxHeight: "60vh", objectFit: "contain" }}
-                  loading="eager"
-                />
-              </div>
-            )}
-
-            {(anuncio.enlace_url) && (
-              <div className="px-5 py-4">
-                {anuncio.titulo && anuncio.titulo !== "Nuevo anuncio" && anuncio.titulo !== "Publicidad" && (
-                  <p className="font-semibold text-foreground text-base mb-1">{anuncio.titulo}</p>
-                )}
-                {anuncio.enlace_url && (
-                  <a
-                    href={anuncio.enlace_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all"
-                  >
-                    Visitar sitio <ExternalLink size={14} />
-                  </a>
-                )}
-              </div>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+              Visitar sitio <ExternalLink size={14} />
+            </a>
+          </div>
+        )}
+      </div>
+    </div>,
     document.body
   );
 };
