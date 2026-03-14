@@ -13,15 +13,7 @@ type AlbumTipo = "fotos" | "videos";
 
 // ─── Helpers YouTube ──────────────────────────────────────────────────────────
 
-const getYoutubeId = (url: string): string | null => {
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
-  return match ? match[1] : null;
-};
-
-const getYoutubeThumbnail = (url: string) => {
-  const id = getYoutubeId(url);
-  return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null;
-};
+import { getYoutubeId, getYoutubeThumbnail, resolveVideoSource, isDirectVideoFile } from "@/lib/video-utils";
 
 // ─── Album Form ───────────────────────────────────────────────────────────────
 
