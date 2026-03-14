@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Tv, Play, Clock, Calendar } from "lucide-react";
+import { Tv, Play, Clock } from "lucide-react";
 
 const getYoutubeId = (url: string): string | null => {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
@@ -14,12 +14,103 @@ const getThumb = (ep: any) => {
   return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
 };
 
-const getEmbedUrl = (url: string) => {
-  const ytId = getYoutubeId(url);
-  return ytId ? `https://www.youtube.com/embed/${ytId}?autoplay=1` : null;
+const isDirectVideo = (url: string) => !getYoutubeId(url);
+
+/* ── Track view events ───────────────────────────────────────────────── */
+
+const trackView = async (id: string, type: "half" | "complete") => {
+  try {
+    await supabase.rpc("increment_programa_view" as any, { ep_id: id, view_type: type });
+  } catch { /* silent */ }
 };
 
-const isDirectVideo = (url: string) => !getYoutubeId(url);
+/* ── Featured Player with click-to-play ──────────────────────────────── */
+
+const FeaturedPlayer = ({ episode }: { episode: any }) => {
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const trackedHalf = useRef(false);
+  const trackedComplete = useRef(false);
+
+  // Reset when episode changes
+  useEffect(() => {
+    setPlaying(false);
+    trackedHalf.current = false;
+    trackedComplete.current = false;
+  }, [episode.id]);
+
+  const handleTimeUpdate = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !v.duration) return;
+    const pct = v.currentTime / v.duration;
+    if (pct >= 0.5 && !trackedHalf.current) {
+      trackedHalf.current = true;
+      trackView(episode.id, "half");
+    }
+    if (pct >= 0.95 && !trackedComplete.current) {
+      trackedComplete.current = true;
+      trackView(episode.id, "complete");
+    }
+  }, [episode.id]);
+
+  const thumb = getThumb(episode);
+  const direct = isDirectVideo(episode.video_url);
+
+  if (!playing) {
+    return (
+      <div
+        className="relative w-full rounded-xl overflow-hidden border border-border bg-black cursor-pointer group"
+        style={{ paddingBottom: "56.25%" }}
+        onClick={() => setPlaying(true)}
+      >
+        {thumb ? (
+          <img src={thumb} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
+        ) : direct ? (
+          <video src={episode.video_url} className="absolute inset-0 w-full h-full object-cover" muted preload="metadata" />
+        ) : (
+          <div className="absolute inset-0 bg-secondary" />
+        )}
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+            <Play size={28} className="text-primary-foreground ml-1" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (direct) {
+    return (
+      <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
+        <video
+          ref={videoRef}
+          key={episode.id}
+          src={episode.video_url}
+          controls
+          autoPlay
+          onTimeUpdate={handleTimeUpdate}
+          className="absolute inset-0 w-full h-full"
+        />
+      </div>
+    );
+  }
+
+  // YouTube - track via postMessage API (best-effort)
+  const ytId = getYoutubeId(episode.video_url);
+  return (
+    <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1`}
+        title={episode.titulo}
+        className="absolute inset-0 w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
+/* ── Main Component ──────────────────────────────────────────────────── */
 
 const Programa = () => {
   const [activeEp, setActiveEp] = useState<any | null>(null);
@@ -51,9 +142,7 @@ const Programa = () => {
         <div className="flex flex-col items-center gap-2 mb-8">
           <div className="flex items-center gap-2">
             <Tv size={18} className="text-primary" />
-            <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-              Programa
-            </p>
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase">Programa</p>
           </div>
           <h2 className="font-space font-bold text-2xl md:text-3xl text-foreground text-center">
             Semillero de Campeones TV
@@ -65,25 +154,7 @@ const Programa = () => {
 
         {/* Featured player */}
         <div className="mb-8">
-          <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
-            {isDirectVideo(featured.video_url) ? (
-              <video
-                key={featured.id}
-                src={featured.video_url}
-                controls
-                autoPlay
-                className="absolute inset-0 w-full h-full"
-              />
-            ) : (
-              <iframe
-                src={getEmbedUrl(featured.video_url)!}
-                title={featured.titulo}
-                className="absolute inset-0 w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            )}
-          </div>
+          <FeaturedPlayer episode={featured} />
           <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-2">
               <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full">
@@ -111,6 +182,7 @@ const Programa = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {others.map((ep) => {
                 const thumb = getThumb(ep);
+                const direct = isDirectVideo(ep.video_url);
                 return (
                   <button
                     key={ep.id}
@@ -120,6 +192,8 @@ const Programa = () => {
                     <div className="relative" style={{ paddingBottom: "56.25%" }}>
                       {thumb ? (
                         <img src={thumb} alt={ep.titulo} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                      ) : direct ? (
+                        <video src={ep.video_url} className="absolute inset-0 w-full h-full object-cover" muted preload="metadata" />
                       ) : (
                         <div className="absolute inset-0 bg-secondary flex items-center justify-center">
                           <Play size={24} className="text-muted-foreground" />

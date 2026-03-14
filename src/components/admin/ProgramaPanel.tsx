@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Pencil, Loader2, X, Tv, Play, Upload } from "lucide-react";
+import { Plus, Trash2, Pencil, Loader2, X, Tv, Play, Upload, Eye, Image } from "lucide-react";
 
 const getYoutubeId = (url: string): string | null => {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
@@ -15,6 +15,8 @@ const getThumb = (ep: any) => {
   const ytId = getYoutubeId(ep.video_url ?? "");
   return ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
 };
+
+const isDirectVideo = (url: string) => !getYoutubeId(url);
 
 const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () => void; onCancel: () => void }) => {
   const { toast } = useToast();
@@ -29,6 +31,9 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
   const [activo, setActivo] = useState(episode?.activo ?? true);
   const [saving, setSaving] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+
+  // Preview for current thumbnail
+  const currentThumb = getThumb(episode ?? { video_url: videoUrl });
 
   const handleVideoFileChange = async (file: File) => {
     setVideoFile(file);
@@ -113,17 +118,49 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-          <Upload size={14} />
-          <span>{thumbFile ? thumbFile.name : "Miniatura (opcional)"}</span>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => setThumbFile(e.target.files?.[0] ?? null)} />
+      {/* Thumbnail section */}
+      <div className="space-y-2">
+        <label className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+          <Image size={12} /> Miniatura personalizada
         </label>
-        <label className="flex items-center gap-2 cursor-pointer text-sm">
-          <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} className="accent-primary" />
-          <span className="text-muted-foreground">Activo</span>
-        </label>
+        <div className="flex items-center gap-3">
+          {/* Current thumbnail preview */}
+          {(thumbFile || currentThumb) && (
+            <div className="w-24 h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 border border-border">
+              {thumbFile ? (
+                <img src={URL.createObjectURL(thumbFile)} alt="Preview" className="w-full h-full object-cover" />
+              ) : currentThumb ? (
+                <img src={currentThumb} alt="Miniatura actual" className="w-full h-full object-cover" />
+              ) : null}
+            </div>
+          )}
+          {/* If direct video and no thumb, show video frame */}
+          {!thumbFile && !currentThumb && videoUrl && isDirectVideo(videoUrl) && (
+            <div className="w-24 h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 border border-border">
+              <video src={videoUrl} muted preload="metadata" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground hover:text-foreground border border-dashed border-border rounded-lg px-3 py-2 hover:border-primary/50 transition-colors flex-1">
+            <Upload size={14} />
+            <span className="truncate">{thumbFile ? thumbFile.name : episode?.miniatura_url ? "Cambiar miniatura" : "Elegir imagen de miniatura"}</span>
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => setThumbFile(e.target.files?.[0] ?? null)} />
+          </label>
+          {(thumbFile || episode?.miniatura_url) && (
+            <button type="button" onClick={() => setThumbFile(null)}
+              className="text-xs text-muted-foreground hover:text-foreground p-1">
+              <X size={14} />
+            </button>
+          )}
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          Si no elegís miniatura, se usará automáticamente el primer frame del video o la miniatura de YouTube.
+        </p>
       </div>
+
+      <label className="flex items-center gap-2 cursor-pointer text-sm">
+        <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} className="accent-primary" />
+        <span className="text-muted-foreground">Activo</span>
+      </label>
 
       <button type="submit" disabled={saving}
         className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
@@ -186,24 +223,39 @@ const ProgramaPanel = () => {
         <div className="space-y-3">
           {episodios.map((ep) => {
             const thumb = getThumb(ep);
+            const direct = isDirectVideo(ep.video_url);
             return (
               <div key={ep.id} className="flex items-center gap-4 bg-card border border-border rounded-xl p-3">
+                {/* Thumbnail */}
                 <div className="w-28 h-16 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
                   {thumb ? (
                     <img src={thumb} alt={ep.titulo} className="w-full h-full object-cover" />
+                  ) : direct ? (
+                    <video src={ep.video_url} muted preload="metadata" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Play size={18} className="text-muted-foreground" /></div>
                   )}
                 </div>
+
+                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-foreground font-medium text-sm truncate">{ep.titulo}</p>
                   <p className="text-muted-foreground text-xs">
                     T{ep.temporada} · E{ep.episodio} {ep.duracion && ep.duracion !== "00:00" ? `· ${ep.duracion}` : ""}
                   </p>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${ep.activo ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
-                    {ep.activo ? "Activo" : "Inactivo"}
-                  </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${ep.activo ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
+                      {ep.activo ? "Activo" : "Inactivo"}
+                    </span>
+                    {/* View counts */}
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded-full" title="Vistas completas / a la mitad">
+                      <Eye size={10} />
+                      {(ep as any).vistas_completas ?? 0} completas · {(ep as any).vistas_mitad ?? 0} a la mitad
+                    </span>
+                  </div>
                 </div>
+
+                {/* Actions */}
                 <div className="flex items-center gap-1.5">
                   <button onClick={() => { setEditing(ep); setShowForm(false); }} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                   <button onClick={() => handleDelete(ep.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 size={14} /></button>

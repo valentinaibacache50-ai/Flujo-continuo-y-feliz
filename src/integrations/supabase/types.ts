@@ -305,6 +305,8 @@ export type Database = {
           temporada: number
           titulo: string
           video_url: string
+          vistas_completas: number
+          vistas_mitad: number
         }
         Insert: {
           activo?: boolean
@@ -318,6 +320,8 @@ export type Database = {
           temporada?: number
           titulo: string
           video_url: string
+          vistas_completas?: number
+          vistas_mitad?: number
         }
         Update: {
           activo?: boolean
@@ -331,6 +335,8 @@ export type Database = {
           temporada?: number
           titulo?: string
           video_url?: string
+          vistas_completas?: number
+          vistas_mitad?: number
         }
         Relationships: []
       }
@@ -459,6 +465,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_programa_view: {
+        Args: { ep_id: string; view_type: string }
+        Returns: undefined
       }
     }
     Enums: {
