@@ -49,7 +49,7 @@ export function Pricing({
   const buildWhatsAppUrl = () => {
     const items = Array.from(selected).map((i) => `${plans[i].name} ($${plans[i].price})`);
     const text = `Hola! Quiero comprar: ${items.join(" + ")}. Total: $${totalPrice}`;
-    return `https://wa.me/5491167391965?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
   };
 
   return (
