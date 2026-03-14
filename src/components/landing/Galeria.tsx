@@ -272,15 +272,18 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {videos.map((video) => {
-                    const thumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
+                    const ytThumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
+                    const isDirectVideo = video.video_url && !getYoutubeId(video.video_url);
                     return (
                       <motion.div key={video.id} whileHover={{ scale: 1.03 }}
                         className="rounded-xl overflow-hidden cursor-pointer group relative bg-secondary border border-border"
                         onClick={() => setActiveVideo(video)}
                       >
                         <div className="aspect-video relative">
-                          {thumb ? (
-                            <img src={thumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                          {ytThumb ? (
+                            <img src={ytThumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                          ) : isDirectVideo ? (
+                            <video src={video.video_url} className="w-full h-full object-cover" muted preload="metadata" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-secondary">
                               <Video size={28} className="text-muted-foreground" />
