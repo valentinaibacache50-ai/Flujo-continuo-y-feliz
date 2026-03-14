@@ -228,7 +228,7 @@ const ProgramaPanel = () => {
                   {thumb ? (
                     <img src={thumb} alt={ep.titulo} className="w-full h-full object-cover" />
                   ) : direct ? (
-                    <video src={ep.video_url} muted preload="metadata" className="w-full h-full object-cover" />
+                    <VideoThumbnail src={ep.video_url} alt={ep.titulo} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Play size={18} className="text-muted-foreground" /></div>
                   )}
