@@ -7,6 +7,7 @@ import {
   Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle,
   Camera, CalendarDays, Images, Play, Video,
 } from "lucide-react";
+import VideoThumbnail from "@/components/VideoThumbnail";
 
 const formatDate = (d: string | null) => {
   if (!d) return null;
