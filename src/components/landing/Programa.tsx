@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tv, Play, Clock } from "lucide-react";
+import VideoThumbnail from "@/components/VideoThumbnail";
 
 const getYoutubeId = (url: string): string | null => {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
@@ -66,7 +67,7 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
         {thumb ? (
           <img src={thumb} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : direct ? (
-          <video src={episode.video_url} className="absolute inset-0 w-full h-full object-cover" muted preload="metadata" />
+          <VideoThumbnail src={episode.video_url} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-secondary" />
         )}
@@ -193,7 +194,7 @@ const Programa = () => {
                       {thumb ? (
                         <img src={thumb} alt={ep.titulo} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                       ) : direct ? (
-                        <video src={ep.video_url} className="absolute inset-0 w-full h-full object-cover" muted preload="metadata" />
+                        <VideoThumbnail src={ep.video_url} alt={ep.titulo} className="absolute inset-0 w-full h-full object-cover" />
                       ) : (
                         <div className="absolute inset-0 bg-secondary flex items-center justify-center">
                           <Play size={24} className="text-muted-foreground" />

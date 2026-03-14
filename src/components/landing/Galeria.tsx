@@ -7,6 +7,7 @@ import {
   Image, Loader2, ChevronLeft, ChevronRight, X, AlertCircle,
   Camera, CalendarDays, Images, Play, Video,
 } from "lucide-react";
+import VideoThumbnail from "@/components/VideoThumbnail";
 
 const formatDate = (d: string | null) => {
   if (!d) return null;
@@ -283,7 +284,7 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
                           {ytThumb ? (
                             <img src={ytThumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
                           ) : isDirectVideo ? (
-                            <video src={video.video_url} className="w-full h-full object-cover" muted preload="metadata" />
+                            <VideoThumbnail src={video.video_url} alt={video.titulo || ""} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-secondary">
                               <Video size={28} className="text-muted-foreground" />
@@ -363,7 +364,7 @@ const AlbumesSectionGrid = ({
          {album.miniatura_url ? (
             <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
           ) : album.firstVideoUrl && !getYoutubeId(album.firstVideoUrl) ? (
-            <video src={album.firstVideoUrl} className="w-full h-full object-cover" muted preload="metadata" />
+            <VideoThumbnail src={album.firstVideoUrl} alt={album.titulo} className="w-full h-full object-cover" />
           ) : album.firstVideoUrl && getYoutubeId(album.firstVideoUrl) ? (
             <img src={`https://img.youtube.com/vi/${getYoutubeId(album.firstVideoUrl)}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
           ) : (

@@ -1,41 +1,30 @@
 
 
-## Plan: Miniaturas visibles para videos directos
+# Problema: ERR_SSL_VERSION_OR_CIPHER_MISMATCH en tu dominio
 
-### Problema
-Los videos subidos directamente (`.mp4`, `.webm`, `.mov`) usan `<video preload="metadata">` para mostrar miniatura, pero muchos navegadores no renderizan un frame visible con ese método, resultando en cajas negras vacías como se ve en la captura.
+## Diagnóstico
 
-### Solución
-Crear un componente `VideoThumbnail` que carga el video en un `<video>` oculto, busca el frame en `t=1s`, lo captura a un `<canvas>`, y muestra el resultado como imagen. Esto funciona en todos los navegadores sin necesidad de servicios externos.
+El error `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` significa que el DNS ya apunta correctamente a Lovable (por eso llega al servidor), pero el **certificado SSL aún no se terminó de generar**. Esto es normal y suele resolverse solo.
 
-### Cambios
+## Qué hacer
 
-1. **Nuevo componente `src/components/VideoThumbnail.tsx`**
-   - Recibe `src` (URL del video) y `alt`, `className`
-   - Carga el video en un `<video>` oculto con `currentTime = 1`
-   - En el evento `seeked`, dibuja el frame en un `<canvas>` y extrae un `dataURL`
-   - Renderiza el `dataURL` como `<img>`, mostrando un placeholder gris mientras carga
+1. **Revisá el estado del dominio en Lovable**: Andá a **Settings → Domains** en tu proyecto. El dominio debería mostrar un estado como "Setting up" o "Verifying". Si dice **"Failed"**, hacé click en **Retry**.
 
-2. **Actualizar `src/components/landing/Galeria.tsx`**
-   - Reemplazar todas las instancias de `<video src={...} muted preload="metadata" />` por `<VideoThumbnail src={...} />`
-   - Aplica tanto en la grilla de álbumes (cover) como dentro del modal de videos individuales
+2. **Verificá que no haya registros DNS conflictivos**: En tu registrador de dominio (donde compraste semillerodecampeones.com.ar), asegurate de que:
+   - El registro **A** para `@` apunte a `185.158.133.1`
+   - El registro **A** para `www` apunte a `185.158.133.1`
+   - El registro **TXT** `_lovable` esté configurado con el valor que Lovable te dio
+   - **No haya otros registros A** viejos apuntando a otra IP
 
-3. **Actualizar `src/components/landing/Programa.tsx`**
-   - Reemplazar los `<video>` usados como miniatura por `<VideoThumbnail>` en el poster del featured player y en la grilla de episodios
+3. **Esperá la propagación**: El certificado SSL se genera automáticamente una vez que Lovable verifica el dominio. Puede tardar **hasta 72 horas** después de configurar los DNS, aunque normalmente tarda minutos a pocas horas.
 
-4. **Actualizar `src/components/admin/GaleriaPanel.tsx`**
-   - Reemplazar previsualizaciones de video en admin por `<VideoThumbnail>` para consistencia
+4. **Publicá el proyecto**: Si todavía no lo publicaste, hacé click en **Publish** arriba a la derecha. El dominio custom no funciona hasta que el proyecto esté publicado.
 
-### Detalle técnico
+## Herramienta útil
 
-```text
-VideoThumbnail component flow:
-  1. Mount → create hidden <video> element
-  2. Set video.src, video.currentTime = 1
-  3. On "seeked" event → draw frame to <canvas>
-  4. canvas.toDataURL("image/jpeg") → setState
-  5. Render <img src={dataURL}> (or gray placeholder while loading)
-```
+Podés verificar que tus DNS estén bien propagados en [dnschecker.org](https://dnschecker.org) buscando tu dominio con tipo A.
 
-No se necesitan herramientas externas ni APIs. Todo se ejecuta en el navegador del visitante.
+## Resumen
+
+No hay nada que cambiar en el código — es un tema de configuración DNS + tiempo de generación del certificado SSL. Si después de unas horas sigue igual, revisá los puntos de arriba.
 

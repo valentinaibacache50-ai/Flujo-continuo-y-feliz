@@ -7,6 +7,7 @@ import {
   Plus, Trash2, Upload, Loader2, Image, AlertCircle, Pencil, X,
   Camera, ChevronLeft, Star, Images, Video, Play, Link,
 } from "lucide-react";
+import VideoThumbnail from "@/components/VideoThumbnail";
 
 type AlbumTipo = "fotos" | "videos";
 
@@ -582,7 +583,7 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
               <div key={video.id} className="rounded-xl overflow-hidden relative group bg-secondary border border-border">
                 <div className="aspect-video relative">
                   {isDirectVideo ? (
-                    <video src={video.imagen_url} muted preload="metadata" className="w-full h-full object-cover" />
+                    <VideoThumbnail src={video.imagen_url} alt={video.titulo || ""} className="w-full h-full object-cover" />
                   ) : thumb ? (
                     <img src={thumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
