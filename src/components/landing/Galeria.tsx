@@ -284,7 +284,7 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
                           {ytThumb ? (
                             <img src={ytThumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
                           ) : isDirectVideo ? (
-                            <video src={video.video_url} className="w-full h-full object-cover" muted preload="metadata" />
+                            <VideoThumbnail src={video.video_url} alt={video.titulo || ""} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-secondary">
                               <Video size={28} className="text-muted-foreground" />
