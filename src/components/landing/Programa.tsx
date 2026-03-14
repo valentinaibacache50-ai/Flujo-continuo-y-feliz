@@ -67,7 +67,7 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
         {thumb ? (
           <img src={thumb} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : direct ? (
-          <video src={episode.video_url} className="absolute inset-0 w-full h-full object-cover" muted preload="metadata" />
+          <VideoThumbnail src={episode.video_url} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-secondary" />
         )}
