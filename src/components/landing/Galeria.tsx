@@ -272,15 +272,18 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {videos.map((video) => {
-                    const thumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
+                    const ytThumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
+                    const isDirectVideo = video.video_url && !getYoutubeId(video.video_url);
                     return (
                       <motion.div key={video.id} whileHover={{ scale: 1.03 }}
                         className="rounded-xl overflow-hidden cursor-pointer group relative bg-secondary border border-border"
                         onClick={() => setActiveVideo(video)}
                       >
                         <div className="aspect-video relative">
-                          {thumb ? (
-                            <img src={thumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                          {ytThumb ? (
+                            <img src={ytThumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                          ) : isDirectVideo ? (
+                            <video src={video.video_url} className="w-full h-full object-cover" muted preload="metadata" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-secondary">
                               <Video size={28} className="text-muted-foreground" />
@@ -357,8 +360,12 @@ const AlbumesSectionGrid = ({
         onClick={() => onSelect(album)}
       >
         <div className="aspect-[4/3] relative overflow-hidden">
-          {album.miniatura_url ? (
+         {album.miniatura_url ? (
             <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          ) : album.firstVideoUrl && !getYoutubeId(album.firstVideoUrl) ? (
+            <video src={album.firstVideoUrl} className="w-full h-full object-cover" muted preload="metadata" />
+          ) : album.firstVideoUrl && getYoutubeId(album.firstVideoUrl) ? (
+            <img src={`https://img.youtube.com/vi/${getYoutubeId(album.firstVideoUrl)}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
           ) : (
             <div className="w-full h-full bg-secondary flex items-center justify-center">
               {tipo === "videos" ? <Video size={22} className="text-muted-foreground" /> : <Camera size={22} className="text-muted-foreground" />}
@@ -402,16 +409,23 @@ const Galeria = () => {
   const { data: albumes = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["albumes"],
     queryFn: async () => {
-      const [{ data: albumData, error }, { data: countData }] = await Promise.all([
+      const [{ data: albumData, error }, { data: countData }, { data: videoData }] = await Promise.all([
         supabase.from("albumes").select("*").order("fecha_publicacion", { ascending: false }),
         supabase.from("galeria").select("album_id").not("album_id", "is", null),
+        supabase.from("galeria").select("album_id, video_url").not("video_url", "is", null),
       ]);
       if (error) throw error;
       const countMap: Record<string, number> = {};
       for (const row of countData ?? []) {
         if (row.album_id) countMap[row.album_id] = (countMap[row.album_id] ?? 0) + 1;
       }
-      return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0 }));
+      const firstVideoMap: Record<string, string> = {};
+      for (const row of videoData ?? []) {
+        if (row.album_id && row.video_url && !firstVideoMap[row.album_id]) {
+          firstVideoMap[row.album_id] = row.video_url;
+        }
+      }
+      return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0, firstVideoUrl: firstVideoMap[album.id] ?? null }));
     },
     retry: 2,
   });

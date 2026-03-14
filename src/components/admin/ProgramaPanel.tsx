@@ -25,8 +25,24 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
   const [episodio, setEpisodio] = useState(episode?.episodio ?? 1);
   const [duracion, setDuracion] = useState(episode?.duracion ?? "");
   const [thumbFile, setThumbFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [activo, setActivo] = useState(episode?.activo ?? true);
   const [saving, setSaving] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+
+  const handleVideoFileChange = async (file: File) => {
+    setVideoFile(file);
+    setUploadingVideo(true);
+    try {
+      const url = await uploadImage(file, "programa-videos");
+      setVideoUrl(url);
+      toast({ title: "Video subido ✓" });
+    } catch (err: any) {
+      toast({ title: `Error al subir video: ${err?.message}`, variant: "destructive" });
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,8 +81,16 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
       <input placeholder="Título *" value={titulo} onChange={(e) => setTitulo(e.target.value)} required
         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
 
-      <input placeholder="URL del video (YouTube o MP4) *" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} required
+      <input placeholder="URL del video (YouTube o enlace directo)" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} required={!videoFile}
         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
+
+      <label className="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground hover:text-foreground border border-dashed border-border rounded-lg px-4 py-3 hover:border-primary/50 transition-colors">
+        <Upload size={16} className="text-primary" />
+        <span>{uploadingVideo ? "Subiendo video..." : videoFile ? videoFile.name : "O subí un archivo de video (.mp4, .webm, .mov)"}</span>
+        <input type="file" accept="video/*" className="hidden" disabled={uploadingVideo}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoFileChange(f); }} />
+        {uploadingVideo && <Loader2 size={14} className="animate-spin ml-auto" />}
+      </label>
 
       <textarea placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={2}
         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none" />
