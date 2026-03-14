@@ -8,6 +8,7 @@ import {
   Camera, CalendarDays, Images, Play, Video,
 } from "lucide-react";
 import VideoThumbnail from "@/components/VideoThumbnail";
+import { getYoutubeId, getYoutubeThumbnail, getYoutubeEmbedUrl, resolveVideoSource, isDirectVideoFile } from "@/lib/video-utils";
 
 const formatDate = (d: string | null) => {
   if (!d) return null;
@@ -189,24 +190,6 @@ const AlbumFotosModal = ({ album, onClose }: { album: any; onClose: () => void }
   );
 };
 
-// ─── Helpers para YouTube ──────────────────────────────────────────────────────
-
-const getYoutubeId = (url: string): string | null => {
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
-  return match ? match[1] : null;
-};
-
-const getYoutubeThumbnail = (url: string) => {
-  const id = getYoutubeId(url);
-  return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null;
-};
-
-const getEmbedUrl = (url: string) => {
-  const id = getYoutubeId(url);
-  if (id) return `https://www.youtube.com/embed/${id}?autoplay=1`;
-  return url;
-};
-
 // ─── Modal álbum de videos ─────────────────────────────────────────────────────
 
 const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void }) => {
@@ -273,8 +256,9 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {videos.map((video) => {
-                    const ytThumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
-                    const isDirectVideo = video.video_url && !getYoutubeId(video.video_url);
+                    const videoSrc = resolveVideoSource(video);
+                    const ytThumb = getYoutubeThumbnail(videoSrc);
+                    const isDirect = isDirectVideoFile(videoSrc);
                     return (
                       <motion.div key={video.id} whileHover={{ scale: 1.03 }}
                         className="rounded-xl overflow-hidden cursor-pointer group relative bg-secondary border border-border"
@@ -283,8 +267,8 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
                         <div className="aspect-video relative">
                           {ytThumb ? (
                             <img src={ytThumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
-                          ) : isDirectVideo ? (
-                            <VideoThumbnail src={video.video_url} alt={video.titulo || ""} className="w-full h-full object-cover" />
+                          ) : isDirect && videoSrc ? (
+                            <VideoThumbnail src={videoSrc} alt={video.titulo || ""} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-secondary">
                               <Video size={28} className="text-muted-foreground" />
@@ -312,32 +296,52 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
         document.body
       )}
 
-      {/* Player */}
+      {/* Player - FIX: handle both YouTube and direct video */}
       <AnimatePresence>
-        {activeVideo && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95"
-            onClick={() => setActiveVideo(null)}
-          >
-            <button onClick={() => setActiveVideo(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <X size={22} />
-            </button>
-            <div className="w-full max-w-4xl px-4" onClick={(e) => e.stopPropagation()}>
-              <div className="aspect-video rounded-xl overflow-hidden bg-black shadow-2xl">
-                <iframe
-                  src={getEmbedUrl(activeVideo.video_url)}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                />
+        {activeVideo && (() => {
+          const videoSrc = resolveVideoSource(activeVideo);
+          const embedUrl = getYoutubeEmbedUrl(videoSrc);
+          const isDirect = isDirectVideoFile(videoSrc);
+
+          return (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95"
+              onClick={() => setActiveVideo(null)}
+            >
+              <button onClick={() => setActiveVideo(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+                <X size={22} />
+              </button>
+              <div className="w-full max-w-4xl px-4" onClick={(e) => e.stopPropagation()}>
+                <div className="aspect-video rounded-xl overflow-hidden bg-black shadow-2xl">
+                  {embedUrl ? (
+                    <iframe
+                      src={embedUrl}
+                      className="w-full h-full"
+                      allow="autoplay; encrypted-media; fullscreen"
+                      allowFullScreen
+                    />
+                  ) : isDirect && videoSrc ? (
+                    <video
+                      src={videoSrc}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <Play size={48} />
+                    </div>
+                  )}
+                </div>
+                {activeVideo.titulo && (
+                  <p className="text-white/70 text-sm mt-3 text-center">{activeVideo.titulo}</p>
+                )}
               </div>
-              {activeVideo.titulo && (
-                <p className="text-white/70 text-sm mt-3 text-center">{activeVideo.titulo}</p>
-              )}
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </>
   );
@@ -351,53 +355,56 @@ const AlbumesSectionGrid = ({
   albumes: any[]; tipo: "fotos" | "videos"; onSelect: (album: any) => void;
 }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-    {albumes.map((album, i) => (
-      <motion.div
-        key={album.id}
-        initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }} transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.2) }}
-        whileHover={{ scale: 1.03 }}
-        className="rounded-xl overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-colors bg-card group"
-        onClick={() => onSelect(album)}
-      >
-        <div className="aspect-[4/3] relative overflow-hidden">
-         {album.miniatura_url ? (
-            <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-          ) : album.firstVideoUrl && !getYoutubeId(album.firstVideoUrl) ? (
-            <VideoThumbnail src={album.firstVideoUrl} alt={album.titulo} className="w-full h-full object-cover" />
-          ) : album.firstVideoUrl && getYoutubeId(album.firstVideoUrl) ? (
-            <img src={`https://img.youtube.com/vi/${getYoutubeId(album.firstVideoUrl)}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-          ) : (
-            <div className="w-full h-full bg-secondary flex items-center justify-center">
-              {tipo === "videos" ? <Video size={22} className="text-muted-foreground" /> : <Camera size={22} className="text-muted-foreground" />}
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          {tipo === "videos" && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center group-hover:bg-primary/70 transition-colors">
-                <Play size={18} className="text-white ml-0.5" />
+    {albumes.map((album, i) => {
+      const ytId = getYoutubeId(album.firstVideoUrl);
+      return (
+        <motion.div
+          key={album.id}
+          initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }} transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.2) }}
+          whileHover={{ scale: 1.03 }}
+          className="rounded-xl overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-colors bg-card group"
+          onClick={() => onSelect(album)}
+        >
+          <div className="aspect-[4/3] relative overflow-hidden">
+            {album.miniatura_url ? (
+              <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            ) : album.firstVideoUrl && ytId ? (
+              <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+            ) : album.firstVideoUrl ? (
+              <VideoThumbnail src={album.firstVideoUrl} alt={album.titulo} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-secondary flex items-center justify-center">
+                {tipo === "videos" ? <Video size={22} className="text-muted-foreground" /> : <Camera size={22} className="text-muted-foreground" />}
               </div>
-            </div>
-          )}
-          {album.fotoCount > 0 && (
-            <span className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
-              {tipo === "videos" ? <Video size={10} /> : <Images size={10} />}
-              {album.fotoCount}
-            </span>
-          )}
-        </div>
-        <div className="px-3 py-2">
-          <p className="text-foreground text-sm font-semibold line-clamp-1">{album.titulo}</p>
-          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-            {album.jornada && <span className="text-xs text-primary font-medium truncate">{album.jornada}</span>}
-            {album.fecha_publicacion && (
-              <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(album.fecha_publicacion)}</span>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            {tipo === "videos" && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center group-hover:bg-primary/70 transition-colors">
+                  <Play size={18} className="text-white ml-0.5" />
+                </div>
+              </div>
+            )}
+            {album.fotoCount > 0 && (
+              <span className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                {tipo === "videos" ? <Video size={10} /> : <Images size={10} />}
+                {album.fotoCount}
+              </span>
             )}
           </div>
-        </div>
-      </motion.div>
-    ))}
+          <div className="px-3 py-2">
+            <p className="text-foreground text-sm font-semibold line-clamp-1">{album.titulo}</p>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+              {album.jornada && <span className="text-xs text-primary font-medium truncate">{album.jornada}</span>}
+              {album.fecha_publicacion && (
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(album.fecha_publicacion)}</span>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      );
+    })}
   </div>
 );
 
@@ -413,7 +420,8 @@ const Galeria = () => {
       const [{ data: albumData, error }, { data: countData }, { data: videoData }] = await Promise.all([
         supabase.from("albumes").select("*").order("fecha_publicacion", { ascending: false }),
         supabase.from("galeria").select("album_id").not("album_id", "is", null),
-        supabase.from("galeria").select("album_id, video_url").not("video_url", "is", null),
+        // Fetch both video_url and imagen_url to resolve direct videos too
+        supabase.from("galeria").select("album_id, video_url, imagen_url, tipo").eq("tipo", "Video"),
       ]);
       if (error) throw error;
       const countMap: Record<string, number> = {};
@@ -422,8 +430,9 @@ const Galeria = () => {
       }
       const firstVideoMap: Record<string, string> = {};
       for (const row of videoData ?? []) {
-        if (row.album_id && row.video_url && !firstVideoMap[row.album_id]) {
-          firstVideoMap[row.album_id] = row.video_url;
+        if (row.album_id && !firstVideoMap[row.album_id]) {
+          const src = row.video_url || row.imagen_url;
+          if (src) firstVideoMap[row.album_id] = src;
         }
       }
       return (albumData ?? []).map((album) => ({ ...album, fotoCount: countMap[album.id] ?? 0, firstVideoUrl: firstVideoMap[album.id] ?? null }));
