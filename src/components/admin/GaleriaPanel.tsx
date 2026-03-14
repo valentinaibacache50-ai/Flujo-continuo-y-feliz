@@ -584,11 +584,13 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {videos.map((video: any) => {
             const thumb = video.video_url ? getYoutubeThumbnail(video.video_url) : null;
-            const isThumb = currentAlbum.miniatura_url && thumb && currentAlbum.miniatura_url === thumb;
+            const isDirectVideo = video.imagen_url && /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(video.imagen_url);
             return (
               <div key={video.id} className="rounded-xl overflow-hidden relative group bg-secondary border border-border">
                 <div className="aspect-video relative">
-                  {thumb ? (
+                  {isDirectVideo ? (
+                    <video src={video.imagen_url} muted preload="metadata" className="w-full h-full object-cover" />
+                  ) : thumb ? (
                     <img src={thumb} alt={video.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Video size={28} className="text-muted-foreground" /></div>
@@ -596,17 +598,7 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                     <Play size={22} className="text-white/60" />
                   </div>
-                  {isThumb && (
-                    <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-semibold">
-                      <Star size={9} /> Portada
-                    </div>
-                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                    {!isThumb && thumb && (
-                      <button onClick={() => setMiniatura(thumb)} title="Usar como portada" className="p-2 bg-primary/80 rounded-lg text-white hover:bg-primary">
-                        <Star size={14} />
-                      </button>
-                    )}
                     <button onClick={() => deleteVideo(video.id)} className="p-2 bg-destructive/80 rounded-lg text-white hover:bg-destructive">
                       <Trash2 size={14} />
                     </button>
@@ -614,6 +606,7 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
                 </div>
                 <div className="px-3 py-2">
                   <p className="text-foreground text-xs font-medium truncate">{video.titulo || "Sin título"}</p>
+                  <p className="text-[10px] text-muted-foreground">{isDirectVideo ? "Archivo" : "YouTube"}</p>
                 </div>
               </div>
             );
