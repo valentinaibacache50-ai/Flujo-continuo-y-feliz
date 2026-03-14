@@ -13,6 +13,17 @@ const Tienda = () => {
     },
   });
 
+  const { data: contacto } = useQuery({
+    queryKey: ["contacto_config"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("contacto_config").select("*").limit(1).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const whatsappNumber = contacto?.whatsapp?.replace(/\D/g, "") || "5491167391964";
+
   const plans = productos.map((p) => ({
     name: p.nombre,
     price: p.precio,
@@ -21,7 +32,7 @@ const Tienda = () => {
     features: p.features || [],
     description: p.descripcion || "",
     buttonText: "Comprar por WhatsApp",
-    href: p.whatsapp_url || "#",
+    href: `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hola! Quiero comprar: ${p.nombre} ($${p.precio})`)}`,
     isPopular: p.es_popular,
   }));
 
@@ -40,6 +51,7 @@ const Tienda = () => {
       <div className="max-w-7xl mx-auto">
         <Pricing
           plans={plans}
+          whatsappNumber={whatsappNumber}
           title="📷 LLEVATE EL RECUERDO EN ALTA CALIDAD"
           description="Fotos profesionales y videos completos de los partidos de tu hijo. Descarga digital inmediata tras confirmar el pago por WhatsApp."
         />

@@ -22,12 +22,14 @@ interface PricingProps {
   plans: PricingPlan[];
   title?: string;
   description?: string;
+  whatsappNumber?: string;
 }
 
 export function Pricing({
   plans,
   title = "Simple, Transparent Pricing",
   description = "Choose the plan that works for you\nAll plans include access to our platform, lead generation tools, and dedicated support.",
+  whatsappNumber = "5491167391964",
 }: PricingProps) {
   const [selected, setSelected] = useState<Set<number>>(new Set());
 
