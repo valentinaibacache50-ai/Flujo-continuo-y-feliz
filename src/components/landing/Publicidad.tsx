@@ -11,8 +11,7 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
     tabIndex={0}
     onKeyDown={(e) => e.key === "Enter" && onClick()}
     aria-label={`Ver anuncio: ${anuncio.titulo}`}
-    className="relative w-full rounded-xl overflow-hidden border border-border hover:border-primary/50 cursor-pointer transition-colors group"
-    style={{ paddingBottom: "56.25%" }}
+    className="relative w-full rounded-xl overflow-hidden border border-border hover:border-primary/50 cursor-pointer transition-colors group aspect-video"
   >
     {anuncio.imagen_url ? (
       <img
