@@ -39,7 +39,7 @@ function HeroGeometric({
   };
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-16">
+    <section ref={sectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-background pt-14 pb-8 sm:pt-16 sm:pb-0">
       {/* Hero background image with parallax + Ken Burns zoom */}
       <motion.div
         className="absolute inset-0 z-0"
