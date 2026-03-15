@@ -39,34 +39,35 @@ function HeroGeometric({
   };
 
   return (
-    <section ref={sectionRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-background pt-14 pb-8 sm:pt-16 sm:pb-0">
-      {/* Hero background image with parallax + Ken Burns zoom */}
+    <section
+      ref={sectionRef}
+      className="relative flex items-center justify-center overflow-hidden bg-background pt-14 sm:pt-16"
+      style={{ minHeight: "100svh" }}
+    >
+      {/* Hero background — extra height to prevent gap during parallax */}
       <motion.div
         className="absolute inset-0 z-0"
-        style={{ y: bgY }}
+        style={{ y: bgY, top: "-10%", bottom: "-10%" }}
       >
-        <motion.img
+        <img
           src="/hero-bg.jpg"
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-center scale-110"
-          initial={{ scale: 1.15 }}
-          animate={{ scale: 1.05 }}
-          transition={{ duration: 8, ease: "easeOut" }}
+          className="w-full h-full object-cover object-center"
+          fetchPriority="high"
+          decoding="async"
         />
-        {/* Dark overlay so text stays readable */}
         <div className="absolute inset-0 bg-background/70" />
       </motion.div>
 
-      {/* Subtle green glow — mantiene la esencia del color sin formas */}
+      {/* Subtle green glow — smaller on mobile for perf */}
       <div className="absolute inset-0 z-[1] pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[700px] h-[700px] rounded-full bg-primary/10 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px]" />
-        <div className="absolute top-[30%] left-[40%] w-[300px] h-[300px] rounded-full bg-primary/5 blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] sm:w-[700px] sm:h-[700px] rounded-full bg-primary/10 blur-[80px] sm:blur-[140px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[200px] h-[200px] sm:w-[500px] sm:h-[500px] rounded-full bg-accent/10 blur-[60px] sm:blur-[120px]" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 drop-shadow-lg">
+      <div className="relative z-10 container mx-auto px-4 py-8 sm:py-0 drop-shadow-lg">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <motion.div
@@ -77,12 +78,12 @@ function HeroGeometric({
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 border border-border mb-4 sm:mb-8"
           >
             <Circle className="h-2 w-2 fill-primary text-primary" />
-            <span className="text-sm text-muted-foreground tracking-wide">
+            <span className="text-xs sm:text-sm text-muted-foreground tracking-wide">
               {badge}
             </span>
           </motion.div>
 
-          {/* Title with scale entrance */}
+          {/* Title */}
           <motion.div
             custom={1}
             variants={{
@@ -101,7 +102,7 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <h1 className="font-bebas text-[2.75rem] leading-[0.95] sm:text-7xl md:text-9xl lg:text-[10rem] sm:leading-none tracking-wide">
+            <h1 className="font-bebas text-[2.5rem] leading-[0.95] sm:text-6xl md:text-8xl lg:text-[10rem] sm:leading-none tracking-wide px-2 sm:px-0">
               <span className="text-gradient-green">{title1}</span>
               <br />
               <span className="text-gradient-green">{title2}</span>
@@ -115,24 +116,24 @@ function HeroGeometric({
               variants={fadeUpVariants}
               initial="hidden"
               animate="visible"
-              className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mt-4 sm:mt-8 px-2 sm:px-0"
+              className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mt-4 sm:mt-8 px-4 sm:px-0"
             >
               {description}
             </motion.p>
           )}
 
-          {/* CTA with glow pulse */}
+          {/* CTA */}
           {ctaText && ctaHref && (
             <motion.div
               custom={3}
               variants={fadeUpVariants}
               initial="hidden"
               animate="visible"
-              className="mt-4 sm:mt-8"
+              className="mt-5 sm:mt-8"
             >
               <motion.a
                 href={ctaHref}
-                className="inline-block px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors relative"
+                className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors relative text-sm sm:text-base"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -149,7 +150,7 @@ function HeroGeometric({
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 }
