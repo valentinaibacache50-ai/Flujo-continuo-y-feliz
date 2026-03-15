@@ -128,7 +128,7 @@ function HeroGeometric({
               variants={fadeUpVariants}
               initial="hidden"
               animate="visible"
-              className="mt-8"
+              className="mt-4 sm:mt-8"
             >
               <motion.a
                 href={ctaHref}

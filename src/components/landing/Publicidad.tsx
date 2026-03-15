@@ -17,7 +17,7 @@ const AdCard = ({ anuncio, onClick }: { anuncio: any; onClick: () => void }) => 
       <img
         src={anuncio.imagen_url}
         alt={anuncio.titulo}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-contain bg-card"
         loading="eager"
         decoding="async"
       />
