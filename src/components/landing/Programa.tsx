@@ -4,13 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tv, Play, Clock } from "lucide-react";
 import VideoThumbnail from "@/components/VideoThumbnail";
 
-import { getYoutubeId, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
+import { getYoutubeEmbedUrl, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
 
-const getThumb = (ep: any) => {
-  if (ep.miniatura_url) return ep.miniatura_url;
-  const ytId = getYoutubeId(ep.video_url);
-  return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
-};
+const getThumb = (ep: any) => ep.miniatura_url || getYoutubeThumbnail(ep.video_url);
 
 const isDirectVideo = (url?: string | null) => isDirectVideoFile(url);
 
