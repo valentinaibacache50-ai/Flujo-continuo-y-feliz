@@ -49,13 +49,40 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+
+    const normalizedVideoUrl = videoUrl.trim();
+    const isYoutube = !!getYoutubeId(normalizedVideoUrl);
+    const isDirect = isDirectVideo(normalizedVideoUrl);
+
+    if (!normalizedVideoUrl) {
+      toast({ title: "Debes cargar una URL de video", variant: "destructive" });
+      setSaving(false);
+      return;
+    }
+
+    if (!isYoutube && !isDirect) {
+      toast({
+        title: "URL inválida",
+        description: "Usá un enlace de YouTube o un archivo directo (.mp4, .webm, .mov, .ogg).",
+        variant: "destructive",
+      });
+      setSaving(false);
+      return;
+    }
+
     try {
       let miniatura_url = episode?.miniatura_url ?? null;
       if (thumbFile) miniatura_url = await uploadImage(thumbFile, "programa");
 
       const payload = {
-        titulo, descripcion: descripcion || null, video_url: videoUrl,
-        miniatura_url, temporada, episodio, duracion: duracion || "00:00", activo,
+        titulo,
+        descripcion: descripcion || null,
+        video_url: normalizedVideoUrl,
+        miniatura_url,
+        temporada,
+        episodio,
+        duracion: duracion || "00:00",
+        activo,
       };
 
       if (episode) {

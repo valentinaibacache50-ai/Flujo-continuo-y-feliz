@@ -4,13 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tv, Play, Clock } from "lucide-react";
 import VideoThumbnail from "@/components/VideoThumbnail";
 
-import { getYoutubeId, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
+import { getYoutubeEmbedUrl, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
 
-const getThumb = (ep: any) => {
-  if (ep.miniatura_url) return ep.miniatura_url;
-  const ytId = getYoutubeId(ep.video_url);
-  return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
-};
+const getThumb = (ep: any) => ep.miniatura_url || getYoutubeThumbnail(ep.video_url);
 
 const isDirectVideo = (url?: string | null) => isDirectVideoFile(url);
 
@@ -51,28 +47,53 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
     }
   }, [episode.id]);
 
+  const videoUrl = episode.video_url?.trim() ?? "";
   const thumb = getThumb(episode);
-  const direct = isDirectVideo(episode.video_url);
+  const direct = isDirectVideo(videoUrl);
+  const embedUrl = getYoutubeEmbedUrl(videoUrl);
+  const canPlay = Boolean(videoUrl) && (direct || Boolean(embedUrl));
 
   if (!playing) {
     return (
       <div
-        className="relative w-full rounded-xl overflow-hidden border border-border bg-black cursor-pointer group"
+        className={`relative w-full rounded-xl overflow-hidden border border-border bg-black ${canPlay ? "cursor-pointer group" : "cursor-default"}`}
         style={{ paddingBottom: "56.25%" }}
-        onClick={() => setPlaying(true)}
+        onClick={() => canPlay && setPlaying(true)}
+        role={canPlay ? "button" : undefined}
+        aria-label={canPlay ? `Reproducir ${episode.titulo}` : undefined}
       >
         {thumb ? (
           <img src={thumb} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : direct ? (
-          <VideoThumbnail src={episode.video_url} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
+          <VideoThumbnail src={videoUrl} alt={episode.titulo} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-secondary" />
         )}
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-            <Play size={28} className="text-primary-foreground ml-1" />
-          </div>
+
+        <div
+          className={`absolute inset-0 transition-colors flex items-center justify-center ${
+            canPlay ? "bg-black/30 group-hover:bg-black/40" : "bg-black/55"
+          }`}
+        >
+          {canPlay ? (
+            <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <Play size={28} className="text-primary-foreground ml-1" />
+            </div>
+          ) : (
+            <p className="text-primary-foreground text-sm font-medium px-4 text-center">
+              Este episodio todavía no tiene un video cargado.
+            </p>
+          )}
         </div>
+      </div>
+    );
+  }
+
+  if (!canPlay) {
+    return (
+      <div className="relative w-full rounded-xl overflow-hidden border border-border bg-card px-5 py-8 text-center">
+        <p className="text-foreground font-semibold">No hay un video válido para reproducir.</p>
+        <p className="text-muted-foreground text-sm mt-1">Cargá una URL de YouTube o un archivo .mp4/.webm/.mov desde el panel admin.</p>
       </div>
     );
   }
@@ -83,7 +104,7 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
         <video
           ref={videoRef}
           key={episode.id}
-          src={episode.video_url}
+          src={videoUrl}
           controls
           autoPlay
           onTimeUpdate={handleTimeUpdate}
@@ -93,16 +114,15 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
     );
   }
 
-  // YouTube - track via postMessage API (best-effort)
-  const ytId = getYoutubeId(episode.video_url);
   return (
     <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
       <iframe
-        src={`https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1`}
+        src={embedUrl!}
         title={episode.titulo}
         className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
       />
     </div>
   );
