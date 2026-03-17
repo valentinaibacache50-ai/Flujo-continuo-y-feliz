@@ -47,13 +47,13 @@ function HeroGeometric({
       {/* Hero background — covers full viewport, uses object-top so the player is visible on mobile */}
       <motion.div
         className="absolute inset-0 z-0"
-        style={{ y: bgY, top: "-10%", bottom: "-10%" }}
+        style={{ y: bgY }}
       >
         <img
           src="/hero-bg.jpg"
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-[center_20%] sm:object-center"
+          className="w-full h-full object-cover object-center"
           fetchPriority="high"
           decoding="async"
         />
