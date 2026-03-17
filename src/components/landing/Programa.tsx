@@ -294,7 +294,7 @@ const Programa = () => {
         {others.length > 0 && (
           <>
             <h4 className="text-foreground font-semibold text-sm uppercase tracking-wider mb-4">
-              Más episodios
+              Más transmisiones
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {others.map((ep) => {
