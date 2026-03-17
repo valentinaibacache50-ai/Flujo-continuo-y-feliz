@@ -60,7 +60,7 @@ const Cronicas = () => {
                 className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
               >
                 {c.imagen_url && (
-                  <SafeImage src={c.imagen_url} alt={c.titulo} className="w-full h-48 object-cover" />
+                  <SafeImage src={c.imagen_url} alt={c.titulo} className="w-full aspect-[16/10] object-cover" />
                 )}
                 <div className="p-5">
                   <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">

@@ -53,7 +53,7 @@ function HeroGeometric({
           src="/hero-bg.jpg"
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-top sm:object-center"
+          className="w-full h-full object-cover object-[center_20%] sm:object-center"
           fetchPriority="high"
           decoding="async"
         />

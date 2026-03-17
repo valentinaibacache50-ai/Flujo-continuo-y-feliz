@@ -75,7 +75,7 @@ const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }
           ) : isDirectVideo ? (
             <SafeVideo src={item.imagen_url} controls autoPlay className="w-full max-h-[50vh] object-contain bg-black" />
           ) : item.imagen_url ? (
-            <SafeImage src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-cover" />
+            <SafeImage src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-contain bg-black" />
           ) : null}
 
           <div className="p-6 md:p-8">
@@ -164,7 +164,7 @@ const Reportajes = () => {
                   className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
                   onClick={() => setSelected(r)}
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     {isDirect ? (
                       <video
                         src={r.imagen_url!}

@@ -45,7 +45,7 @@ const NoticiaModal = ({ noticia, onClose }: { noticia: any; onClose: () => void 
           </button>
 
           {noticia.imagen_url && (
-            <div className="relative w-full h-56 sm:h-72">
+            <div className="relative w-full aspect-[16/9]">
               <SafeImage src={noticia.imagen_url} alt={noticia.titulo} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card/80 pointer-events-none" />
             </div>
@@ -152,7 +152,7 @@ const Noticias = () => {
               onClick={() => setSelectedNoticia(noticias[0])}
             >
               {noticias[0].imagen_url ? (
-                <div className="relative h-48 sm:h-64 md:h-80">
+                <div className="relative aspect-[16/9]">
                   <SafeImage src={noticias[0].imagen_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent rounded-2xl" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
@@ -196,7 +196,7 @@ const Noticias = () => {
                     onClick={() => setSelectedNoticia(n)}
                   >
                     {n.imagen_url && (
-                      <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full h-36 object-cover" />
+                      <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full aspect-[16/10] object-cover" />
                     )}
                     <div className="p-4 md:p-5">
                       <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">{n.tag}</span>
