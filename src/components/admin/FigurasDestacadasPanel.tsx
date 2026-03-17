@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Save, Users } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Users, Upload } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
+import { uploadImage } from "@/lib/storage";
 
 interface Figura {
   id: string;
