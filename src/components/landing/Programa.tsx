@@ -211,6 +211,9 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
           src={videoUrl}
           controls
           autoPlay
+          controlsList="nodownload"
+          disablePictureInPicture
+          onContextMenu={(e) => e.preventDefault()}
           onPlay={handlePlay}
           onTimeUpdate={handleTimeUpdate}
           className="absolute inset-0 w-full h-full"

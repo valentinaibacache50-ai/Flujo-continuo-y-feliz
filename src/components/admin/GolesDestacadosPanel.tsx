@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Save, Goal } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Goal, Upload } from "lucide-react";
+import { uploadImage, uploadProgramVideo } from "@/lib/storage";
 
 interface Gol {
   id: string;
@@ -26,6 +27,44 @@ const GolesDestacadosPanel = () => {
   const [editing, setEditing] = useState<Gol | null>(null);
   const [form, setForm] = useState(empty);
   const [creating, setCreating] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingThumb, setUploadingThumb] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const thumbInputRef = useRef<HTMLInputElement>(null);
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    setVideoProgress(0);
+    try {
+      const url = await uploadProgramVideo(file, (p) => setVideoProgress(p));
+      setForm(f => ({ ...f, video_url: url }));
+      toast.success("Video subido");
+    } catch (err: any) {
+      toast.error(err.message || "Error al subir video");
+    } finally {
+      setUploadingVideo(false);
+      if (videoInputRef.current) videoInputRef.current.value = "";
+    }
+  };
+
+  const handleThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingThumb(true);
+    try {
+      const url = await uploadImage(file, "goles-miniaturas");
+      setForm(f => ({ ...f, miniatura_url: url }));
+      toast.success("Miniatura subida");
+    } catch (err: any) {
+      toast.error(err.message || "Error al subir miniatura");
+    } finally {
+      setUploadingThumb(false);
+      if (thumbInputRef.current) thumbInputRef.current.value = "";
+    }
+  };
 
   const { data: goles = [], isLoading } = useQuery({
     queryKey: ["admin_goles_destacados"],
@@ -97,8 +136,29 @@ const GolesDestacadosPanel = () => {
           <CardHeader><CardTitle>{editing ? "Editar gol" : "Nuevo gol"}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <Input placeholder="Título *" value={form.titulo} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} />
-            <Input placeholder="URL del video (YouTube o directo) *" value={form.video_url} onChange={e => setForm(f => ({ ...f, video_url: e.target.value }))} />
-            <Input placeholder="URL miniatura (opcional)" value={form.miniatura_url || ""} onChange={e => setForm(f => ({ ...f, miniatura_url: e.target.value }))} />
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Video *</label>
+              <div className="flex gap-2">
+                <Input placeholder="URL del video (YouTube o directo)" value={form.video_url} onChange={e => setForm(f => ({ ...f, video_url: e.target.value }))} className="flex-1" />
+                <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
+                <Button type="button" variant="outline" size="sm" disabled={uploadingVideo} onClick={() => videoInputRef.current?.click()}>
+                  {uploadingVideo ? <><Loader2 size={14} className="animate-spin mr-1" />{videoProgress}%</> : <><Upload size={14} className="mr-1" />Subir</>}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Miniatura (opcional)</label>
+              <div className="flex gap-2">
+                <Input placeholder="URL miniatura" value={form.miniatura_url || ""} onChange={e => setForm(f => ({ ...f, miniatura_url: e.target.value }))} className="flex-1" />
+                <input ref={thumbInputRef} type="file" accept="image/*" className="hidden" onChange={handleThumbUpload} />
+                <Button type="button" variant="outline" size="sm" disabled={uploadingThumb} onClick={() => thumbInputRef.current?.click()}>
+                  {uploadingThumb ? <Loader2 size={14} className="animate-spin" /> : <><Upload size={14} className="mr-1" />Subir</>}
+                </Button>
+              </div>
+            </div>
+
             <Textarea placeholder="Descripción (opcional)" value={form.descripcion || ""} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
             <Input type="number" placeholder="Orden" value={form.orden} onChange={e => setForm(f => ({ ...f, orden: Number(e.target.value) }))} />
             <div className="flex items-center gap-2">

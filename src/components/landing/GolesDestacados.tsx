@@ -140,6 +140,9 @@ const GolesDestacados = () => {
                     className="w-full h-full"
                     controls
                     autoPlay
+                    controlsList="nodownload"
+                    disablePictureInPicture
+                    onContextMenu={(e) => e.preventDefault()}
                   />
                 )}
               </motion.div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Save, Users } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Users, Upload } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
+import { uploadImage } from "@/lib/storage";
 
 interface Figura {
   id: string;
@@ -28,6 +29,24 @@ const FigurasDestacadasPanel = () => {
   const [editing, setEditing] = useState<Figura | null>(null);
   const [form, setForm] = useState(empty);
   const [creating, setCreating] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const imgInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImg(true);
+    try {
+      const url = await uploadImage(file, "figuras-destacadas");
+      setForm(f => ({ ...f, imagen_url: url }));
+      toast.success("Imagen subida");
+    } catch (err: any) {
+      toast.error(err.message || "Error al subir imagen");
+    } finally {
+      setUploadingImg(false);
+      if (imgInputRef.current) imgInputRef.current.value = "";
+    }
+  };
 
   const { data: figuras = [], isLoading } = useQuery({
     queryKey: ["admin_figuras_destacadas"],
@@ -96,7 +115,17 @@ const FigurasDestacadasPanel = () => {
             <Input placeholder="Nombre *" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
             <Input placeholder="Posición (ej: Delantero)" value={form.posicion || ""} onChange={e => setForm(f => ({ ...f, posicion: e.target.value }))} />
             <Input placeholder="Equipo" value={form.equipo || ""} onChange={e => setForm(f => ({ ...f, equipo: e.target.value }))} />
-            <Input placeholder="URL de imagen" value={form.imagen_url || ""} onChange={e => setForm(f => ({ ...f, imagen_url: e.target.value }))} />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Imagen</label>
+              <div className="flex gap-2">
+                <Input placeholder="URL de imagen" value={form.imagen_url || ""} onChange={e => setForm(f => ({ ...f, imagen_url: e.target.value }))} className="flex-1" />
+                <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                <Button type="button" variant="outline" size="sm" disabled={uploadingImg} onClick={() => imgInputRef.current?.click()}>
+                  {uploadingImg ? <Loader2 size={14} className="animate-spin" /> : <><Upload size={14} className="mr-1" />Subir</>}
+                </Button>
+              </div>
+              {form.imagen_url && <SafeImage src={form.imagen_url} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />}
+            </div>
             <Textarea placeholder="Descripción (opcional)" value={form.descripcion || ""} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
             <Input type="number" placeholder="Orden" value={form.orden} onChange={e => setForm(f => ({ ...f, orden: Number(e.target.value) }))} />
             <div className="flex items-center gap-2">
