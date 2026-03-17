@@ -1,10 +1,13 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Users } from "lucide-react";
+import { Loader2, Users, X } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
 
 const FigurasDestacadas = () => {
+  const [selected, setSelected] = useState<string | null>(null);
+
   const { data: figuras = [], isLoading } = useQuery({
     queryKey: ["figuras_destacadas"],
     queryFn: async () => {
@@ -17,6 +20,8 @@ const FigurasDestacadas = () => {
       return data;
     },
   });
+
+  const selectedFig = figuras.find(f => f.id === selected);
 
   return (
     <section id="figuras-destacadas" className="py-12 md:py-24 px-4 bg-secondary/30">
@@ -56,11 +61,13 @@ const FigurasDestacadas = () => {
                 className="group bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
               >
                 {fig.imagen_url ? (
-                  <SafeImage
-                    src={fig.imagen_url}
-                    alt={fig.nombre}
-                    className="w-full aspect-[3/4] object-cover"
-                  />
+                  <div className="cursor-pointer" onClick={() => setSelected(fig.id)}>
+                    <SafeImage
+                      src={fig.imagen_url}
+                      alt={fig.nombre}
+                      className="w-full aspect-[3/4] object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="w-full aspect-[3/4] bg-secondary flex items-center justify-center">
                     <Users size={32} className="text-muted-foreground" />
@@ -82,6 +89,40 @@ const FigurasDestacadas = () => {
           </div>
         )}
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {selectedFig && selectedFig.imagen_url && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+            onClick={() => setSelected(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-3xl w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelected(null)}
+                className="absolute -top-10 right-0 z-10 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+              >
+                <X size={18} />
+              </button>
+              <img
+                src={selectedFig.imagen_url}
+                alt={selectedFig.nombre}
+                className="w-full max-h-[85vh] object-contain rounded-xl"
+              />
+              <p className="text-center text-white font-space font-semibold mt-3 text-lg">{selectedFig.nombre}</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
