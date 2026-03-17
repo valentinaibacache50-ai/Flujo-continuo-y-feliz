@@ -317,6 +317,9 @@ const AlbumVideosModal = ({ album, onClose }: { album: any; onClose: () => void 
                       autoPlay
                       playsInline
                       className="w-full h-full"
+                      controlsList="nodownload"
+                      disablePictureInPicture
+                      onContextMenu={(e) => e.preventDefault()}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground">

@@ -5,6 +5,8 @@ import logo from "@/assets/logo-ball.png";
 const navLinks = [
   { label: "Galería", href: "#galeria" },
   { label: "Estadísticas", href: "#estadisticas" },
+  { label: "Goles Destacados", href: "#goles-destacados" },
+  { label: "Figuras Destacadas", href: "#figuras-destacadas" },
   { label: "Fechas", href: "#fechas" },
   { label: "Noticias", href: "#noticias" },
   { label: "Reportajes", href: "#reportajes" },
