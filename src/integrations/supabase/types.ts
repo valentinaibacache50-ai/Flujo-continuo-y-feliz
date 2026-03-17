@@ -306,6 +306,7 @@ export type Database = {
           titulo: string
           video_url: string
           vistas_completas: number
+          vistas_inicio: number
           vistas_mitad: number
         }
         Insert: {
@@ -321,6 +322,7 @@ export type Database = {
           titulo: string
           video_url: string
           vistas_completas?: number
+          vistas_inicio?: number
           vistas_mitad?: number
         }
         Update: {
@@ -336,6 +338,7 @@ export type Database = {
           titulo?: string
           video_url?: string
           vistas_completas?: number
+          vistas_inicio?: number
           vistas_mitad?: number
         }
         Relationships: []
