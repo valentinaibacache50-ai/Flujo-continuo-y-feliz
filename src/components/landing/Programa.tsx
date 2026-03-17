@@ -143,7 +143,11 @@ const Programa = () => {
         .order("temporada", { ascending: false })
         .order("episodio", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      // Filter out episodes with empty/invalid video_url so they never show broken players
+      return (data ?? []).filter((ep) => {
+        const url = ep.video_url?.trim();
+        return url && (isDirectVideo(url) || !!getYoutubeEmbedUrl(url));
+      });
     },
     staleTime: 1000 * 60 * 5,
   });
