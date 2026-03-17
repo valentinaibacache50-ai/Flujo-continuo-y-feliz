@@ -330,7 +330,7 @@ const Programa = () => {
                     <div className="p-3">
                       <p className="text-foreground text-sm font-medium line-clamp-2">{ep.titulo}</p>
                       <p className="text-muted-foreground text-xs mt-1">
-                        T{ep.temporada} · Episodio {ep.episodio}
+                        T{ep.temporada} · Programa {ep.episodio}
                       </p>
                     </div>
                   </button>
