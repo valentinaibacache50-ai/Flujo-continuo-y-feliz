@@ -152,7 +152,7 @@ const Noticias = () => {
               onClick={() => setSelectedNoticia(noticias[0])}
             >
               {noticias[0].imagen_url ? (
-                <div className="relative h-48 sm:h-64 md:h-80">
+                <div className="relative aspect-[16/9]">
                   <SafeImage src={noticias[0].imagen_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent rounded-2xl" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
