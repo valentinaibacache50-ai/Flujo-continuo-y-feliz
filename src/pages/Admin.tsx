@@ -15,6 +15,8 @@ import ReportajesPanel from "@/components/admin/ReportajesPanel";
 import PedidosPanel from "@/components/admin/PedidosPanel";
 import PublicidadPanel from "@/components/admin/PublicidadPanel";
 import ProgramaPanel from "@/components/admin/ProgramaPanel";
+import GolesDestacadosPanel from "@/components/admin/GolesDestacadosPanel";
+import FigurasDestacadasPanel from "@/components/admin/FigurasDestacadasPanel";
 import { Loader2 } from "lucide-react";
 
 const Admin = () => {
