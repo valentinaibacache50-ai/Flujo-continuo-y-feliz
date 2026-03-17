@@ -44,16 +44,16 @@ function HeroGeometric({
       className="relative flex items-center justify-center overflow-hidden bg-background"
       style={{ minHeight: "100svh" }}
     >
-      {/* Hero background — covers full viewport, uses object-top so the player is visible on mobile */}
+      {/* Hero background — mobile muestra imagen completa, desktop mantiene cover */}
       <motion.div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-background"
         style={{ y: bgY }}
       >
         <img
           src="/hero-bg.jpg"
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-contain sm:object-cover object-center"
           fetchPriority="high"
           decoding="async"
         />
