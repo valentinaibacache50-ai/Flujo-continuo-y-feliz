@@ -196,7 +196,7 @@ const Noticias = () => {
                     onClick={() => setSelectedNoticia(n)}
                   >
                     {n.imagen_url && (
-                      <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full h-36 object-cover" />
+                      <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full aspect-[16/10] object-cover" />
                     )}
                     <div className="p-4 md:p-5">
                       <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">{n.tag}</span>
