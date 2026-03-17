@@ -129,7 +129,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
       } else {
         const { error } = await supabase.from("programa_episodios").insert(payload);
         if (error) throw error;
-        toast({ title: "Episodio creado" });
+        toast({ title: "Programa creado" });
       }
       onSave();
     } catch (err: any) {
