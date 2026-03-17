@@ -316,7 +316,7 @@ const ProgramaPanel = () => {
                 <div className="flex-1 min-w-0">
                   <p className="text-foreground font-medium text-sm truncate">{ep.titulo}</p>
                   <p className="text-muted-foreground text-xs">
-                    T{ep.temporada} · E{ep.episodio} {ep.duracion && ep.duracion !== "00:00" ? `· ${ep.duracion}` : ""}
+                    T{ep.temporada} · P{ep.episodio} {ep.duracion && ep.duracion !== "00:00" ? `· ${ep.duracion}` : ""}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${ep.activo ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
