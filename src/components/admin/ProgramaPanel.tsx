@@ -254,7 +254,7 @@ const ProgramaPanel = () => {
   });
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Eliminar este episodio?")) return;
+    if (!confirm("¿Eliminar este programa?")) return;
     const { error } = await supabase.from("programa_episodios").delete().eq("id", id);
     if (error) toast({ title: "Error al eliminar", variant: "destructive" });
     else {
