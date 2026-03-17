@@ -323,9 +323,9 @@ const ProgramaPanel = () => {
                       {ep.activo ? "Activo" : "Inactivo"}
                     </span>
                     {/* View counts */}
-                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded-full" title="Vistas completas / a la mitad">
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded-full" title="Reproducciones / vistas al 50% / completas">
                       <Eye size={10} />
-                      {(ep as any).vistas_completas ?? 0} completas · {(ep as any).vistas_mitad ?? 0} a la mitad
+                      {(ep as any).vistas_inicio ?? 0} plays · {(ep as any).vistas_mitad ?? 0} al 50% · {(ep as any).vistas_completas ?? 0} completas
                     </span>
                   </div>
                 </div>

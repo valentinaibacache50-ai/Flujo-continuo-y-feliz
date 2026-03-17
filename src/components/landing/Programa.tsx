@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tv, Play, Clock } from "lucide-react";
 import VideoThumbnail from "@/components/VideoThumbnail";
 
-import { getYoutubeEmbedUrl, getYoutubeThumbnail, isDirectVideoFile } from "@/lib/video-utils";
+import { getYoutubeEmbedUrl, getYoutubeThumbnail, isDirectVideoFile, getYoutubeId } from "@/lib/video-utils";
 
 const getThumb = (ep: any) => ep.miniatura_url || getYoutubeThumbnail(ep.video_url);
 
@@ -12,10 +12,104 @@ const isDirectVideo = (url?: string | null) => isDirectVideoFile(url);
 
 /* ── Track view events ───────────────────────────────────────────────── */
 
-const trackView = async (id: string, type: "half" | "complete") => {
+const trackView = async (id: string, type: "start" | "half" | "complete") => {
   try {
     await supabase.rpc("increment_programa_view" as any, { ep_id: id, view_type: type });
   } catch { /* silent */ }
+};
+
+/* ── YouTube IFrame API loader ───────────────────────────────────────── */
+
+let ytApiReady: Promise<void> | null = null;
+
+const loadYTApi = (): Promise<void> => {
+  if (ytApiReady) return ytApiReady;
+  ytApiReady = new Promise<void>((resolve) => {
+    if ((window as any).YT?.Player) { resolve(); return; }
+    const prev = (window as any).onYouTubeIframeAPIReady;
+    (window as any).onYouTubeIframeAPIReady = () => { prev?.(); resolve(); };
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+  });
+  return ytApiReady;
+};
+
+/* ── YouTube Player with tracking ────────────────────────────────────── */
+
+const YouTubePlayer = ({ videoId, episodeId, title }: { videoId: string; episodeId: string; title: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<any>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const trackedStart = useRef(false);
+  const trackedHalf = useRef(false);
+  const trackedComplete = useRef(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const init = async () => {
+      await loadYTApi();
+      if (!mounted || !containerRef.current) return;
+
+      // Create a child div for YT to replace
+      const el = document.createElement("div");
+      containerRef.current.appendChild(el);
+
+      playerRef.current = new (window as any).YT.Player(el, {
+        videoId,
+        playerVars: { autoplay: 1, rel: 0, modestbranding: 1 },
+        events: {
+          onStateChange: (event: any) => {
+            const YT = (window as any).YT;
+            if (event.data === YT.PlayerState.PLAYING) {
+              if (!trackedStart.current) {
+                trackedStart.current = true;
+                trackView(episodeId, "start");
+              }
+              // Poll progress every 3s
+              clearInterval(intervalRef.current);
+              intervalRef.current = setInterval(() => {
+                const p = playerRef.current;
+                if (!p?.getCurrentTime || !p?.getDuration) return;
+                const pct = p.getCurrentTime() / p.getDuration();
+                if (pct >= 0.5 && !trackedHalf.current) {
+                  trackedHalf.current = true;
+                  trackView(episodeId, "half");
+                }
+                if (pct >= 0.90 && !trackedComplete.current) {
+                  trackedComplete.current = true;
+                  trackView(episodeId, "complete");
+                }
+              }, 3000);
+            } else {
+              clearInterval(intervalRef.current);
+            }
+            if (event.data === YT.PlayerState.ENDED && !trackedComplete.current) {
+              trackedComplete.current = true;
+              trackView(episodeId, "complete");
+            }
+          },
+        },
+      });
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+      clearInterval(intervalRef.current);
+      playerRef.current?.destroy?.();
+    };
+  }, [videoId, episodeId]);
+
+  return (
+    <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
+      <div ref={containerRef} className="absolute inset-0 w-full h-full [&>div]:w-full [&>div]:h-full [&>iframe]:w-full [&>iframe]:h-full" />
+    </div>
+  );
 };
 
 /* ── Featured Player with click-to-play ──────────────────────────────── */
@@ -23,12 +117,14 @@ const trackView = async (id: string, type: "half" | "complete") => {
 const FeaturedPlayer = ({ episode }: { episode: any }) => {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const trackedStart = useRef(false);
   const trackedHalf = useRef(false);
   const trackedComplete = useRef(false);
 
   // Reset when episode changes
   useEffect(() => {
     setPlaying(false);
+    trackedStart.current = false;
     trackedHalf.current = false;
     trackedComplete.current = false;
   }, [episode.id]);
@@ -41,15 +137,23 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
       trackedHalf.current = true;
       trackView(episode.id, "half");
     }
-    if (pct >= 0.95 && !trackedComplete.current) {
+    if (pct >= 0.90 && !trackedComplete.current) {
       trackedComplete.current = true;
       trackView(episode.id, "complete");
+    }
+  }, [episode.id]);
+
+  const handlePlay = useCallback(() => {
+    if (!trackedStart.current) {
+      trackedStart.current = true;
+      trackView(episode.id, "start");
     }
   }, [episode.id]);
 
   const videoUrl = episode.video_url?.trim() ?? "";
   const thumb = getThumb(episode);
   const direct = isDirectVideo(videoUrl);
+  const ytId = getYoutubeId(videoUrl);
   const embedUrl = getYoutubeEmbedUrl(videoUrl);
   const canPlay = Boolean(videoUrl) && (direct || Boolean(embedUrl));
 
@@ -107,6 +211,7 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
           src={videoUrl}
           controls
           autoPlay
+          onPlay={handlePlay}
           onTimeUpdate={handleTimeUpdate}
           className="absolute inset-0 w-full h-full"
         />
@@ -114,18 +219,8 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
     );
   }
 
-  return (
-    <div className="relative w-full rounded-xl overflow-hidden border border-border bg-black" style={{ paddingBottom: "56.25%" }}>
-      <iframe
-        src={embedUrl!}
-        title={episode.titulo}
-        className="absolute inset-0 w-full h-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
-    </div>
-  );
+  // YouTube: use IFrame API for accurate tracking
+  return <YouTubePlayer videoId={ytId!} episodeId={episode.id} title={episode.titulo} />;
 };
 
 /* ── Main Component ──────────────────────────────────────────────────── */
