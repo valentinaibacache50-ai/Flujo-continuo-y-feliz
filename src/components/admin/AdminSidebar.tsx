@@ -6,6 +6,8 @@ const menuItems = [
   { id: "galeria", label: "Galería", icon: Image },
   { id: "programa", label: "Programa", icon: Tv },
   { id: "estadisticas", label: "Estadísticas", icon: BarChart3 },
+  { id: "goles", label: "Goles Destacados", icon: Goal },
+  { id: "figuras", label: "Figuras Destacadas", icon: Users },
   { id: "fechas", label: "Fechas", icon: Calendar },
   { id: "noticias", label: "Noticias", icon: FileText },
   { id: "tienda", label: "Tienda", icon: Store },

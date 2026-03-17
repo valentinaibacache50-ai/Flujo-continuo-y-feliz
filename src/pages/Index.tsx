@@ -38,6 +38,12 @@ const Index = () => (
       <Estadisticas />
     </Suspense>
     <Suspense fallback={<SectionLoader />}>
+      <GolesDestacados />
+    </Suspense>
+    <Suspense fallback={<SectionLoader />}>
+      <FigurasDestacadas />
+    </Suspense>
+    <Suspense fallback={<SectionLoader />}>
       <Fechas />
     </Suspense>
     <Suspense fallback={<SectionLoader />}>

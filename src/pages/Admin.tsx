@@ -41,6 +41,8 @@ const Admin = () => {
       case "galeria": return <GaleriaPanel />;
       case "programa": return <ProgramaPanel />;
       case "estadisticas": return <EstadisticasPanel />;
+      case "goles": return <GolesDestacadosPanel />;
+      case "figuras": return <FigurasDestacadasPanel />;
       case "fechas": return <FechasPanel />;
       case "tienda": return <TiendaPanel />;
       case "reportajes": return <ReportajesPanel />;
