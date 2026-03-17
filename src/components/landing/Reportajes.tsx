@@ -164,7 +164,7 @@ const Reportajes = () => {
                   className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
                   onClick={() => setSelected(r)}
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     {isDirect ? (
                       <video
                         src={r.imagen_url!}
