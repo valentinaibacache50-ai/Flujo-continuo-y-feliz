@@ -142,7 +142,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-3 relative">
       <button type="button" onClick={onCancel} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"><X size={18} /></button>
-      <h3 className="text-sm font-semibold text-foreground">{episode ? "Editar episodio" : "Nuevo episodio"}</h3>
+      <h3 className="text-sm font-semibold text-foreground">{episode ? "Editar programa" : "Nuevo programa"}</h3>
 
       <input placeholder="Título *" value={titulo} onChange={(e) => setTitulo(e.target.value)} required
         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
