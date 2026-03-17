@@ -75,7 +75,7 @@ const ReportajeLightbox = ({ item, onClose }: { item: any; onClose: () => void }
           ) : isDirectVideo ? (
             <SafeVideo src={item.imagen_url} controls autoPlay className="w-full max-h-[50vh] object-contain bg-black" />
           ) : item.imagen_url ? (
-            <SafeImage src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-cover" />
+            <SafeImage src={item.imagen_url} alt={item.titulo} className="w-full max-h-[50vh] object-contain bg-black" />
           ) : null}
 
           <div className="p-6 md:p-8">
