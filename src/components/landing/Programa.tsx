@@ -185,7 +185,7 @@ const FeaturedPlayer = ({ episode }: { episode: any }) => {
             </div>
           ) : (
             <p className="text-primary-foreground text-sm font-medium px-4 text-center">
-              Este episodio todavía no tiene un video cargado.
+              Este programa todavía no tiene un video cargado.
             </p>
           )}
         </div>
@@ -265,7 +265,7 @@ const Programa = () => {
             Semillero de Campeones TV
           </h2>
           <p className="text-muted-foreground text-sm text-center max-w-lg">
-            Mirá los episodios completos de nuestro programa deportivo
+            Mirá las transmisiones completas de nuestro programa deportivo
           </p>
         </div>
 
@@ -275,7 +275,7 @@ const Programa = () => {
           <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-2">
               <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full">
-                T{featured.temporada} · E{featured.episodio}
+                T{featured.temporada} · P{featured.episodio}
               </span>
               {featured.duracion && featured.duracion !== "00:00" && (
                 <span className="flex items-center gap-1 text-muted-foreground text-xs">
@@ -294,7 +294,7 @@ const Programa = () => {
         {others.length > 0 && (
           <>
             <h4 className="text-foreground font-semibold text-sm uppercase tracking-wider mb-4">
-              Más episodios
+              Más transmisiones
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {others.map((ep) => {
@@ -330,7 +330,7 @@ const Programa = () => {
                     <div className="p-3">
                       <p className="text-foreground text-sm font-medium line-clamp-2">{ep.titulo}</p>
                       <p className="text-muted-foreground text-xs mt-1">
-                        T{ep.temporada} · Episodio {ep.episodio}
+                        T{ep.temporada} · Programa {ep.episodio}
                       </p>
                     </div>
                   </button>

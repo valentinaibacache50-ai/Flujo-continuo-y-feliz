@@ -58,12 +58,12 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
 
         toast({
           title: "Video subido y vinculado ✓",
-          description: "Ya quedó asociado al episodio en la portada.",
+          description: "Ya quedó asociado al programa en la portada.",
         });
       } else {
         toast({
           title: "Video subido ✓",
-          description: "Ahora guardá el episodio para publicarlo en la portada.",
+          description: "Ahora guardá el programa para publicarlo en la portada.",
         });
       }
     } catch (err: any) {
@@ -79,7 +79,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
     if (uploadingVideo) {
       toast({
         title: "Esperá a que termine la subida",
-        description: "Cuando llegue al 100% podrás guardar el episodio.",
+        description: "Cuando llegue al 100% podrás guardar el programa.",
         variant: "destructive",
       });
       return;
@@ -125,11 +125,11 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
       if (episode) {
         const { error } = await supabase.from("programa_episodios").update(payload).eq("id", episode.id);
         if (error) throw error;
-        toast({ title: "Episodio actualizado" });
+        toast({ title: "Programa actualizado" });
       } else {
         const { error } = await supabase.from("programa_episodios").insert(payload);
         if (error) throw error;
-        toast({ title: "Episodio creado" });
+        toast({ title: "Programa creado" });
       }
       onSave();
     } catch (err: any) {
@@ -142,7 +142,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-3 relative">
       <button type="button" onClick={onCancel} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"><X size={18} /></button>
-      <h3 className="text-sm font-semibold text-foreground">{episode ? "Editar episodio" : "Nuevo episodio"}</h3>
+      <h3 className="text-sm font-semibold text-foreground">{episode ? "Editar programa" : "Nuevo programa"}</h3>
 
       <input placeholder="Título *" value={titulo} onChange={(e) => setTitulo(e.target.value)} required
         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
@@ -174,7 +174,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
             className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground focus:outline-none focus:border-primary" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Episodio</label>
+          <label className="text-xs text-muted-foreground">Programa</label>
           <input type="number" min={1} value={episodio} onChange={(e) => setEpisodio(Number(e.target.value))}
             className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground focus:outline-none focus:border-primary" />
         </div>
@@ -232,7 +232,7 @@ const EpisodeForm = ({ episode, onSave, onCancel }: { episode?: any; onSave: () 
       <button type="submit" disabled={saving || uploadingVideo}
         className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
         {(saving || uploadingVideo) && <Loader2 size={14} className="animate-spin" />}
-        {episode ? "Guardar cambios" : "Crear episodio"}
+        {episode ? "Guardar cambios" : "Crear programa"}
       </button>
     </form>
   );
@@ -254,7 +254,7 @@ const ProgramaPanel = () => {
   });
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Eliminar este episodio?")) return;
+    if (!confirm("¿Eliminar este programa?")) return;
     const { error } = await supabase.from("programa_episodios").delete().eq("id", id);
     if (error) toast({ title: "Error al eliminar", variant: "destructive" });
     else {
@@ -282,7 +282,7 @@ const ProgramaPanel = () => {
         </h2>
         <button onClick={() => { setEditing(null); setShowForm(true); }}
           className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90">
-          <Plus size={16} /> Nuevo episodio
+          <Plus size={16} /> Nuevo programa
         </button>
       </div>
 
@@ -293,7 +293,7 @@ const ProgramaPanel = () => {
       {isLoading ? (
         <div className="flex justify-center py-10"><Loader2 className="animate-spin text-primary" size={24} /></div>
       ) : episodios.length === 0 ? (
-        <p className="text-muted-foreground text-center py-10">No hay episodios cargados aún.</p>
+        <p className="text-muted-foreground text-center py-10">No hay programas cargados aún.</p>
       ) : (
         <div className="space-y-3">
           {episodios.map((ep) => {
@@ -316,7 +316,7 @@ const ProgramaPanel = () => {
                 <div className="flex-1 min-w-0">
                   <p className="text-foreground font-medium text-sm truncate">{ep.titulo}</p>
                   <p className="text-muted-foreground text-xs">
-                    T{ep.temporada} · E{ep.episodio} {ep.duracion && ep.duracion !== "00:00" ? `· ${ep.duracion}` : ""}
+                    T{ep.temporada} · P{ep.episodio} {ep.duracion && ep.duracion !== "00:00" ? `· ${ep.duracion}` : ""}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${ep.activo ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
