@@ -47,11 +47,16 @@ const NoticiasPanel = () => {
   const saveMutation = useMutation({
     mutationFn: async () => {
       setUploading(true);
+      setUploadProgress(0);
       let imagen_url: string | null = null;
       let video_url: string | null = null;
 
-      if (imageFile) imagen_url = await uploadImage(imageFile, "noticias");
-      if (videoFile) video_url = await uploadProgramVideo(videoFile, (p) => setUploadProgress(p));
+      try {
+        if (imageFile) imagen_url = await uploadImage(imageFile, "noticias");
+        if (videoFile) video_url = await uploadProgramVideo(videoFile, (p) => setUploadProgress(p));
+      } catch (uploadErr: any) {
+        throw new Error(`Error al subir archivo: ${uploadErr.message || "Intenta de nuevo"}`);
+      }
 
       const payload: any = { titulo, tag, descripcion };
       if (imagen_url) payload.imagen_url = imagen_url;
@@ -71,7 +76,10 @@ const NoticiasPanel = () => {
       resetForm();
       toast({ title: editingId ? "Noticia actualizada" : "Noticia agregada" });
     },
-    onError: () => { setUploading(false); toast({ title: "Error al guardar", variant: "destructive" }); },
+    onError: (err: any) => {
+      setUploading(false);
+      toast({ title: err.message || "Error al guardar", variant: "destructive" });
+    },
   });
 
   const deleteMutation = useMutation({

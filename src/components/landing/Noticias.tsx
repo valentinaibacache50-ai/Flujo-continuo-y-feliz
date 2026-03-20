@@ -45,8 +45,17 @@ const NoticiaModal = ({ noticia, onClose }: { noticia: any; onClose: () => void 
           </button>
 
           {noticia.video_url ? (
-            <div className="relative w-full aspect-[16/9]">
-              <video src={noticia.video_url} controls className="w-full h-full object-cover bg-black" />
+            <div className="relative w-full aspect-[16/9] bg-black">
+              <video
+                src={noticia.video_url}
+                controls
+                controlsList="nodownload"
+                disablePictureInPicture
+                onContextMenu={(e) => e.preventDefault()}
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-contain bg-black"
+              />
             </div>
           ) : noticia.imagen_url ? (
             <div className="relative w-full aspect-[16/9]">
@@ -155,9 +164,20 @@ const Noticias = () => {
               className="relative rounded-2xl mb-8 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group overflow-hidden"
               onClick={() => setSelectedNoticia(noticias[0])}
             >
-              {noticias[0].imagen_url ? (
+              {(noticias[0].video_url || noticias[0].imagen_url) ? (
                 <div className="relative aspect-[16/9]">
-                  <SafeImage src={noticias[0].imagen_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
+                  {noticias[0].video_url ? (
+                    <video
+                      src={noticias[0].video_url}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-cover rounded-2xl"
+                      onContextMenu={(e) => e.preventDefault()}
+                    />
+                  ) : (
+                    <SafeImage src={noticias[0].imagen_url!} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent rounded-2xl" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
                     <div className="flex items-center gap-3 mb-3 md:mb-4">
@@ -199,9 +219,18 @@ const Noticias = () => {
                     className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group"
                     onClick={() => setSelectedNoticia(n)}
                   >
-                    {n.imagen_url && (
+                    {n.video_url ? (
+                      <video
+                        src={n.video_url}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="w-full aspect-[16/10] object-cover bg-black"
+                        onContextMenu={(e) => e.preventDefault()}
+                      />
+                    ) : n.imagen_url ? (
                       <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full aspect-[16/10] object-cover" />
-                    )}
+                    ) : null}
                     <div className="p-4 md:p-5">
                       <span className="inline-block text-[10px] font-semibold text-primary-foreground bg-primary/80 px-2.5 py-0.5 rounded-full tracking-wider mb-3">{n.tag}</span>
                       <h3 className="font-space font-semibold text-base mb-2 text-foreground group-hover:text-primary transition-colors leading-snug">{n.titulo}</h3>
