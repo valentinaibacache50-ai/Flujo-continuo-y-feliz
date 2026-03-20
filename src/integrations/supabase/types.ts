@@ -292,6 +292,7 @@ export type Database = {
           tiempo_lectura: string | null
           titulo: string
           updated_at: string
+          video_url: string | null
         }
         Insert: {
           categoria?: string | null
@@ -304,6 +305,7 @@ export type Database = {
           tiempo_lectura?: string | null
           titulo: string
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
           categoria?: string | null
@@ -316,6 +318,7 @@ export type Database = {
           tiempo_lectura?: string | null
           titulo?: string
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }
