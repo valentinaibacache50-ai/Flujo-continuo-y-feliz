@@ -43,9 +43,9 @@ const Navbar = () => {
           </span>
         </a>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-3 lg:gap-5">
           {navLinks.map((l) => (
-            <a key={l.href} href={l.href} onClick={(e) => scrollToSection(e, l.href)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a key={l.href} href={l.href} onClick={(e) => scrollToSection(e, l.href)} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
               {l.label}
             </a>
           ))}
