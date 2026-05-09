@@ -85,7 +85,7 @@ const AlbumFotosModal = ({ album, onClose }: { album: any; onClose: () => void }
     queryKey: ["album_fotos", album.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("galeria").select("*").eq("album_id", album.id).order("created_at", { ascending: true });
+        .from("galeria").select("*").eq("album_id", album.id).order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
