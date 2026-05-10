@@ -23,7 +23,9 @@ const VideoThumbnail = ({ src, alt = "", className = "" }: VideoThumbnailProps) 
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
     video.muted = true;
-    video.preload = "auto";
+    video.playsInline = true;
+    // Only fetch metadata + the bytes needed to seek to t=1s, not the whole video.
+    video.preload = "metadata";
     let cancelled = false;
 
     const cleanup = () => {

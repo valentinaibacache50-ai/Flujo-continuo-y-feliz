@@ -152,7 +152,7 @@ const AlbumFotosModal = ({ album, onClose }: { album: any; onClose: () => void }
                       onClick={() => setLightboxIndex(i)}
                     >
                       {foto.imagen_url ? (
-                        <img src={foto.imagen_url} alt={foto.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                        <SafeImage src={foto.imagen_url} alt={foto.titulo || ""} width={300} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-secondary flex items-center justify-center">
                           <Image size={18} className="text-muted-foreground" />
@@ -360,7 +360,7 @@ const AlbumesSectionGrid = ({
         >
           <div className="aspect-[4/3] relative overflow-hidden">
             {album.miniatura_url ? (
-              <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <SafeImage src={album.miniatura_url} alt={album.titulo} width={400} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
             ) : album.firstVideoUrl && ytId ? (
               <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
             ) : album.firstVideoUrl ? (
