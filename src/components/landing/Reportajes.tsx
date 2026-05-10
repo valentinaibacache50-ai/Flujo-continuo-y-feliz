@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Mic, X, Play, AlertCircle, ExternalLink } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
+import VideoThumbnail from "@/components/VideoThumbnail";
 import AdBanner from "@/components/landing/AdBanner";
 import { getYoutubeId, isDirectVideoFile } from "@/lib/video-utils";
 
@@ -166,16 +167,10 @@ const Reportajes = () => {
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     {isDirect ? (
-                      <video
+                      <VideoThumbnail
                         src={r.imagen_url!}
+                        alt={r.titulo}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        preload="metadata"
-                        muted
-                        playsInline
-                        controlsList="nodownload"
-                        disablePictureInPicture
-                        onContextMenu={(e) => e.preventDefault()}
-                        onLoadedMetadata={(e) => { (e.target as HTMLVideoElement).currentTime = 0.1; }}
                       />
                     ) : thumbnail ? (
                       <SafeImage
