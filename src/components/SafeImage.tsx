@@ -40,8 +40,10 @@ const SafeImage = ({
   quality = 70,
   priority,
 }: SafeImageProps) => {
+  const [fallback, setFallback] = useState(false);
   const [error, setError] = useState(false);
-  const finalSrc = useMemo(() => transformSupabaseUrl(src, width, quality), [src, width, quality]);
+  const transformed = useMemo(() => transformSupabaseUrl(src, width, quality), [src, width, quality]);
+  const finalSrc = fallback ? src : transformed;
   const fetchPriority = priority ?? (loading === "eager" ? "high" : "low");
 
   if (error || !src)
@@ -60,16 +62,10 @@ const SafeImage = ({
       // @ts-expect-error fetchpriority is a valid HTML attribute, types lag behind
       fetchpriority={fetchPriority}
       onError={() => {
-        // If the transform endpoint fails (e.g. project without image transforms enabled),
+        // If the transform endpoint fails (project without image transforms),
         // fall back to the original URL once before showing the placeholder.
-        if (finalSrc !== src) {
-          const img = document.createElement("img");
-          img.onload = () => setError(false);
-          img.onerror = () => setError(true);
-          img.src = src;
-        } else {
-          setError(true);
-        }
+        if (!fallback && transformed !== src) setFallback(true);
+        else setError(true);
       }}
     />
   );
