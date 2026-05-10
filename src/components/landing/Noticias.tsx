@@ -3,8 +3,9 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Newspaper, X, AlertCircle } from "lucide-react";
+import { Loader2, Newspaper, X, AlertCircle, Play } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
+import VideoThumbnail from "@/components/VideoThumbnail";
 import AdBanner from "@/components/landing/AdBanner";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -167,14 +168,14 @@ const Noticias = () => {
               {(noticias[0].video_url || noticias[0].imagen_url) ? (
                 <div className="relative aspect-[16/9]">
                   {noticias[0].video_url ? (
-                    <video
-                      src={noticias[0].video_url}
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover rounded-2xl"
-                      onContextMenu={(e) => e.preventDefault()}
-                    />
+                    <>
+                      <VideoThumbnail src={noticias[0].video_url} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center shadow-xl">
+                          <Play size={22} className="text-primary-foreground ml-1" />
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <SafeImage src={noticias[0].imagen_url!} alt={noticias[0].titulo} className="w-full h-full object-cover rounded-2xl" />
                   )}
@@ -220,14 +221,14 @@ const Noticias = () => {
                     onClick={() => setSelectedNoticia(n)}
                   >
                     {n.video_url ? (
-                      <video
-                        src={n.video_url}
-                        muted
-                        playsInline
-                        preload="metadata"
-                        className="w-full aspect-[16/10] object-cover bg-black"
-                        onContextMenu={(e) => e.preventDefault()}
-                      />
+                      <div className="relative w-full aspect-[16/10] bg-black">
+                        <VideoThumbnail src={n.video_url} alt={n.titulo} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-11 h-11 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
+                            <Play size={18} className="text-primary-foreground ml-0.5" />
+                          </div>
+                        </div>
+                      </div>
                     ) : n.imagen_url ? (
                       <SafeImage src={n.imagen_url} alt={n.titulo} className="w-full aspect-[16/10] object-cover" />
                     ) : null}
