@@ -65,6 +65,7 @@ const FigurasDestacadas = () => {
                     <SafeImage
                       src={fig.imagen_url}
                       alt={fig.nombre}
+                      width={400}
                       className="w-full aspect-[3/4] object-cover"
                     />
                   </div>
