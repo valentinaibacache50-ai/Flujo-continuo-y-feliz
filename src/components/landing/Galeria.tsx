@@ -360,7 +360,7 @@ const AlbumesSectionGrid = ({
         >
           <div className="aspect-[4/3] relative overflow-hidden">
             {album.miniatura_url ? (
-              <SafeImage src={album.miniatura_url} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <SafeImage src={album.miniatura_url} alt={album.titulo} width={400} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
             ) : album.firstVideoUrl && ytId ? (
               <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
             ) : album.firstVideoUrl ? (
