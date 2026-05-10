@@ -152,7 +152,7 @@ const AlbumFotosModal = ({ album, onClose }: { album: any; onClose: () => void }
                       onClick={() => setLightboxIndex(i)}
                     >
                       {foto.imagen_url ? (
-                        <img src={foto.imagen_url} alt={foto.titulo || ""} className="w-full h-full object-cover" loading="lazy" />
+                        <SafeImage src={foto.imagen_url} alt={foto.titulo || ""} width={300} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-secondary flex items-center justify-center">
                           <Image size={18} className="text-muted-foreground" />
