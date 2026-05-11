@@ -358,19 +358,19 @@ const AlbumesSectionGrid = ({
           className="rounded-xl overflow-hidden cursor-pointer border border-border hover:border-primary/50 transition-colors bg-card group"
           onClick={() => onSelect(album)}
         >
-          <div className="aspect-[4/3] relative overflow-hidden bg-secondary">
+          <div className="relative overflow-hidden bg-secondary">
             {album.miniatura_url ? (
-              <SafeImage src={album.miniatura_url} alt={album.titulo} width={600} quality={85} className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" />
+              <SafeImage src={album.miniatura_url} alt={album.titulo} width={600} quality={85} className="w-full h-auto block transition-transform duration-300 group-hover:scale-105" />
             ) : album.firstVideoUrl && ytId ? (
-              <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+              <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-auto block transition-transform duration-300 group-hover:scale-105" loading="lazy" />
             ) : album.firstVideoUrl ? (
-              <VideoThumbnail src={album.firstVideoUrl} alt={album.titulo} className="w-full h-full object-cover object-center" />
+              <VideoThumbnail src={album.firstVideoUrl} alt={album.titulo} className="w-full h-auto block" />
             ) : (
-              <div className="w-full h-full bg-secondary flex items-center justify-center">
+              <div className="w-full aspect-[4/3] bg-secondary flex items-center justify-center">
                 {tipo === "videos" ? <Video size={22} className="text-muted-foreground" /> : <Camera size={22} className="text-muted-foreground" />}
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
             {tipo === "videos" && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center group-hover:bg-primary/70 transition-colors">

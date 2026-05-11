@@ -1,42 +1,66 @@
 import { useEffect, useRef, useState } from "react";
 
 const CustomCursor = () => {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const ringRef = useRef({ x: -100, y: -100 });
-  const [ringPos, setRingPos] = useState({ x: -100, y: -100 });
-  const [clicking, setClicking] = useState(false);
-  const [hovering, setHovering] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const ring = useRef({ x: -100, y: -100 });
+  const target = useRef({ x: -100, y: -100 });
   const rafRef = useRef<number>(0);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Don't render on touch-only devices
     if (window.matchMedia("(hover: none)").matches) return;
-
-    const target = { x: -100, y: -100 };
+    setVisible(true);
 
     const onMove = (e: MouseEvent) => {
-      target.x = e.clientX;
-      target.y = e.clientY;
-      setPos({ x: e.clientX, y: e.clientY });
+      target.current.x = e.clientX;
+      target.current.y = e.clientY;
 
+      const dot = dotRef.current;
       const el = document.elementFromPoint(e.clientX, e.clientY);
-      const isInteractive = el?.closest("a, button, input, textarea, select, [role='button'], label");
-      setHovering(!!isInteractive);
+      const isHover = !!el?.closest("a, button, input, textarea, select, [role='button'], label");
+      const dotSize = isHover ? 8 : 6;
+
+      if (dot) {
+        dot.style.width = `${dotSize}px`;
+        dot.style.height = `${dotSize}px`;
+        dot.style.left = `${e.clientX - dotSize / 2}px`;
+        dot.style.top = `${e.clientY - dotSize / 2}px`;
+      }
+
+      const ringEl = ringRef.current;
+      if (ringEl) {
+        const size = isHover ? 44 : 28;
+        ringEl.style.width = `${size}px`;
+        ringEl.style.height = `${size}px`;
+        ringEl.style.borderColor = isHover ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.4)";
+      }
     };
 
-    const onDown = () => setClicking(true);
-    const onUp = () => setClicking(false);
+    const onDown = () => {
+      if (dotRef.current) dotRef.current.style.transform = "scale(0.4)";
+      if (ringRef.current) ringRef.current.style.transform = "scale(0.8)";
+    };
+    const onUp = () => {
+      if (dotRef.current) dotRef.current.style.transform = "scale(1)";
+      if (ringRef.current) ringRef.current.style.transform = "scale(1)";
+    };
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const animate = () => {
-      ringRef.current.x = lerp(ringRef.current.x, target.x, 0.1);
-      ringRef.current.y = lerp(ringRef.current.y, target.y, 0.1);
-      setRingPos({ x: ringRef.current.x, y: ringRef.current.y });
+      ring.current.x = lerp(ring.current.x, target.current.x, 0.12);
+      ring.current.y = lerp(ring.current.y, target.current.y, 0.12);
+      const ringEl = ringRef.current;
+      if (ringEl) {
+        const w = parseFloat(ringEl.style.width) || 28;
+        ringEl.style.left = `${ring.current.x - w / 2}px`;
+        ringEl.style.top = `${ring.current.y - w / 2}px`;
+      }
       rafRef.current = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mousedown", onDown);
     window.addEventListener("mouseup", onUp);
     rafRef.current = requestAnimationFrame(animate);
@@ -49,32 +73,25 @@ const CustomCursor = () => {
     };
   }, []);
 
+  if (!visible) return null;
+
   return (
     <>
-      {/* Dot */}
       <div
+        ref={dotRef}
         className="fixed pointer-events-none z-[9999] rounded-full bg-white"
         style={{
-          width: hovering ? 8 : 6,
-          height: hovering ? 8 : 6,
-          left: pos.x - (hovering ? 4 : 3),
-          top: pos.y - (hovering ? 4 : 3),
-          transform: clicking ? "scale(0.4)" : "scale(1)",
-          transition: "transform 0.1s ease, width 0.2s ease, height 0.2s ease",
+          width: 6, height: 6, left: -100, top: -100,
+          transition: "transform 0.1s ease, width 0.15s ease, height 0.15s ease",
           boxShadow: "0 0 6px rgba(255,255,255,0.6)",
         }}
       />
-      {/* Ring */}
       <div
+        ref={ringRef}
         className="fixed pointer-events-none z-[9998] rounded-full border border-white/40"
         style={{
-          width: hovering ? 44 : 28,
-          height: hovering ? 44 : 28,
-          left: ringPos.x - (hovering ? 22 : 14),
-          top: ringPos.y - (hovering ? 22 : 14),
-          transform: clicking ? "scale(0.8)" : "scale(1)",
-          transition: "transform 0.15s ease, width 0.25s ease, height 0.25s ease, border-color 0.25s ease",
-          borderColor: hovering ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.4)",
+          width: 28, height: 28, left: -100, top: -100,
+          transition: "transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease",
         }}
       />
     </>
