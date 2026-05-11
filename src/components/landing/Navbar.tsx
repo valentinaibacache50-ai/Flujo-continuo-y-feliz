@@ -62,7 +62,7 @@ const Navbar = () => {
   const today = useLiveDate();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <a href="#" onClick={(e) => scrollToSection(e, "#")} className="flex items-center gap-2 shrink-0">
           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shadow-md">
@@ -87,10 +87,10 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-foreground capitalize px-2 py-1 rounded-full bg-primary/15 border border-primary/30">
-            <CalendarDays size={11} className="text-primary" />
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground capitalize px-2.5 py-1.5 rounded-full bg-primary/15 border border-primary/30">
+            <CalendarDays size={12} className="text-primary" />
             <time dateTime={new Date().toISOString().slice(0, 10)}>
-              {new Date().toLocaleDateString("es-AR", { day: "numeric", month: "short" })}
+              {new Date().toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" })}
             </time>
           </div>
           <button className="text-foreground" onClick={() => setOpen(!open)}>

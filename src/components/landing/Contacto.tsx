@@ -96,6 +96,8 @@ const Contacto = () => {
               onChange={(e) => setForm({ ...form, nombre: e.target.value })}
               className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm"
               required
+              maxLength={100}
+              autoComplete="name"
             />
             <input
               placeholder="Asunto"
@@ -103,6 +105,7 @@ const Contacto = () => {
               onChange={(e) => setForm({ ...form, asunto: e.target.value })}
               className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm"
               required
+              maxLength={200}
             />
             <textarea
               placeholder="Contanos cómo podemos ayudarte..."
@@ -111,6 +114,7 @@ const Contacto = () => {
               onChange={(e) => setForm({ ...form, mensaje: e.target.value })}
               className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none transition-colors text-sm"
               required
+              maxLength={1000}
             />
             <button
               type="submit"

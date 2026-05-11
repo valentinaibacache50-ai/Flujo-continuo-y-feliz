@@ -135,13 +135,13 @@ const Fechas = () => {
                 transition={{ duration: 0.35, delay: i * 0.06 }}
                 whileHover={{ x: 4 }}
                 onClick={() => setSelected(f)}
-                className="w-full text-left bg-card border border-border rounded-xl p-4 md:p-5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all group flex flex-col md:flex-row md:items-center gap-3 md:gap-4 cursor-pointer"
+                className="w-full text-left bg-card border border-border rounded-xl p-4 md:p-6 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all group flex flex-col md:flex-row md:items-center gap-4 md:gap-5 cursor-pointer"
               >
                 {/* Date badge */}
                 <div className="flex items-center gap-3 md:min-w-[160px]">
-                  <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-2 text-center min-w-[64px]">
-                    <p className="font-space font-bold text-primary text-base leading-tight">{f.fecha.split(" ")[0]}</p>
-                    <p className="text-[10px] text-primary/70 uppercase font-semibold">{f.fecha.split(" ")[1] || ""}</p>
+                  <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 text-center min-w-[72px]">
+                    <p className="font-space font-bold text-primary text-xl leading-tight">{f.fecha.split(" ")[0]}</p>
+                    <p className="text-[11px] text-primary/70 uppercase font-semibold mt-0.5">{f.fecha.split(" ")[1] || ""}</p>
                   </div>
                   <div className="text-sm">
                     <p className="text-foreground font-medium">{f.dia}</p>

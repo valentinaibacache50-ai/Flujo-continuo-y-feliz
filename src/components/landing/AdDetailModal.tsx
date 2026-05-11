@@ -61,11 +61,12 @@ const AdDetailModal = ({ anuncio, onClose }: AdDetailModalProps) => {
             {anuncio.titulo && anuncio.titulo !== "Nuevo anuncio" && anuncio.titulo !== "Publicidad" && (
               <p className="font-semibold text-foreground text-base mb-4">{anuncio.titulo}</p>
             )}
-            {anuncio.enlace_url && (
+            {anuncio.enlace_url && /^https?:\/\//i.test(anuncio.enlace_url) && (
               <a
                 href={anuncio.enlace_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                referrerPolicy="no-referrer"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all"
               >
                 Visitar sitio <ExternalLink size={14} />

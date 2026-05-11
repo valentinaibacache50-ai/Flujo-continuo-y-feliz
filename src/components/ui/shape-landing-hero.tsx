@@ -133,12 +133,12 @@ function HeroGeometric({
             >
               <motion.a
                 href={ctaHref}
-                className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors relative text-sm sm:text-base"
+                className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 transition-colors relative text-sm sm:text-base shadow-lg shadow-accent/20"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <motion.span
-                  className="absolute inset-0 rounded-lg bg-primary/30"
+                  className="absolute inset-0 rounded-lg bg-accent/30"
                   animate={{ opacity: [0, 0.6, 0], scale: [1, 1.15, 1] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 />
