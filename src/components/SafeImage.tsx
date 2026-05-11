@@ -8,7 +8,7 @@ interface SafeImageProps {
   loading?: "lazy" | "eager";
   /** Target render width in CSS px. Used to request a smaller image from Supabase. */
   width?: number;
-  /** Image quality 1-100 (default 70). */
+  /** Image quality 1-100 (default 80). */
   quality?: number;
   /** fetchpriority hint for the browser. */
   priority?: "high" | "low" | "auto";
@@ -19,7 +19,7 @@ interface SafeImageProps {
  * so we serve a resized/compressed version instead of the full original.
  * Falls back to the original URL for non-Supabase or already-transformed URLs.
  */
-const transformSupabaseUrl = (src: string, width?: number, quality = 70): string => {
+const transformSupabaseUrl = (src: string, width?: number, quality = 80): string => {
   if (!src || !width) return src;
   if (!src.includes("/storage/v1/object/public/")) return src;
   // Skip SVG/GIF — transform doesn't support animated/vector well.
@@ -37,7 +37,7 @@ const SafeImage = ({
   className = "",
   loading = "lazy",
   width,
-  quality = 70,
+  quality = 80,
   priority,
 }: SafeImageProps) => {
   const [fallback, setFallback] = useState(false);

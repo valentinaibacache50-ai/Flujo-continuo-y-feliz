@@ -145,16 +145,16 @@ const AlbumFotosModal = ({ album, onClose }: { album: any; onClose: () => void }
               ) : fotos.length === 0 ? (
                 <p className="text-center text-muted-foreground py-16">No hay fotos en este álbum</p>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {fotos.map((foto, i) => (
-                    <motion.div key={foto.id} whileHover={{ scale: 1.04 }}
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer bg-secondary"
+                    <motion.div key={foto.id} whileHover={{ scale: 1.03 }}
+                      className="rounded-lg overflow-hidden cursor-pointer bg-secondary"
                       onClick={() => setLightboxIndex(i)}
                     >
                       {foto.imagen_url ? (
-                        <SafeImage src={foto.imagen_url} alt={foto.titulo || ""} width={400} className="w-full h-full object-cover object-center" />
+                        <SafeImage src={foto.imagen_url} alt={foto.titulo || ""} width={500} quality={85} className="w-full h-auto rounded-lg" />
                       ) : (
-                        <div className="w-full h-full bg-secondary flex items-center justify-center">
+                        <div className="w-full aspect-[4/3] bg-secondary flex items-center justify-center">
                           <Image size={18} className="text-muted-foreground" />
                         </div>
                       )}
@@ -360,7 +360,7 @@ const AlbumesSectionGrid = ({
         >
           <div className="aspect-[4/3] relative overflow-hidden bg-secondary">
             {album.miniatura_url ? (
-              <SafeImage src={album.miniatura_url} alt={album.titulo} width={500} className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" />
+              <SafeImage src={album.miniatura_url} alt={album.titulo} width={600} quality={85} className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" />
             ) : album.firstVideoUrl && ytId ? (
               <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={album.titulo} className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" loading="lazy" />
             ) : album.firstVideoUrl ? (
