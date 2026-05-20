@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Menu, X, CalendarDays } from "lucide-react";
 import logo from "@/assets/logo-ball.png";
 
@@ -61,6 +63,24 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const today = useLiveDate();
 
+  const { data: navbarConfig } = useQuery({
+    queryKey: ["navbar_config"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("navbar_config").select("*").limit(1).single();
+      if (error) return null;
+      return data;
+    },
+    staleTime: 60_000,
+  });
+
+  const displayDate = navbarConfig && !navbarConfig.usar_fecha_auto && navbarConfig.fecha_texto
+    ? navbarConfig.fecha_texto
+    : today;
+
+  const displayDateShort = navbarConfig && !navbarConfig.usar_fecha_auto && navbarConfig.fecha_texto
+    ? navbarConfig.fecha_texto
+    : new Date().toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" });
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
@@ -75,7 +95,7 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-1.5 text-xs font-semibold text-foreground capitalize whitespace-nowrap mx-6 px-4 py-1.5 rounded-full bg-primary/15 border border-primary/30">
           <CalendarDays size={14} className="text-primary" />
-          <time dateTime={new Date().toISOString().slice(0, 10)}>{today}</time>
+          <time dateTime={new Date().toISOString().slice(0, 10)}>{displayDate}</time>
         </div>
 
         <div className="hidden lg:flex items-center gap-4">
@@ -90,7 +110,7 @@ const Navbar = () => {
           <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground capitalize px-2.5 py-1.5 rounded-full bg-primary/15 border border-primary/30">
             <CalendarDays size={12} className="text-primary" />
             <time dateTime={new Date().toISOString().slice(0, 10)}>
-              {new Date().toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" })}
+              {displayDateShort}
             </time>
           </div>
           <button className="text-foreground" onClick={() => setOpen(!open)}>
@@ -105,7 +125,7 @@ const Navbar = () => {
           <div className="lg:hidden relative z-50 bg-background border-b border-border px-4 pb-4 space-y-1">
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground capitalize pt-2 pb-1 border-b border-border/50 mb-1">
               <CalendarDays size={12} className="text-primary" />
-              <time dateTime={new Date().toISOString().slice(0, 10)}>{today}</time>
+              <time dateTime={new Date().toISOString().slice(0, 10)}>{displayDate}</time>
             </div>
             {navLinks.map((l) => (
               <a key={l.href} href={l.href} onClick={(e) => { scrollToSection(e, l.href); setOpen(false); }} className="block py-2.5 px-2 text-muted-foreground hover:text-primary transition-colors text-sm">
