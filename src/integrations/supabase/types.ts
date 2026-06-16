@@ -247,27 +247,6 @@ export type Database = {
         }
         Relationships: []
       }
-      navbar_config: {
-        Row: {
-          created_at: string
-          fecha_texto: string | null
-          id: string
-          usar_fecha_auto: boolean
-        }
-        Insert: {
-          created_at?: string
-          fecha_texto?: string | null
-          id?: string
-          usar_fecha_auto?: boolean
-        }
-        Update: {
-          created_at?: string
-          fecha_texto?: string | null
-          id?: string
-          usar_fecha_auto?: boolean
-        }
-        Relationships: []
-      }
       hero_config: {
         Row: {
           badge: string
@@ -298,6 +277,27 @@ export type Database = {
           id?: string
           title1?: string
           title2?: string
+        }
+        Relationships: []
+      }
+      navbar_config: {
+        Row: {
+          created_at: string
+          fecha_texto: string | null
+          id: string
+          usar_fecha_auto: boolean
+        }
+        Insert: {
+          created_at?: string
+          fecha_texto?: string | null
+          id?: string
+          usar_fecha_auto?: boolean
+        }
+        Update: {
+          created_at?: string
+          fecha_texto?: string | null
+          id?: string
+          usar_fecha_auto?: boolean
         }
         Relationships: []
       }
