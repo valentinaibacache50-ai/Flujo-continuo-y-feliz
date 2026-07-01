@@ -35,9 +35,12 @@ const BannerFijo = () => {
         className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
       >
         <div className="pointer-events-auto w-full max-w-5xl mx-4 mb-4 relative rounded-xl overflow-hidden shadow-2xl border border-border/50">
+          {(() => {
+            const safeHref = banner.enlace_url && /^https?:\/\//i.test(banner.enlace_url) ? banner.enlace_url : null;
+            return (
           <a
-            href={banner.enlace_url || "#"}
-            target={banner.enlace_url ? "_blank" : undefined}
+            href={safeHref || "#"}
+            target={safeHref ? "_blank" : undefined}
             rel="noopener noreferrer"
             className="block"
           >
@@ -53,6 +56,8 @@ const BannerFijo = () => {
               </div>
             )}
           </a>
+            );
+          })()}
           <button
             onClick={() => setCerrado(true)}
             aria-label="Cerrar banner"
