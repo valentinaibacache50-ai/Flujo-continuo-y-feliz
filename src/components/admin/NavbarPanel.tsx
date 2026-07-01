@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -22,11 +22,13 @@ const NavbarPanel = () => {
     },
   });
 
-  if (config && !initialized) {
-    setUsarFechaAuto(config.usar_fecha_auto);
-    setFechaTexto(config.fecha_texto || "");
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (config && !initialized) {
+      setUsarFechaAuto(config.usar_fecha_auto);
+      setFechaTexto(config.fecha_texto || "");
+      setInitialized(true);
+    }
+  }, [config, initialized]);
 
   const updateMutation = useMutation({
     mutationFn: async () => {

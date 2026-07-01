@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,15 +25,17 @@ const HeroPanel = () => {
   const [ctaHref, setCtaHref] = useState("");
   const [initialized, setInitialized] = useState(false);
 
-  if (hero && !initialized) {
-    setBadge(hero.badge);
-    setTitle1(hero.title1);
-    setTitle2(hero.title2);
-    setDescription(hero.description);
-    setCtaText(hero.cta_text);
-    setCtaHref(hero.cta_href);
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (hero && !initialized) {
+      setBadge(hero.badge);
+      setTitle1(hero.title1);
+      setTitle2(hero.title2);
+      setDescription(hero.description);
+      setCtaText(hero.cta_text);
+      setCtaHref(hero.cta_href);
+      setInitialized(true);
+    }
+  }, [hero, initialized]);
 
   const updateMutation = useMutation({
     mutationFn: async () => {

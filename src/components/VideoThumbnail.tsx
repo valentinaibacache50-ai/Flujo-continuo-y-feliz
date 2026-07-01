@@ -30,6 +30,7 @@ const VideoThumbnail = ({ src, alt = "", className = "" }: VideoThumbnailProps) 
 
     const cleanup = () => {
       cancelled = true;
+      video.pause();
       video.removeAttribute("src");
       video.load();
     };

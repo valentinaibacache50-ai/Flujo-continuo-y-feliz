@@ -45,7 +45,8 @@ const useLiveDate = () => {
     const scheduleNext = () => {
       const now = new Date();
       const next = new Date(now);
-      next.setHours(24, 0, 1, 0); // 1s after next midnight
+      next.setDate(next.getDate() + 1);
+      next.setHours(0, 0, 1, 0); // 1s after next midnight
       timeoutId = window.setTimeout(() => {
         setDate(formatToday());
         scheduleNext();

@@ -26,7 +26,7 @@ const Contacto = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const phoneNumber = (config?.whatsapp ?? "+54 9 1167391965").replace(/\D/g, "");
+    const phoneNumber = (config?.whatsapp ?? "+5491167391965").replace(/\D/g, "");
     const message = encodeURIComponent(
       `Hola, soy ${form.nombre}.\n\n*Asunto:* ${form.asunto}\n\n${form.mensaje}`
     );
@@ -35,7 +35,7 @@ const Contacto = () => {
     setForm({ nombre: "", asunto: "", mensaje: "" });
   };
 
-  const whatsapp = config?.whatsapp ?? "+57 300 000 0000";
+  const whatsapp = config?.whatsapp ?? "+54 9 1167391965";
   const facebook = config?.facebook ?? "@semillerodecampeonesav";
   const cobertura = config?.cobertura ?? "Fútbol Juvenil y de Barrio";
 
