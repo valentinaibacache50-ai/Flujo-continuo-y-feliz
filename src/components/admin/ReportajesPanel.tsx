@@ -77,7 +77,7 @@ const ReportajesPanel = () => {
       if (imageFile) imagen_url = await uploadImage(imageFile, "reportajes");
       if (videoFile) {
         const uploaded = await uploadImage(videoFile, "reportajes");
-        if (uploaded) imagen_url = uploaded;
+        if (uploaded) video_url = uploaded;
       }
 
       const payload: any = { titulo, subtitulo: subtitulo || null, contenido, tag, video_url };
@@ -98,7 +98,7 @@ const ReportajesPanel = () => {
       resetForm();
       toast({ title: editingId ? "Reportaje actualizado" : "Reportaje agregado" });
     },
-    onError: () => { setUploading(false); toast({ title: "Error al guardar", variant: "destructive" }); },
+    onError: (err: any) => { setUploading(false); toast({ title: err?.message || "Error al guardar reportaje", variant: "destructive" }); },
   });
 
   const deleteMutation = useMutation({

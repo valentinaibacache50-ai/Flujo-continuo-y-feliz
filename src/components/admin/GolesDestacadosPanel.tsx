@@ -78,11 +78,16 @@ const GolesDestacadosPanel = () => {
   const save = useMutation({
     mutationFn: async () => {
       if (!form.titulo.trim() || !form.video_url.trim()) throw new Error("Título y URL de video son obligatorios");
+      const payload = {
+        ...form,
+        miniatura_url: form.miniatura_url?.trim() || null,
+        descripcion: form.descripcion?.trim() || null,
+      };
       if (editing) {
-        const { error } = await supabase.from("goles_destacados").update(form).eq("id", editing.id);
+        const { error } = await supabase.from("goles_destacados").update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("goles_destacados").insert(form);
+        const { error } = await supabase.from("goles_destacados").insert(payload);
         if (error) throw error;
       }
     },
@@ -93,7 +98,7 @@ const GolesDestacadosPanel = () => {
       setCreating(false);
       setForm(empty);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message || "Error al guardar gol"),
   });
 
   const remove = useMutation({

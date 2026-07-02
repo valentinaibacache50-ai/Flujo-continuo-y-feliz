@@ -41,7 +41,7 @@ const CronicasPanel = () => {
       setShowForm(false); setUploading(false);
       toast({ title: "Crónica publicada" });
     },
-    onError: () => { setUploading(false); toast({ title: "Error", variant: "destructive" }); },
+    onError: (err: any) => { setUploading(false); toast({ title: err?.message || "Error al publicar crónica", variant: "destructive" }); },
   });
 
   const deleteMutation = useMutation({

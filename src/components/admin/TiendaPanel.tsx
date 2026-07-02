@@ -68,7 +68,7 @@ const TiendaPanel = () => {
       resetForm();
       toast({ title: editingId ? "Producto actualizado" : "Producto agregado" });
     },
-    onError: () => toast({ title: "Error al guardar", variant: "destructive" }),
+    onError: (err: any) => toast({ title: err?.message || "Error al guardar producto", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({

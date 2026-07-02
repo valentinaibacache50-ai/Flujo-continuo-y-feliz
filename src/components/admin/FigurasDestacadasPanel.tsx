@@ -60,11 +60,18 @@ const FigurasDestacadasPanel = () => {
   const save = useMutation({
     mutationFn: async () => {
       if (!form.nombre.trim()) throw new Error("El nombre es obligatorio");
+      const payload = {
+        ...form,
+        posicion: form.posicion?.trim() || null,
+        equipo: form.equipo?.trim() || null,
+        imagen_url: form.imagen_url?.trim() || null,
+        descripcion: form.descripcion?.trim() || null,
+      };
       if (editing) {
-        const { error } = await supabase.from("figuras_destacadas").update(form).eq("id", editing.id);
+        const { error } = await supabase.from("figuras_destacadas").update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("figuras_destacadas").insert(form);
+        const { error } = await supabase.from("figuras_destacadas").insert(payload);
         if (error) throw error;
       }
     },

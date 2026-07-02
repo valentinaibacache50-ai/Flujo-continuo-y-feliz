@@ -65,7 +65,7 @@ const FechasPanel = () => {
       resetForm();
       toast({ title: editingId ? "Fecha actualizada" : "Fecha agregada" });
     },
-    onError: () => toast({ title: "Error al guardar", variant: "destructive" }),
+    onError: (err: any) => toast({ title: err?.message || "Error al guardar fecha", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({

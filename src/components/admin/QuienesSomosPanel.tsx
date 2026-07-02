@@ -32,7 +32,7 @@ const QuienesSomosPanel = () => {
       setShowForm(false);
       toast({ title: "Valor agregado" });
     },
-    onError: () => toast({ title: "Error al agregar", variant: "destructive" }),
+    onError: (err: any) => toast({ title: err?.message || "Error al agregar", variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
