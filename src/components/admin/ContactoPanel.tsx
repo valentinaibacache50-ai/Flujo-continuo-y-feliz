@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -22,12 +22,14 @@ const ContactoPanel = () => {
   const [cobertura, setCobertura] = useState("");
   const [initialized, setInitialized] = useState(false);
 
-  if (config && !initialized) {
-    setWhatsapp(config.whatsapp);
-    setFacebook(config.facebook);
-    setCobertura(config.cobertura);
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (config && !initialized) {
+      setWhatsapp(config.whatsapp);
+      setFacebook(config.facebook);
+      setCobertura(config.cobertura);
+      setInitialized(true);
+    }
+  }, [config, initialized]);
 
   const updateMutation = useMutation({
     mutationFn: async () => {
@@ -39,7 +41,7 @@ const ContactoPanel = () => {
       queryClient.invalidateQueries({ queryKey: ["contacto_config"] });
       toast({ title: "Contacto actualizado" });
     },
-    onError: () => toast({ title: "Error al guardar", variant: "destructive" }),
+    onError: (err: any) => toast({ title: err?.message || "Error al guardar contacto", variant: "destructive" }),
   });
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;

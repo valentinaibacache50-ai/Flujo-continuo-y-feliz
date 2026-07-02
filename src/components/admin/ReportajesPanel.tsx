@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/lib/storage";
+import { uploadImage, uploadProgramVideo } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Upload, Loader2, Image, FileVideo, AlertCircle, Pencil, X } from "lucide-react";
 
@@ -76,7 +76,7 @@ const ReportajesPanel = () => {
 
       if (imageFile) imagen_url = await uploadImage(imageFile, "reportajes");
       if (videoFile) {
-        const uploaded = await uploadImage(videoFile, "reportajes");
+        const uploaded = await uploadProgramVideo(videoFile);
         if (uploaded) video_url = uploaded;
       }
 

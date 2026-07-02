@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/lib/storage";
+import { uploadImage, uploadProgramVideo } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Trash2, Upload, Loader2, Image, AlertCircle, Pencil, X,
@@ -447,9 +447,8 @@ const AlbumVideosView = ({ album, onBack }: { album: any; onBack: () => void }) 
 
       if (videoFile) {
         setUploading(true);
-        const uploaded = await uploadImage(videoFile, "galeria");
+        const uploaded = await uploadProgramVideo(videoFile);
         imagenUrl = uploaded;
-        // Also set as video_url for consistency
         if (!finalVideoUrl) finalVideoUrl = uploaded;
         setUploading(false);
       }
