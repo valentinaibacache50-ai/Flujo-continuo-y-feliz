@@ -60,7 +60,7 @@ const Publicidad = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Megaphone size={16} className="text-primary" />
-            <p className="text-primary text-sm font-semibold tracking-wider uppercase">Publicidad</p>
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase">Sponsors</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {anuncios.map((anuncio) => (

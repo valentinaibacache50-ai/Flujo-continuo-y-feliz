@@ -114,7 +114,7 @@ export function Pricing({
                     className="font-variant-numeric: tabular-nums"
                   />
                 </span>
-                <span className="text-sm text-muted-foreground">/ {plan.period}</span>
+                {plan.period && <span className="text-sm text-muted-foreground">/ {plan.period}</span>}
               </div>
               <ul className="space-y-2">
                 {plan.features.map((feature, idx) => (

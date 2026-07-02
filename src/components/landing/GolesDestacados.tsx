@@ -16,14 +16,14 @@ const GolesDestacados = () => {
         .from("goles_destacados")
         .select("*")
         .eq("activo", true)
-        .order("created_at", { ascending: false });
+        .order("orden", { ascending: true });
       if (error) throw error;
       return data;
     },
   });
 
   const getThumbnail = (item: typeof goles[number]) => {
-    if (item.miniatura_url) return item.miniatura_url;
+    if (item.miniatura_url?.trim()) return item.miniatura_url;
     const ytThumb = getYoutubeThumbnail(item.video_url);
     if (ytThumb) return ytThumb;
     return null;
