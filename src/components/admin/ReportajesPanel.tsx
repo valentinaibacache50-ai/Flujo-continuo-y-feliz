@@ -76,8 +76,10 @@ const ReportajesPanel = () => {
 
       if (imageFile) imagen_url = await uploadImage(imageFile, "reportajes");
       if (videoFile) {
+        // Un video subido como archivo se guarda en imagen_url (igual que lo leen
+        // Reportajes.tsx y esta misma lista): video_url es solo para links de YouTube.
         const uploaded = await uploadProgramVideo(videoFile);
-        if (uploaded) video_url = uploaded;
+        if (uploaded) imagen_url = uploaded;
       }
 
       const payload: any = { titulo, subtitulo: subtitulo || null, contenido, tag, video_url };
